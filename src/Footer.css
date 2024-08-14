@@ -1,0 +1,26 @@
+/* Footer.css */
+.App-footer {
+    background-color: #074D88;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .footer-links {
+    margin-bottom: 10px;
+  }
+  
+  .footer-links a {
+    color: #61dafb;
+    margin: 0 15px;
+    text-decoration: none;
+  }
+  
+  .footer-links a:hover {
+    text-decoration: underline;
+  }
+  
+  .footer-copyright {
+    margin-top: 10px;
+  }
+  
