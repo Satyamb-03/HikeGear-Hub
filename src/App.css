@@ -1,5 +1,13 @@
+/* General App styles */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensures the container takes up at least the full viewport height */
 }
 
 .App-header {
@@ -20,45 +28,86 @@
   color: white;
 }
 
+/* Navigation styles */
 .App-nav ul {
   list-style-type: none;
-  padding: 0;
-  background-color: #5289A1;
   margin: 0;
+  padding: 0;
   display: flex;
-  justify-content: center;
+  justify-content: space-around; /* Spread items evenly */
+  background-color: #5289A1; /* Navigation bar background color */
 }
 
 .App-nav ul li {
-  margin: 0 20px;
+  position: relative;
+  flex-grow: 1; /* Ensures each list item takes up equal space */
+  text-align: center; /* Centers the text within each item */
 }
 
 .App-nav ul li a {
-  color: white;
-  text-decoration: none;
-  padding: 14px 20px;
   display: block;
+  color: white; /* Text color */
+  padding: 14px 20px;
+  text-decoration: none;
 }
 
 .App-nav ul li a:hover {
-  background-color: #61dafb;
+  background-color: #3a6178; /* Adjusted hover background color */
 }
 
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #3a6178; /* Dropdown background matching hover color */
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%); /* Centers the dropdown under the main category */
+}
+
+.dropdown-content a {
+  color: white; /* Text color inside dropdown */
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #5289A1; /* Background color on hover inside subcategories */
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Main content styles */
+.App-main {
+  flex: 1; /* Allows the main content to take up available space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Footer styles */
+.App-footer {
+  margin-top: auto; /* Pushes the footer to the bottom */
+  background-color: #074088; /* Match with header color or any color of your choice */
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Image styling */
 .App-image img {
   width: 100%;
   height: auto;
   margin-top: 20px;
 }
 
-.logo-link {
-  color: white;
-  text-decoration: none;
-}
-
-.logo-link:hover {
-  text-decoration: underline;
-}
-
+/* Logo link styles */
 .logo-link {
   font-family: 'Kaushan Script', cursive;
   font-size: 24px;
@@ -68,4 +117,18 @@
 
 .logo-link:hover {
   text-decoration: underline;
+}
+
+.Home {
+  text-align: center;
+  padding: 20px; /* Optional padding for spacing */
+}
+
+.home-image {
+  margin-bottom: 20px; /* Space between image and text */
+}
+
+.home-image img {
+  max-width: 100%; /* Ensure the image scales properly */
+  height: auto; /* Maintain aspect ratio */
 }

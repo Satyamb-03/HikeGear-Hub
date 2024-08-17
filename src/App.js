@@ -1,4 +1,3 @@
-// App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
@@ -27,23 +26,56 @@ function App() {
         
         <nav className="App-nav">
           <ul>
-            <li><Link to="/clothing">Clothing</Link></li>
-            <li><Link to="/footwear">Footwear</Link></li>
-            <li><Link to="/gear">Gear</Link></li>
-            <li><Link to="/accessories">Accessories</Link></li>
+            <li className="dropdown">
+              <Link to="/clothing" className="dropbtn">Clothing</Link>
+              <div className="dropdown-content">
+                <Link to="/clothing/men">Men's Clothing</Link>
+                <Link to="/clothing/women">Women's Clothing</Link>
+                <Link to="/clothing/kids">Kid's Clothing</Link>
+              </div>
+            </li>
+            <li className="dropdown">
+              <Link to="/footwear" className="dropbtn">Footwear</Link>
+              <div className="dropdown-content">
+                <Link to="/footwear/men">Men's Footwear</Link>
+                <Link to="/footwear/women">Women's Footwear</Link>
+                <Link to="/footwear/kids">Kid's Footwear</Link>
+              </div>
+            </li>
+            <li className="dropdown">
+              <Link to="/gear" className="dropbtn">Gear</Link>
+              <div className="dropdown-content">
+                <Link to="/gear/furniture">Camp Furniture</Link>
+                <Link to="/gear/kitchen">Camp Kitchen</Link>
+                <Link to="/gear/packs">Packs</Link>
+                <Link to="/gear/sleep">Sleep Systems</Link>
+                <Link to="/gear/tents">Tents & Bivvies</Link>
+              </div>
+            </li>
+            <li className="dropdown">
+              <Link to="/accessories" className="dropbtn">Accessories</Link>
+              <div className="dropdown-content">
+                <Link to="/accessories/headwear">Headwear</Link>
+                <Link to="/accessories/clothing">Clothing Accessories</Link>
+                <Link to="/accessories/footwear">Footwear Accessories</Link>
+                <Link to="/accessories/backpack">Backpack Accessories</Link>
+              </div>
+            </li>
           </ul>
         </nav>
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/clothing" element={<Clothing />} />
-          <Route path="/footwear" element={<Footwear />} />
-          <Route path="/gear" element={<Gear />} />
-          <Route path="/accessories" element={<Accessories />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        </Routes>
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/clothing" element={<Clothing />} />
+            <Route path="/footwear" element={<Footwear />} />
+            <Route path="/gear" element={<Gear />} />
+            <Route path="/accessories" element={<Accessories />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          </Routes>
+        </main>
 
         <Footer />
       </div>
@@ -54,6 +86,9 @@ function App() {
 function Home() {
   return (
     <div className="Home">
+       <div className="home-image">
+        <img src="/Homepage1.jpg" alt="Hiking Gear" />
+      </div>
       <h2>Welcome to Hike Gear Hub – Your Ultimate Adventure Partner!</h2>
       <p>
         Planning your next outdoor adventure? Whether you’re a seasoned hiker or a first-time explorer, we’ve got you covered with top-quality hiking gear available for rent. From tents to trekking poles, and everything in between, Hike Gear Hub offers a wide range of equipment to suit all your needs.
@@ -68,12 +103,9 @@ function Home() {
       <p>
         Don’t let a lack of gear hold you back. Explore our catalog, choose your gear, and get ready to hit the trails. Your next adventure is just a few clicks away!
       </p>
-      <div className="home-image">
-        <img src="/Homepage1.jpg" alt="Hiking Gear" />
-      </div>
+     
     </div>
   );
 }
-
 
 export default App;
