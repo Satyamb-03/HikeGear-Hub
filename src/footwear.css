@@ -1,0 +1,105 @@
+/* Container Styling */
+.Footwear {
+    background-color: #f8f7f9;
+    padding: 30px 15px; /* Reduced padding */
+    text-align: center;
+    color: #250bea;
+}
+
+/* Heading */
+.Footwear h2 {
+    font-size: 2rem; /* Reduced font size */
+    margin-bottom: 15px;
+    font-family: 'Itim', cursive; /* Applying the Itim font */
+    color: #114eb7;
+}
+
+/* Description Paragraph */
+.Footwear p {
+    font-size: 1rem; /* Reduced font size */
+    margin-bottom: 30px;
+    color: #52796f;
+}
+
+/* List Container */
+.footwear-list {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 20px; /* Reduced gap */
+}
+
+/* Individual Item */
+.footwear-item {
+    background-color: #ffffff;
+    border: 2px solid #2704eb;
+    border-radius: 12px; /* Slightly reduced border radius */
+    padding: 20px; /* Reduced padding */
+    max-width: 220px; /* Reduced max width */
+    text-align: center;
+}
+
+/* Hover Effect */
+.footwear-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Product Image */
+.footwear-item img {
+    max-width: 90%; /* Reduced image size */
+    height: auto;
+    border-radius: 10px; /* Slightly reduced border radius */
+    margin-bottom: 12px;
+}
+
+/* Product Name */
+.footwear-item h3 {
+    font-size: 1.2rem; /* Reduced font size */
+    color: #060e6e;
+    margin-bottom: 8px;
+}
+
+/* Product Description */
+.footwear-item p {
+    font-size: 0.9rem; /* Reduced font size */
+    color: #7065e9;
+    margin-bottom: 4px;
+}
+
+/* Price */
+.footwear-item .price {
+    font-size: 1.1rem; /* Reduced font size */
+    font-weight: bold;
+    color: #d00000;
+}
+
+/* Add to Cart Button */
+.add-to-cart-btn {
+    background-color: #3906f2;
+    color: white;
+    border: none;
+    padding: 8px 16px; /* Reduced padding */
+    margin-top: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem; /* Reduced font size */
+    transition: background-color 0.3s ease;
+}
+
+/* Hover Effect on Button */
+.add-to-cart-btn:hover {
+    background-color: #1b4332;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footwear-list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footwear-item {
+        max-width: 90%; /* Adjusted for smaller screens */
+    }
+}
