@@ -1,0 +1,107 @@
+/* Container Styling */
+.Gear {
+    background-color: #ffffff;
+    padding: 30px 15px; /* Reduced padding */
+    text-align: center;
+    color: #0c4b33;
+}
+
+/* Heading */
+.Gear h2 {
+    font-size: 2rem; /* Reduced font size */
+    margin-bottom: 15px;
+    font-family: 'Itim', cursive; /* Applying the Itim font */
+    color: #065143;
+}
+
+/* Description Paragraph */
+.Gear p {
+    font-size: 1rem; /* Reduced font size */
+    margin-bottom: 30px;
+    color: #1b4332;
+}
+
+/* List Container */
+.gear-list {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 20px; /* Reduced gap */
+}
+
+/* Individual Item */
+.gear-item {
+    background-color: #ffffff;
+    border: 2px solid #065143;
+    border-radius: 12px; /* Slightly reduced border radius */
+    padding: 20px; /* Reduced padding */
+    max-width: 220px; /* Reduced max width */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added subtle shadow */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Hover Effect */
+.gear-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Product Image */
+.gear-item img {
+    max-width: 90%; /* Reduced image size */
+    height: auto;
+    border-radius: 10px; /* Slightly reduced border radius */
+    margin-bottom: 12px;
+}
+
+/* Product Name */
+.gear-item h3 {
+    font-size: 1.2rem; /* Reduced font size */
+    color: #003a20;
+    margin-bottom: 8px;
+}
+
+/* Product Description */
+.gear-item p {
+    font-size: 0.9rem; /* Reduced font size */
+    color: #065143;
+    margin-bottom: 4px;
+}
+
+/* Price */
+.gear-item .price {
+    font-size: 1.1rem; /* Reduced font size */
+    font-weight: bold;
+    color: #d00000;
+}
+
+/* Add to Cart Button */
+.add-to-cart-btn {
+    background-color: #0b3d91;
+    color: white;
+    border: none;
+    padding: 8px 16px; /* Reduced padding */
+    margin-top: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem; /* Reduced font size */
+    transition: background-color 0.3s ease;
+}
+
+/* Hover Effect on Button */
+.add-to-cart-btn:hover {
+    background-color: #1b4332;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .gear-list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .gear-item {
+        max-width: 90%; /* Adjusted for smaller screens */
+    }
+}
