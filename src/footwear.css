@@ -1,105 +1,140 @@
-/* Container Styling */
 .Footwear {
-    background-color: #f8f7f9;
-    padding: 30px 15px; /* Reduced padding */
     text-align: center;
-    color: #250bea;
-}
-
-/* Heading */
-.Footwear h2 {
-    font-size: 2rem; /* Reduced font size */
-    margin-bottom: 15px;
-    font-family: 'Itim', cursive; /* Applying the Itim font */
-    color: #114eb7;
-}
-
-/* Description Paragraph */
-.Footwear p {
-    font-size: 1rem; /* Reduced font size */
-    margin-bottom: 30px;
-    color: #52796f;
-}
-
-/* List Container */
-.footwear-list {
+    margin: 20px;
+  }
+  
+  .footwear-list {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
     flex-wrap: wrap;
-    gap: 20px; /* Reduced gap */
-}
-
-/* Individual Item */
-.footwear-item {
-    background-color: #ffffff;
-    border: 2px solid #2704eb;
-    border-radius: 12px; /* Slightly reduced border radius */
-    padding: 20px; /* Reduced padding */
-    max-width: 220px; /* Reduced max width */
-    text-align: center;
-}
-
-/* Hover Effect */
-.footwear-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-/* Product Image */
-.footwear-item img {
-    max-width: 90%; /* Reduced image size */
+  }
+  
+  .footwear-item {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 10px;
+    width: 250px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    position: relative;
+  }
+  
+  .footwear-item img {
+    width: 100%;
     height: auto;
-    border-radius: 10px; /* Slightly reduced border radius */
-    margin-bottom: 12px;
-}
-
-/* Product Name */
-.footwear-item h3 {
-    font-size: 1.2rem; /* Reduced font size */
-    color: #060e6e;
-    margin-bottom: 8px;
-}
-
-/* Product Description */
-.footwear-item p {
-    font-size: 0.9rem; /* Reduced font size */
-    color: #7065e9;
-    margin-bottom: 4px;
-}
-
-/* Price */
-.footwear-item .price {
-    font-size: 1.1rem; /* Reduced font size */
+    border-radius: 8px;
+  }
+  
+  .footwear-item:hover {
+    transform: scale(1.05);
+  }
+  
+  .price {
     font-weight: bold;
-    color: #d00000;
-}
-
-/* Add to Cart Button */
-.add-to-cart-btn {
-    background-color: #3906f2;
+    color: #e60023;
+    font-size: 1.2em;
+  }
+  
+  .add-to-cart-btn {
+    background-color: #4CAF50;
     color: white;
+    padding: 10px 20px;
     border: none;
-    padding: 8px 16px; /* Reduced padding */
-    margin-top: 12px;
-    border-radius: 5px;
     cursor: pointer;
-    font-size: 0.9rem; /* Reduced font size */
     transition: background-color 0.3s ease;
-}
-
-/* Hover Effect on Button */
-.add-to-cart-btn:hover {
-    background-color: #1b4332;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .footwear-list {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .footwear-item {
-        max-width: 90%; /* Adjusted for smaller screens */
-    }
-}
+    border-radius: 4px;
+    margin-top: 10px;
+  }
+  
+  .add-to-cart-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .new-arrival {
+    border-color: #ffd700;
+  }
+  
+  .new-badge {
+    background-color: #ffd700;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+  }
+  
+  .item-name-clickable {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+  }
+  
+  .popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto; /* Enable vertical scrolling */
+    z-index: 1000;
+  }
+  
+  .popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 90vh; /* Limits the height to 90% of the viewport */
+    overflow-y: auto; /* Enables scrolling within the popup */
+    text-align: left;
+    position: relative;
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #333;
+  }
+  
+  .popup-images img {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 8px;
+  }
+  
+  /* Context Menu Styling */
+  .context-menu {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    z-index: 1000;
+  }
+  
+  .context-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .context-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .context-menu li:hover {
+    background-color: #f0f0f0;
+  }
+  
