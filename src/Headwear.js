@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './Accessories.css';
+import './Headwear.css';
 
-const accessoriesItems = [
+const headwearItems = [
   {
     id: 1,
     name: 'Sun Hat',
@@ -14,24 +14,6 @@ const accessoriesItems = [
   },
   {
     id: 2,
-    name: 'Thermal Gloves',
-    description: 'Warm gloves for cold weather conditions.',
-    fullDescription: 'These thermal gloves are insulated, keeping your hands warm in extreme cold while remaining breathable.',
-    price: '$10/day',
-    image: '/Accessories/thermalGloves.jpg',
-    moreImages: ['/Accessories/Thermal.b.jpg', 'Accessories/Thermal.p.jpg'],
-  },
-  {
-    id: 3,
-    name: 'Gaiters',
-    description: 'Protective gaiters to keep debris out of your boots.',
-    fullDescription: 'These gaiters provide excellent protection from mud, rain, and snow, ensuring your feet stay dry and comfortable.',
-    price: '$7/day',
-    image: '/Accessories/Gaiters.jpg',
-    moreImages: ['/Accessories/Gaiter.p.png', 'Accessories/Gaiter.b.png'],
-  },
-  {
-    id: 4,
     name: 'Helmet',
     description: 'Protect your head during adventurous hikes.',
     fullDescription: 'This helmet offers superior protection with a lightweight design, perfect for climbing or biking.',
@@ -41,27 +23,26 @@ const accessoriesItems = [
     newArrival: true,
   },
   {
-    id: 5,
-    name: 'Hiking Socks',
-    description: 'Comfortable and breathable socks for long hikes.',
-    fullDescription: 'These socks are designed to keep your feet dry and blister-free, with moisture-wicking properties.',
-    price: '$3/day',
-    image: '/Accessories/Socks.jpg',
-    moreImages: ['/Accessories/Socks.b.jpg'],
+    id: 3,
+    name: 'Beanie',
+    description: 'Warm and cozy beanie for cold weather.',
+    fullDescription: 'This beanie is made from soft, insulating material to keep your head warm during chilly hikes.',
+    price: '$4/day',
+    image: '/Accessories/Beanie.jpg',
+    moreImages: ['/Accessories/Beanie.p.jpg'],
   },
   {
-    id: 6,
-    name: 'Headlamp',
-    description: 'Bright LED headlamp for night hikes.',
-    fullDescription: 'This rechargeable headlamp provides up to 440 lumens of light, perfect for late-night or early-morning hikes.',
-    price: '$12/day',
-    image: '/Accessories/Headlamp.jpg',
-    moreImages: ['/Accessories/Headlamp.p.jpg', 'Accessories/Headlamp.b.jpg','Accessories/Headlamp.f.jpg'],
-    newArrival: true,
+    id: 4,
+    name: 'Visor Cap',
+    description: 'Lightweight visor to keep the sun out of your eyes.',
+    fullDescription: 'This visor cap is perfect for sunny hikes, providing shade while keeping your head cool.',
+    price: '$3/day',
+    image: '/Accessories/VisorCap.jpg',
+    moreImages: ['/Accessories/VisorCap.p.jpg'],
   },
 ];
 
-function Accessories() {
+function Headwear() {
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleAddToCart = (item) => {
@@ -77,13 +58,13 @@ function Accessories() {
   };
 
   return (
-    <div className="Accessories">
-      <h2>Accessories</h2>
-      <p>Discover essential accessories to make your hike comfortable and safe.</p>
+    <div className="Headwear">
+      <h2>Headwear</h2>
+      <p>Explore our range of headwear to keep you protected and comfortable on your hikes.</p>
 
-      <div className="accessories-list">
-        {accessoriesItems.map((item) => (
-          <div key={item.id} className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}>
+      <div className="headwear-list">
+        {headwearItems.map((item) => (
+          <div key={item.id} className={`headwear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.image} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
@@ -126,4 +107,4 @@ function Accessories() {
   );
 }
 
-export default Accessories;
+export default Headwear;
