@@ -2,6 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
 import Clothing from './Clothing';
+import MensClothing from './MensClothing';
+import WomensClothing from './WomensClothing';
+import KidsClothing from './KidsClothing';
 import Footwear from './Footwear';
 import Gear from './Gear';
 import Accessories from './Accessories';
@@ -66,8 +69,11 @@ function App() {
 
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
             <Route path="/clothing" element={<Clothing />} />
+            <Route path="/clothing/men" element={<MensClothing />} />
+            <Route path="/clothing/women" element={<WomensClothing />} />
+            <Route path="/clothing/kids" element={<KidsClothing />} />
             <Route path="/footwear" element={<Footwear />} />
             <Route path="/gear" element={<Gear />} />
             <Route path="/accessories" element={<Accessories />} />
