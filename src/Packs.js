@@ -3,13 +3,13 @@ import './Gear.css';
 
 const gearItems = [
   {
-    id: 1,
+  id: 1,
     name: 'Osprey Ultralight Stuff Waist Pack',
     description: 'The Ultralight Stuff Waist Pack is an ideal accessory on your adventures....',
     fullDescription: 'The Ultralight Stuff Waist Pack is an ideal accessory on your adventures to expand your carrying capacity or keep essentials close. It weighs pretty much nothing, has two compartments to keep your essentials organised and stuffs into its own pocket when not in use.',
     price: '$10/day',
     image: '/gear/pa.1.jpg',
-    moreImages: ['/gear/pa1.jpg','/gear/pa1.1.jpg'],
+    moreImages: ['/gear/pa.1.jpg','/gear/pa1.1.jpg'],
     newArrival: true,
   },
   {
@@ -38,8 +38,9 @@ const gearItems = [
     fullDescription: 'The 20-litre 50th Anniversary Arcane Large Day is a limited edition pack built with 100%-recycled durable fabrics and clean lines to create a pack for your big everyday adventures. It features an anniversary logo patch, a breathable harness and back panel to keep you comfortable and a self-locking security hook that allows you to wrap the harness around a pole, table leg or similar. A large J-zip front panel opening gives you access to the main compartment, the front panel has a handy scratch-free pocket and the side has a low-profile, stretchy pocket to keep your water bottle to hand.',
     price: '$30/day',
     image: '/gear/pa3.jpg',
-    moreImages: ['/gear/pa3.jpg','/gear/ppa3.1.jpg','/gear/pa3.2.jpg'],
+    moreImages: ['/gear/pa3.jpg','/gear/pa3.1.jpg','/gear/pa3.2.jpg'],
     newArrival: true,
+  
   },
  
 ];

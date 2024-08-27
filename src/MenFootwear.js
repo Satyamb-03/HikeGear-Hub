@@ -37,8 +37,10 @@ const footwearItems = [
     description:'The Hydro Moc is a water-friendly slip-on sandal that is ideal ...',
     fullDescription: 'The Hydro Moc is a water-friendly slip-on sandal that is ideal for your adventures in and around water. It features advanced construction techniques, a rear sling to lock in your heel, arch support and BLOOM® performance foam made of 10% algae biomass and FloatPro Foam™ for lightweight comfort. The Hydro Moc also floats!',
     price: '$35/day',
-    image: '/footwear/moc',
-    moreImages:['/footwear/moc.jpg','/footwear/moc1.jpg']
+    image: '/footwear/moc.jpg',
+    moreImages:['/footwear/moc.jpg','/footwear/moc1.jpg'],
+    newArrival: true,
+
     }
 ];
 

@@ -4,12 +4,12 @@ import './Gear.css';
 const gearItems = [
   {
     id: 1,
-    name: '',
-    description: '.',
-    fullDescription: '.',
+    name: 'OZtrail Deluxe Kitchen with Sink',
+    description: 'The Deluxe Kitchen with Sink is a compact all-in-one camp kitchen solution...',
+    fullDescription: 'The Deluxe Kitchen with Sink is a compact all-in-one camp kitchen solution. It has a built-in sink, paper towel holder, lantern pole for hanging your light and cooking after the sun goes down, a double cupboard with MDF shelves for storing food and kitchen items and a generous bench top that can take a large format stove. A great choice when you want it all but dont have a lot of space at camp..',
     price: '$10/day',
-    image: '/gear/',
-    moreImages: ['/gear/','/gear/','/gear/'],
+    image: '/gear/sink.jpg',
+    moreImages: ['/gear/sink.jpg','/gear/sink1.jpg','/gear/sink2.jpg'],
     newArrival: true,
   },
   {
@@ -38,9 +38,8 @@ const gearItems = [
     fullDescription: 'With a nice fat air mat like this Queen-sized mattress from OZtrail means you dont have to rough out the night when you’re out camping or when an unexpected visitor stays the night. It features air support coil construction for excellent comfort, a dual-lock push valve for easy inflation and deflation and a velour top that is luxurious to the touch. Comes with a handy storage bag and a repair kit should the worst happe.',
     price: '$10/day',
     image: '/gear/bed.jpg',
-    moreImages: ['/gear/bedjpg','/gear/b1.jpg'],
+    moreImages: ['/gear/bed.jpg','/gear/b1.jpg'],
   },
- 
 ];
 
 function Gear() {
