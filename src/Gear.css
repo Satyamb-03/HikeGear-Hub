@@ -3,22 +3,16 @@
     background-color: #ffffff;
     padding: 20px; /* Match Footwear padding */
     text-align: center;
-    color: #0c4b33;
+    color: #080c0b;
 }
 
-/* Heading */
-.Gear h2 {
-    font-size: 2rem;
-    margin-bottom: 20px; /* Match Footwear margin */
-    font-family: 'Itim', cursive;
-    color: #065143;
-}
+
 
 /* Description Paragraph */
 .Gear p {
     font-size: 1rem;
     margin-bottom: 20px; /* Match Footwear margin */
-    color: #1b4332;
+    color: #000f09;
 }
 
 /* List Container */
@@ -59,14 +53,14 @@
 /* Product Name */
 .gear-item h3 {
     font-size: 1.2rem;
-    color: #003a20;
+    color: #007bff;
     margin-bottom: 8px;
 }
 
 /* Product Description */
 .gear-item p {
     font-size: 0.9rem;
-    color: #065143;
+    color: #020605;
     margin-bottom: 4px;
 }
 
@@ -106,3 +100,7 @@
         max-width: 90%; /* Adjusted for smaller screens */
     }
 }
+
+
+
+  
