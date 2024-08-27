@@ -6,93 +6,109 @@ import MensClothing from './MensClothing';
 import WomensClothing from './WomensClothing';
 import KidsClothing from './KidsClothing';
 import Footwear from './Footwear';
+import MenFootwear from './MenFootwear';
+import WomenFootwear from './WomenFootwear';
+import KidFootwear from './KidFootwear';
 import Gear from './Gear';
+
 import Accessories from './Accessories';
+ 
 import Contact from './Contact';
 import About from './About';
 import PrivacyPolicy from './PrivacyPolicy';
 import Footer from './Footer';
+import Cart from './Cart';
+import { CartProvider } from './CartContext';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <header className="App-header">
-          <h1>
-            <Link to="/" className="logo-link">HikeGear Hub</Link>
-          </h1>
-          <div className="auth-buttons">
-            <button>Sign In</button>
-            <button>Sign Up</button>
-          </div>
-        </header>
-        
-        <nav className="App-nav">
-          <ul>
-            <li className="dropdown">
-              <Link to="/clothing" className="dropbtn">Clothing</Link>
-              <div className="dropdown-content">
-                <Link to="/clothing/men">Men's Clothing</Link>
-                <Link to="/clothing/women">Women's Clothing</Link>
-                <Link to="/clothing/kids">Kid's Clothing</Link>
-              </div>
-            </li>
-            <li className="dropdown">
-              <Link to="/footwear" className="dropbtn">Footwear</Link>
-              <div className="dropdown-content">
-                <Link to="/footwear/men">Men's Footwear</Link>
-                <Link to="/footwear/women">Women's Footwear</Link>
-                <Link to="/footwear/kids">Kid's Footwear</Link>
-              </div>
-            </li>
-            <li className="dropdown">
-              <Link to="/gear" className="dropbtn">Gear</Link>
-              <div className="dropdown-content">
-                <Link to="/gear/furniture">Camp Furniture</Link>
-                <Link to="/gear/kitchen">Camp Kitchen</Link>
-                <Link to="/gear/packs">Packs</Link>
-                <Link to="/gear/sleep">Sleep Systems</Link>
-                <Link to="/gear/tents">Tents & Bivvies</Link>
-              </div>
-            </li>
-            <li className="dropdown">
-              <Link to="/accessories" className="dropbtn">Accessories</Link>
-              <div className="dropdown-content">
-                <Link to="/accessories/headwear">Headwear</Link>
-                <Link to="/accessories/clothing">Clothing Accessories</Link>
-                <Link to="/accessories/footwear">Footwear Accessories</Link>
-                <Link to="/accessories/backpack">Backpack Accessories</Link>
-              </div>
-            </li>
-          </ul>
-        </nav>
+    <CartProvider>
+      <Router>
+        <div className="App">
+          <header className="App-header">
+            <h1>
+              <Link to="/" className="logo-link">HikeGear Hub</Link>
+            </h1>
+            <div className="auth-buttons">
+              <button>Sign In</button>
+              <button>Sign Up</button>
+            </div>
+          </header>
+          
+          <nav className="App-nav">
+            <ul>
+              <li className="dropdown">
+                <Link to="/clothing" className="dropbtn">Clothing</Link>
+                <div className="dropdown-content">
+                  <Link to="/clothing/men">Men's Clothing</Link>
+                  <Link to="/clothing/women">Women's Clothing</Link>
+                  <Link to="/clothing/kids">Kid's Clothing</Link>
+                </div>
+              </li>
+              <li className="dropdown">
+                <Link to="/footwear" className="dropbtn">Footwear</Link>
+                <div className="dropdown-content">
+                  <Link to="/footwear/men">Men's Footwear</Link>
+                  <Link to="/footwear/women">Women's Footwear</Link>
+                  <Link to="/footwear/kids">Kid's Footwear</Link>
+                </div>
+              </li>
+              <li className="dropdown">
+                <Link to="/gear" className="dropbtn">Gear</Link>
+                <div className="dropdown-content">
+                  <Link to="/gear/furniture">Camp Furniture</Link>
+                  <Link to="/gear/kitchen">Camp Kitchen</Link>
+                  <Link to="/gear/packs">Packs</Link>
+                  <Link to="/gear/sleep">Sleep Systems</Link>
+                  <Link to="/gear/tents">Tents & Bivvies</Link>
+                </div>
+              </li>
+              <li className="dropdown">
+                <Link to="/accessories" className="dropbtn">Accessories</Link>
+                <div className="dropdown-content">
+                  <Link to="/accessories/headwear">Headwear</Link>
+                  <Link to="/accessories/clothing">Clothing Accessories</Link>
+                  <Link to="/accessories/footwear">Footwear Accessories</Link>
+                  <Link to="/accessories/backpack">Backpack Accessories</Link>
+                </div>
+              </li>
+              <li>
+                <Link to="/cart" className="cart-link">Cart</Link>
+              </li>
+            </ul>
+          </nav>
 
-        <main>
-          <Routes>
-          <Route path="/" element={<Home />} />
-            <Route path="/clothing" element={<Clothing />} />
-            <Route path="/clothing/men" element={<MensClothing />} />
-            <Route path="/clothing/women" element={<WomensClothing />} />
-            <Route path="/clothing/kids" element={<KidsClothing />} />
-            <Route path="/footwear" element={<Footwear />} />
-            <Route path="/gear" element={<Gear />} />
-            <Route path="/accessories" element={<Accessories />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          </Routes>
-        </main>
+          <main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/clothing" element={<Clothing />} />
+              <Route path="/clothing/men" element={<MensClothing />} />
+              <Route path="/clothing/women" element={<WomensClothing />} />
+              <Route path="/clothing/kids" element={<KidsClothing />} />
+              <Route path="/footwear" element={<Footwear />} />
+              <Route path="/footwear/men" element={<MenFootwear />} />
+              <Route path="/footwear/women" element={<WomenFootwear />} />
+              <Route path="/footwear/kids" element={<KidFootwear />} />
+              <Route path="/gear" element={<Gear />} />
+              <Route path="/accessories" element={<Accessories />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/cart" element={<Cart />} />
+            </Routes>
+          </main>
 
-        <Footer />
-      </div>
-    </Router>
+          <Footer />
+        </div>
+      </Router>
+    </CartProvider>
   );
 }
 
 function Home() {
   return (
     <div className="Home">
-       <div className="home-image">
+      <div className="home-image">
         <img src="/Homepage1.jpg" alt="Hiking Gear" />
       </div>
       <h2>Welcome to Hike Gear Hub – Your Ultimate Adventure Partner!</h2>
@@ -109,7 +125,6 @@ function Home() {
       <p>
         Don’t let a lack of gear hold you back. Explore our catalog, choose your gear, and get ready to hit the trails. Your next adventure is just a few clicks away!
       </p>
-     
     </div>
   );
 }
