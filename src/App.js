@@ -10,9 +10,8 @@ import MenFootwear from './MenFootwear';
 import WomenFootwear from './WomenFootwear';
 import KidFootwear from './KidFootwear';
 import Gear from './Gear';
-
+import BagpackAccess from './BagpackAccess';
 import Accessories from './Accessories';
- 
 import Contact from './Contact';
 import About from './About';
 import PrivacyPolicy from './PrivacyPolicy';
@@ -61,6 +60,7 @@ function App() {
                   <Link to="/gear/packs">Packs</Link>
                   <Link to="/gear/sleep">Sleep Systems</Link>
                   <Link to="/gear/tents">Tents & Bivvies</Link>
+                  <Link to="/gear/additional">Additional Gear</Link>
                 </div>
               </li>
               <li className="dropdown">
@@ -90,7 +90,9 @@ function App() {
               <Route path="/footwear/women" element={<WomenFootwear />} />
               <Route path="/footwear/kids" element={<KidFootwear />} />
               <Route path="/gear" element={<Gear />} />
+               
               <Route path="/accessories" element={<Accessories />} />
+              <Route path="/accessories/backpack" element={<BagpackAccess />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/about" element={<About />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

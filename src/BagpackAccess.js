@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import './Accessories.css';
+import './BagpackAccess.css';
+
 const backpackAccessItems = [
   {
     id: 1,
-    name: 'Osprey Hydraulics LT Reservoirs',
+    name: 'Hydration Reservoir',
     description: 'Stay hydrated with this easy-to-fill reservoir.',
     fullDescription: 'This hydration reservoir fits most backpacks and includes a wide-mouth opening for easy filling and cleaning.',
     price: '$15/day',
@@ -13,7 +14,7 @@ const backpackAccessItems = [
   },
   {
     id: 2,
-    name: 'Patagonia Friction Beltc',
+    name: 'Backpack Waist Belt',
     description: 'Enhance comfort with this adjustable waist belt.',
     fullDescription: 'This backpack waist belt provides additional support and stability, reducing strain on your shoulders during long hikes.',
     price: '$12/day',
@@ -23,7 +24,7 @@ const backpackAccessItems = [
   },
   {
     id: 3,
-    name: 'Companion Family First Aid Kit',
+    name: 'First Aid Kit',
     description: 'Compact and essential first aid kit for hiking emergencies.',
     fullDescription: 'This first aid kit includes basic supplies for treating minor injuries and handling emergencies on the trail.',
     price: '$20/day',
@@ -32,7 +33,7 @@ const backpackAccessItems = [
   },
   {
     id: 4,
-    name: 'Sea to Summit Ultra-Sil Compression Sack',
+    name: 'Compression Sack',
     description: 'Compress your gear to save space in your backpack.',
     fullDescription: 'This compression sack helps you pack more efficiently by reducing the volume of your gear, ideal for sleeping bags and clothing.',
     price: '$8/day',
