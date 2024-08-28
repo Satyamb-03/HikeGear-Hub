@@ -4,7 +4,7 @@ import './ClothingAccess.css';
 const clothingAccessItems = [
   {
     id: 1,
-    name: 'Thermal Gloves',
+    name: 'Icebreaker 260 Tech Glove Liners',
     description: 'Keep your hands warm during winter hikes.',
     fullDescription: 'These thermal gloves are designed to provide insulation and comfort in cold weather, made from high-quality materials.',
     price: '$6/day',
@@ -12,18 +12,9 @@ const clothingAccessItems = [
     moreImages: ['/Accessories/ThermalGloves.p.jpg', '/Accessories/ThermalGloves.b.jpg'],
     newArrival: true,
   },
+ 
   {
     id: 2,
-    name: 'Gaiters',
-    description: 'Protect your lower legs from mud and snow.',
-    fullDescription: 'These gaiters are waterproof and durable, perfect for trekking through challenging terrains.',
-    price: '$7/day',
-    image: '/Accessories/Gaiters.jpg',
-    moreImages: ['/Accessories/Gaiters.p.jpg', '/Accessories/Gaiters.b.jpg'],
-    newArrival: true,
-  },
-  {
-    id: 3,
     name: 'Neck Warmer',
     description: 'Soft and warm neck warmer for cold hikes.',
     fullDescription: 'This neck warmer provides excellent insulation and can be adjusted for a snug fit, keeping you warm and comfortable.',
@@ -32,8 +23,8 @@ const clothingAccessItems = [
     moreImages: ['/Accessories/NeckWarmer.p.jpg', '/Accessories/NeckWarmer.b.jpg'],
   },
   {
-    id: 4,
-    name: 'Balaclava',
+    id: 3,
+    name: 'Outdoor Research Alpine Fleece Balaclava',
     description: 'Full head and neck protection.',
     fullDescription: 'This balaclava offers full coverage, protecting you from harsh winds and cold temperatures while being breathable and comfortable.',
     price: '$5/day',
