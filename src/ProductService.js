@@ -1,15 +1,41 @@
-import { db } from "./firebase";
-import { collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
-import { storage } from 'firebase/storage';
+import { db, storage } from "./firebase";
+import { collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-// Collection name
 const collectionName = "products";
 const productCollectionRef = collection(db, collectionName);
 
 class ProductService {
   // Add a new product
-  addProduct(newProduct) {
-    return addDoc(productCollectionRef, newProduct);
+  async addProduct(newProduct, mainImageFile, additionalImageFiles) {
+    let mainImageURL = '';
+    let additionalImagesURLs = [];
+
+    // Upload main image if provided
+    if (mainImageFile) {
+      const mainImageRef = ref(storage, `images/${mainImageFile.name}`);
+      await uploadBytes(mainImageRef, mainImageFile);
+      mainImageURL = await getDownloadURL(mainImageRef);
+    }
+
+    // Upload additional images if provided
+    if (additionalImageFiles.length > 0) {
+      const uploadPromises = Array.from(additionalImageFiles).map(async (file) => {
+        const fileRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(fileRef, file);
+        return getDownloadURL(fileRef);
+      });
+      additionalImagesURLs = await Promise.all(uploadPromises);
+    }
+
+    // Save product data with URLs
+    const productData = {
+      ...newProduct,
+      mainImage: mainImageURL,
+      additionalImages: additionalImagesURLs,
+    };
+
+    return addDoc(productCollectionRef, productData);
   }
 
   // Update an existing product
@@ -39,6 +65,16 @@ class ProductService {
   async updateProductQuantity(productId, newQuantity) {
     const productRef = doc(db, collectionName, productId);
     await updateDoc(productRef, { quantity: newQuantity });
+  }
+
+  // Get products by category and subcategory
+  getProductsByCategoryAndSubcategory(category, subcategory) {
+    const productQuery = query(
+      productCollectionRef,
+      where("category", "==", category),
+      where("subcategory", "==", subcategory)
+    );
+    return getDocs(productQuery);
   }
 }
 
