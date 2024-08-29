@@ -1,56 +1,68 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
-import { auth } from "../firebase";
+import React, { createContext, useContext } from 'react';
+import { auth } from './firebase'; // Adjust path if needed
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { db } from './firebase'; // Adjust path if needed
+import { collection, addDoc } from 'firebase/firestore';
 
-const userAuthContext = createContext();
+const UserAuthContext = createContext();
 
-export function UserAuthContextProvider({ children }) {
-  const [user, setUser] = useState({});
+export const UserAuthContextProvider = ({ children }) => {
+  const signUp = async (email, password, name, age, mobile) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-  function logIn(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
-  }
+      // Save additional user details to Firestore
+      await addDoc(collection(db, 'users'), {
+        uid: user.uid,
+        email,
+        name,
+        age,
+        mobile
+      });
+      
+      return user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
 
-  function signUp(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password);
-  }
+  const logIn = async (email, password) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return userCredential.user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
 
-  function logOut() {
-    return signOut(auth);
-  }
+  const signOutUser = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
 
-  function googleSignIn() {
-    const googleAuthProvider = new GoogleAuthProvider();
-    return signInWithPopup(auth, googleAuthProvider);
-  }
+  const googleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      return result.user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth", currentUser);
-      setUser(currentUser);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const onAuthStateChangedListener = (callback) => {
+    return onAuthStateChanged(auth, callback);
+  };
 
   return (
-    <userAuthContext.Provider
-      value={{ user, logIn, signUp, logOut, googleSignIn }}
-    >
+    <UserAuthContext.Provider value={{ signUp, logIn, signOutUser, googleSignIn, onAuthStateChangedListener }}>
       {children}
-    </userAuthContext.Provider>
+    </UserAuthContext.Provider>
   );
-}
+};
 
-export function useUserAuth() {
-  return useContext(userAuthContext);
-}
+export const useUserAuth = () => useContext(UserAuthContext);

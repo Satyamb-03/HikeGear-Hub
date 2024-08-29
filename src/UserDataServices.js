@@ -1,5 +1,6 @@
-import { db } from "../firebase";
+// Import only once from the correct path
 import { doc, setDoc } from "firebase/firestore";
+import { auth, db, collection, getDocs, addDoc, storage, ref, uploadBytes, getDownloadURL } from './firebase'; // Adjust path if necessary
 
 const collectionName = "users";
 
@@ -11,4 +12,3 @@ class UserDataService {
 }
 
 export default new UserDataService();
-
