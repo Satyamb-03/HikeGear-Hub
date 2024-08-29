@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
+
 import Clothing from './Clothing';
 import MensClothing from './MensClothing';
 import WomensClothing from './WomensClothing';
@@ -20,6 +21,7 @@ import Cart from './Cart';
 import { CartProvider } from './CartContext';
 import UserDataServices from './UserDataServices';
 import signUp from './SignUP';
+import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
 
 
 function App() {
@@ -36,7 +38,7 @@ function App() {
               <button>Sign Up</button>
             </div>
           </header>
-          
+
           <nav className="App-nav">
             <ul>
               <li className="dropdown">
@@ -93,17 +95,15 @@ function App() {
               <Route path="/footwear/women" element={<WomenFootwear />} />
               <Route path="/footwear/kids" element={<KidFootwear />} />
               <Route path="/gear" element={<Gear />} />
-               
               <Route path="/accessories" element={<Accessories />} />
               <Route path="/accessories/backpack" element={<BagpackAccess />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/about" element={<About />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/cart" element={<Cart />} />
-
               <Route path='/SignUP' element={<signUp />} />
               <Route path='/SignIn' element={<Home />} />
-
+              <Route path="/supplier-dashboard" element={<SupplierDashboard />} /> {/* New route */}
             </Routes>
           </main>
 
@@ -134,6 +134,9 @@ function Home() {
       <p>
         Don’t let a lack of gear hold you back. Explore our catalog, choose your gear, and get ready to hit the trails. Your next adventure is just a few clicks away!
       </p>
+      <Link to="/supplier-dashboard">
+        <button className="go-to-dashboard-button">Go to Supplier Dashboard</button>
+      </Link>
     </div>
   );
 }

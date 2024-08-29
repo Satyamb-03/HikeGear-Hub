@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Clothing.css';
 import { CartContext } from './CartContext';
-import ProductService from './ProductService'; // Adjust this import based on your actual file structure
-import AddProduct from './AddProduct'; // Component to add new products
+import ProductService from './ProductService';
 
 function KidsClothing() {
   const [clothingItems, setClothingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [quantities, setQuantities] = useState({}); // Object to store quantities for each item
+  const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
   const { addToCart } = useContext(CartContext);
@@ -15,7 +14,7 @@ function KidsClothing() {
   useEffect(() => {
     const fetchClothingItems = async () => {
       try {
-        const clothingSnapshot = await ProductService.getAllKidsProducts(); // Adjust the method to get kids' clothing items
+        const clothingSnapshot = await ProductService.getProductsByCategoryAndSubcategory('Clothing', 'Kids');
         const clothingList = clothingSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -70,7 +69,6 @@ function KidsClothing() {
     <div className="Clothing">
       <h2>Kid's Clothing</h2>
       <p>Find durable and comfortable outdoor clothing for kids of all ages.</p>
-      <AddProduct /> {/* Include the AddProduct component */}
       <div className="clothing-list">
         {clothingItems.map((item) => (
           <div key={item.id} className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}>
@@ -78,7 +76,7 @@ function KidsClothing() {
             <img src={item.image} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
-            <p className="price">{item.pricePerDay}/day</p>
+            <p className="price">${item.pricePerDay}/day</p>
             <label>
               Quantity:
               <input

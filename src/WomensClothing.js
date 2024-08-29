@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
-import './Clothing.css'; 
-import { CartContext } from './CartContext'; // Import CartContext
-import ProductService from './ProductService'; // Assuming you have a ProductService for womensClothing
-import AddProduct from './AddProduct'; // Component to add new products
+import './Clothing.css';
+import { CartContext } from './CartContext';
+import ProductService from './ProductService';
 
 function WomensClothing() {
   const [womensClothingItems, setWomensClothingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantities, setQuantities] = useState({});
-  const [days, setDays] = useState(1); // Default rental days to 1
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [days, setDays] = useState(1);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchWomensClothingItems = async () => {
       try {
-        const womensClothingSnapshot = await ProductService.getAllWomensClothing(); // Fetch women's clothing from Firestore
+        const womensClothingSnapshot = await ProductService.getProductsByCategoryAndSubcategory('Clothing', 'Women');
         const womensClothingList = womensClothingSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -31,7 +30,7 @@ function WomensClothing() {
       } catch (error) {
         console.error("Error fetching women's clothing items:", error);
       } finally {
-        setLoading(false); // Stop loading when data is fetched
+        setLoading(false);
       }
     };
 
@@ -70,7 +69,6 @@ function WomensClothing() {
     <div className="Clothing">
       <h2>Women's Clothing</h2>
       <p>Explore our wide range of outdoor clothing suitable for all weather conditions.</p>
-      <AddProduct /> {/* Include the AddProduct component */}
       <div className="clothing-list">
         {womensClothingItems.map((item) => (
           <div key={item.id} className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}>

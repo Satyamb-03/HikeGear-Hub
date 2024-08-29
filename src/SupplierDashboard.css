@@ -1,0 +1,68 @@
+/* SupplierDashboard.css */
+.supplier-dashboard {
+    padding: 20px;
+    max-width: 800px; /* Limit the maximum width for better readability */
+    margin: auto; /* Center align the form */
+    background-color: #f9f9f9; /* Light background color for the form */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  }
+  
+  .form-container {
+    padding: 20px;
+    background-color: #ffffff; /* White background for the form box */
+    border-radius: 8px; /* Rounded corners for the form box */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for the form box */
+  }
+  
+  .add-product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between form elements */
+  }
+  
+  .add-product-form label {
+    font-size: 16px;
+    font-weight: bold; /* Bold labels for better visibility */
+  }
+  
+  .add-product-form input, 
+  .add-product-form textarea, 
+  .add-product-form select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px; /* Rounded corners for inputs */
+    font-size: 16px;
+  }
+  
+  .add-product-form textarea {
+    resize: vertical; /* Allow vertical resizing of textarea */
+  }
+  
+  .add-product-form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff; /* Blue background color */
+    color: #fff; /* White text color */
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-product-form button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  .image-preview {
+    display: flex;
+    gap: 10px; /* Space between images */
+  }
+  
+  .image-preview img {
+    max-width: 100px;
+    max-height: 100px; /* Limit the height for better display */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
