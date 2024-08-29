@@ -11,6 +11,13 @@ import MenFootwear from './MenFootwear';
 import WomenFootwear from './WomenFootwear';
 import KidFootwear from './KidFootwear';
 import Gear from './Gear';
+import FootwearAccess from './FootwearAccess';
+import Headwear from './Headwear';
+import ClothingAccess from './ClothingAccess';
+import SleepSystem from './SleepSystem';
+import Packs from './Packs';
+import Tents from './Tents';
+import CampFurniture from './CampFurniture';
 import BagpackAccess from './BagpackAccess';
 import Accessories from './Accessories';
 import Contact from './Contact';
@@ -18,6 +25,7 @@ import About from './About';
 import PrivacyPolicy from './PrivacyPolicy';
 import Footer from './Footer';
 import Cart from './Cart';
+import CampKitchen from './CampKitchen';
 import { CartProvider } from './CartContext';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
 
@@ -92,6 +100,10 @@ function App() {
               <Route path="/footwear/women" element={<WomenFootwear />} />
               <Route path="/footwear/kids" element={<KidFootwear />} />
               <Route path="/gear" element={<Gear />} />
+              <Route path="/footwear-accessories" component={FootwearAccess} />
+              <Route path="/headwear" component={Headwear} />
+              <Route path="/gear/campfurniture" element={<CampFurniture />} />
+              <Route path="/gear/kitchen" element={<CampKitchen />} />
               <Route path="/accessories" element={<Accessories />} />
               <Route path="/accessories/backpack" element={<BagpackAccess />} />
               <Route path="/contact" element={<Contact />} />
