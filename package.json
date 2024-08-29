@@ -6,19 +6,14 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-Routing-to-App.js
     "bootstrap": "^5.3.3",
- main
     "firebase": "^10.13.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
- Routing-to-App.js
     "react-router-dom": "^6.26.1",
-
     "react-google-button": "^0.8.0",
     "react-router-dom": "^6.26.0",
- main
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
