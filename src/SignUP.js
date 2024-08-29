@@ -75,10 +75,10 @@ const SignUp = () => {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicEmail">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>E-Mail:</label>
+          <label style={{ fontWeight: 700, marginRight: 10 }}>Username:</label>
           <Form.Control
             type="email"
-            placeholder="Email address"
+            placeholder="Username"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />

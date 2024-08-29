@@ -114,6 +114,7 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUP />} />
+                <Route path='/Supplier-DashBoard' element={<SupplierDashboard />} /> 
               </Routes>
             </main>
 
