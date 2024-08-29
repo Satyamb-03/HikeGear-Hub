@@ -18,6 +18,9 @@ import PrivacyPolicy from './PrivacyPolicy';
 import Footer from './Footer';
 import Cart from './Cart';
 import { CartProvider } from './CartContext';
+import UserDataServices from './UserDataServices';
+import signUp from './SignUP';
+
 
 function App() {
   return (
@@ -97,6 +100,10 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/cart" element={<Cart />} />
+
+              <Route path='/SignUP' element={<signUp />} />
+              <Route path='/SignIn' element={<Home />} />
+
             </Routes>
           </main>
 
