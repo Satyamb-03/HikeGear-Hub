@@ -1,41 +1,40 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Clothing.css';
 import { CartContext } from './CartContext';
-import ProductService from './ProductService'; // Assuming you have a ProductService for mensClothing
-import AddProduct from './AddProduct'; // Component to add new products
+import ProductService from './ProductService';
 
 function MensClothing() {
-  const [mensClothingItems, setMensClothingItems] = useState([]);
+  const [clothingItems, setClothingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantities, setQuantities] = useState({});
-  const [days, setDays] = useState(1); // Default rental days to 1
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [days, setDays] = useState(1);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
-    const fetchMensClothingItems = async () => {
+    const fetchClothingItems = async () => {
       try {
-        const mensClothingSnapshot = await ProductService.getAllMensClothing(); // Fetch men's clothing from Firestore
-        const mensClothingList = mensClothingSnapshot.docs.map(doc => ({
+        const clothingSnapshot = await ProductService.getProductsByCategoryAndSubcategory('Clothing', 'Men');
+        const clothingList = clothingSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-        setMensClothingItems(mensClothingList);
+        setClothingItems(clothingList);
 
         // Initialize quantities for each item
         const initialQuantities = {};
-        mensClothingList.forEach(item => {
+        clothingList.forEach(item => {
           initialQuantities[item.id] = 1;
         });
         setQuantities(initialQuantities);
       } catch (error) {
         console.error("Error fetching men's clothing items:", error);
       } finally {
-        setLoading(false); // Stop loading when data is fetched
+        setLoading(false);
       }
     };
 
-    fetchMensClothingItems();
+    fetchClothingItems();
   }, []);
 
   const handleQuantityChange = (id, value) => {
@@ -69,10 +68,9 @@ function MensClothing() {
   return (
     <div className="Clothing">
       <h2>Men's Clothing</h2>
-      <p>Explore our range of men's outdoor clothing suitable for all weather conditions.</p>
-      <AddProduct /> {/* Include the AddProduct component */}
+      <p>Discover a variety of clothing options for men, perfect for any outdoor adventure.</p>
       <div className="clothing-list">
-        {mensClothingItems.map((item) => (
+        {clothingItems.map((item) => (
           <div key={item.id} className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.image} alt={item.name} />
@@ -98,7 +96,7 @@ function MensClothing() {
               />
             </label>
             <button
-              className="add-to-cart-btn"
+              className="confirm-btn"
               onClick={() => handleAddToCart(item)}
             >
               Add to Cart

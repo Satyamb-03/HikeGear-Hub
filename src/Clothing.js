@@ -2,12 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Clothing.css';
 import { CartContext } from './CartContext';
 import ProductService from './ProductService';
-import AddProduct from './AddProduct';
 
 function Clothing() {
   const [clothingItems, setClothingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [quantities, setQuantities] = useState({}); // Object to store quantities for each item
+  const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
   const { addToCart } = useContext(CartContext);
@@ -70,7 +69,6 @@ function Clothing() {
     <div className="Clothing">
       <h2>Clothing</h2>
       <p>Explore our wide range of outdoor clothing suitable for all weather conditions.</p>
-      <AddProduct />
       <div className="clothing-list">
         {clothingItems.map((item) => (
           <div key={item.id} className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}>
