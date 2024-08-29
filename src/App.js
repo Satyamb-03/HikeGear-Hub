@@ -30,7 +30,7 @@ import { CartProvider } from './CartContext';
 import { UserAuthContextProvider } from './UserAuth';
 import SignIn from './SignIn';
 import UserDataServices from './UserDataServices';
-import signUp from './SignUP';
+import SignUP from './SignUP';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
 
 
@@ -113,7 +113,7 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
+                <Route path="/signup" element={<SignUP />} />
               </Routes>
             </main>
 
