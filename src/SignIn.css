@@ -1,0 +1,98 @@
+/* Ensure the container has proper padding and centering */
+.box {
+    max-width: 500px;
+    margin: 0 auto; /* Center container horizontally */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+  }
+  
+  /* Increase font size for headings */
+  .box h2 {
+    margin-bottom: 20px;
+    font-size: 2rem; /* Large font size for headings */
+  }
+  
+  /* Add spacing between form groups */
+  .mb-3 {
+    width: 100%; /* Ensure form controls take full width */
+    margin-bottom: 16px;
+  }
+  
+  /* Increase font size for form controls */
+  .form-control {
+    font-size: 1.1rem; /* Slightly larger font size for form controls */
+  }
+  
+  /* Increase font size for buttons */
+  .btn {
+    font-size: 1.2rem; /* Larger font size for buttons */
+  }
+  
+  /* Style for the Sign In button with a blue background */
+  .btn-primary {
+    background-color: #007bff; /* Blue background color */
+    border-color: #007bff; /* Matching border color */
+    transition: background-color 0.3s, border-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  /* Hover effect for the Sign In button */
+  .btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    border-color: #004085; /* Darker border color on hover */
+  }
+  
+  /* Center the Google Button and add margin */
+  .g-btn {
+    display: block;
+    margin: 20px auto; /* Center horizontally and add vertical margin */
+  }
+  
+  /* Add spacing above and below the form */
+  .p-4 {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Center text in the link section */
+  .text-center {
+    margin-top: 20px;
+    text-align: center; /* Center text */
+  }
+  
+  /* Increase font size for link text */
+  .text-center a {
+    font-size: 1.1rem; /* Larger font size for links */
+    color: #007bff; /* Blue color for links */
+    text-decoration: none; /* Remove underline from links */
+    transition: color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  /* Hover effect for links */
+  .text-center a:hover {
+    color: #0056b3; /* Darker blue on hover */
+    text-decoration: underline; /* Underline links on hover */
+  }
+  
+  /* Increase font size for error messages */
+  .alert {
+    font-size: 1.1rem; /* Larger font size for error messages */
+  }
+  
+  /* Style for horizontal rule */
+  .box hr {
+    margin: 20px 0;
+  }
+  
+  /* Add margin between label and input box */
+  .form-group label {
+    display: block;
+    margin-bottom: 8px; /* Space between label and input box */
+  }
+
+  input{
+    margin-right: 10px;
+  }

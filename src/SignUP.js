@@ -1,101 +1,118 @@
-import React, { useState } from "react";
-import { Link } from 'react-router-dom';
-import { useUserAuth } from "./UserAuth";
+import React, { useState } from 'react';
+import { Alert, Form, Button } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useUserAuth } from './UserAuth';
 
+const SignUp = () => {
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
+  const [error, setError] = useState("");
+  const { signUp } = useUserAuth();
+  const navigate = useNavigate(); // Initialize useNavigate
 
-const signUp = () => {
-    const [username, setUsername] = useState("");
-    const [error, setError] = useState("");
-    const [password, setPassword] = useState("");
-    const [fullName, setFullName] = useState("");
-    const [age, setAge] = useState("");
-    const [contactNo, setContactNo]= useState("");
-    const { signUp } = useUserAuth();
-    let navigate = useNavigate();
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setError("");
-  
-      const newUser = {
-        fullName,
-        age,
-        contactNo,
-      
-      };
-  
-      try {
-        await signUp(username, password);
-        await UserDataService.addUser(newUser);
-        navigate("/");
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-  
-    return (
-      <>
-        <div className="p-4 box">
-          <h2 className="mb-3">Firebase Auth Signup</h2>
-          {error && <Alert variant="danger">{error}</Alert>}
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicFullName">
-              <Form.Control
-                type="text"
-                placeholder=" Name"
-                onChange={(e) => setFullName(e.target.value)}
-              />
-            </Form.Group>
-  
-         
-  
-            <Form.Group className="mb-3" controlId="formBasicAge">
-              <Form.Control
-                type="number"
-                placeholder="Age"
-                onChange={(e) => setAge(e.target.value)}
-              />
-            </Form.Group>
-  
-            <Form.Group className="mb-3" controlId="formBasicContactNo">
-              <Form.Control
-                type="text"
-                placeholder="Mobile number"
-                onChange={(e) => setContactNo(e.target.value)}
-              />
-           
-  
-            </Form.Group>
-  
-            <Form.Group className="mb-3" controlId="formBasicUsername">
-              <Form.Control
-                type="email"
-                placeholder="Username"
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </Form.Group>
-  
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Form.Group>
-  
-            <div className="d-grid gap-2">
-              <Button variant="primary" type="Submit">
-                Sign up
-              </Button>
-            </div>
-          </Form>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Check if all fields are filled
+    if (!name || !age || !mobile || !email || !password || !confirmPassword) {
+      setError("All fields are required");
+      return;
+    }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      await signUp(email, password, name, age, mobile);
+      // Redirect to Sign In page after successful sign up
+      navigate("/signin");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  return (
+    <div className="p-4 box">
+      <h2 className="mb-3">Sign Up</h2>
+      {error && <Alert variant="danger">{error}</Alert>}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3" controlId="formBasicName">
+          <label style={{ fontWeight: 700, marginRight: 10 }}>Name:</label>
+          <Form.Control 
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicAge">
+          <label style={{ fontWeight: 700, marginRight: 10 }}>Age:</label>
+          <Form.Control
+            type="number"
+            placeholder="Age"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicMobile">
+          <label style={{ fontWeight: 700, marginRight: 10 }}>Mobile Number:</label>
+          <Form.Control
+            type="text"
+            placeholder="Mobile Number"
+            value={mobile}
+            onChange={(e) => setMobile(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <label style={{ fontWeight: 700, marginRight: 10 }}>E-Mail:</label>
+          <Form.Control
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <label style={{ fontWeight: 700, marginRight: 10 }}>Password:</label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
+          <label style={{ fontWeight: 700, marginRight: 10 }}>Confirm Password:</label>
+          <Form.Control
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </Form.Group>
+
+        <div className="d-grid gap-2">
+          <Button variant="primary" type="submit">Sign Up</Button>
         </div>
-        <div className="p-4 box mt-3 text-center">
-          Already have an account? <Link to="/">Log In</Link>
-        </div>
-      </>
-    );
+      </Form>
+      <div className="p-4 box mt-3 text-center">
+        Already have an account? <Link to="/signin">Sign in</Link>
+      </div>
+    </div>
+  );
 };
 
-
-export default signUp;
+export default SignUp;
