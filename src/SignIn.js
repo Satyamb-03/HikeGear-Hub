@@ -40,7 +40,7 @@ const SignIn = () => {
       <h2 className="mb-3">Sign In</h2>
       {error && <Alert variant="danger">{error}</Alert>}
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicEmail"><label  style={{ fontWeight: 700, marginRight: 10 }}>Email:</label>
+        <Form.Group className="mb-3" controlId="formBasicEmail"><label  style={{ fontWeight: 700, marginRight: 10 }}>Username:</label>
           <Form.Control
             type="email"
             placeholder="Username"

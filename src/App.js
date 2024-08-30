@@ -28,16 +28,17 @@ import Cart from './Cart';
 import CampKitchen from './CampKitchen';
 import { CartProvider } from './CartContext';
 import { UserAuthContextProvider } from './UserAuth';
-import SignIn from './SignIn';
+import SignIn from './SignIn
 import SignUp from './SignUP';
 import UserDataServices from './UserDataServices';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
-
-
+import UserDataServices from './UserDataServices';
+import SignUP from './SignUP';
+import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboar
 
 function App() {
   return (
-    <CartProvider>
+ 
  
  
       <UserAuthContextProvider>
@@ -116,8 +117,13 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/signin" element={<SignIn />} />
+ 
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
+
+
+                <Route path="/signup" element={<SignUP />} />
+                <Route path='/Supplier-DashBoard' element={<SupplierDashboard />} /> 
 
               </Routes>
             </main>
@@ -126,7 +132,8 @@ function App() {
           </div>
         </Router>
       </UserAuthContextProvider>
-
+ 
+ 
     </CartProvider>
   );
 }
