@@ -1,4 +1,3 @@
-// Cart.js
 import React, { useContext } from 'react';
 import { CartContext } from './CartContext';
 import { Link } from 'react-router-dom';
@@ -20,11 +19,6 @@ function Cart() {
     }
   };
 
-  // Function to get price from integer value
-  const getPricePerDay = (price) => {
-    return typeof price === 'number' ? price : 0;
-  };
-
   return (
     <div className="Cart">
       <h2>Your Cart</h2>
@@ -34,11 +28,11 @@ function Cart() {
         ) : (
           <ul>
             {cart.map((item) => {
-              const pricePerDay = getPricePerDay(item.price);
+              const pricePerDay = item.pricePerDay || 0;
               const total = pricePerDay * item.quantity * item.days;
               return (
                 <li key={item.id} className="cart-item">
-                  <img src={item.image} alt={item.name} />
+                  <img src={item.mainImage} alt={item.name} />
                   <div>
                     <h3>{item.name}</h3>
                     <p>
@@ -57,26 +51,22 @@ function Cart() {
                         min="1"
                         value={item.days}
                         onChange={(e) => handleDaysChange(item.id, parseInt(e.target.value, 10))}
-                        />
-                      </p>
-                      <p>Price per Day: ${pricePerDay.toFixed(2)}</p>
-                      <p>Total: $
-                        {pricePerDay > 0
-                          ? total.toFixed(2)
-                          : 'Invalid Price'}
-                      </p>
-                      <button onClick={() => removeFromCart(item.id)}>Remove</button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-        <h3>Total Cost: ${getTotalCost().toFixed(2)}</h3>
-        <Link to="/checkout">Proceed to Checkout</Link>
+                      />
+                    </p>
+                    <p>Price per Day: ${pricePerDay.toFixed(2)}</p>
+                    <p>Total: ${total.toFixed(2)}</p>
+                    <button onClick={() => removeFromCart(item.id)}>Remove</button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
-    );
-  }
-  
-  export default Cart;
+      <h3>Total Cost: ${getTotalCost().toFixed(2)}</h3>
+      <Link to="/checkout">Proceed to Checkout</Link>
+    </div>
+  );
+}
+
+export default Cart;

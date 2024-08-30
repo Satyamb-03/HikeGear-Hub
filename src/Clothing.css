@@ -96,6 +96,9 @@
     overflow-y: auto; /* Enables scrolling within the popup */
     text-align: left;
     position: relative;
+    white-space: normal;
+    overflow: auto;
+    max-height: 80vh;
   }
   
   .close-btn {
@@ -112,3 +115,12 @@
     margin-top: 10px;
     border-radius: 8px;
   }
+  .clothing-item p {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-height: 3em; /* Adjust this based on the line-height to show two lines */
+    line-height: 1.5em; /* Adjust the line-height if necessary */
+  }
+  
+  
