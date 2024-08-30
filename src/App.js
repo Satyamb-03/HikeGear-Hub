@@ -13,7 +13,7 @@ import KidFootwear from './KidFootwear';
 import Gear from './Gear';
 import FootwearAccess from './FootwearAccess';
 import Headwear from './Headwear';
-import ClothingAccess from './ClothingAccess';
+// import ClothingAccess from './ClothingAccess';
 import SleepSystem from './SleepSystem';
 import Packs from './Packs';
 import Tents from './Tents';
@@ -29,107 +29,17 @@ import CampKitchen from './CampKitchen';
 import { CartProvider } from './CartContext';
 import { UserAuthContextProvider } from './UserAuth';
 import SignIn from './SignIn';
-import SignUp from './SignUp';
+import SignUp from './SignUP';
 import UserDataServices from './UserDataServices';
-<<<<<<< Updated upstream
-import signUp from './SignUP';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
 
-=======
->>>>>>> Stashed changes
+
 
 function App() {
   return (
     <CartProvider>
-<<<<<<< Updated upstream
-      <Router>
-        <div className="App">
-          <header className="App-header">
-            <h1>
-              <Link to="/" className="logo-link">HikeGear Hub</Link>
-            </h1>
-            <div className="auth-buttons">
-              <button>Sign In</button>
-              <button>Sign Up</button>
-            </div>
-          </header>
-
-          <nav className="App-nav">
-            <ul>
-              <li className="dropdown">
-                <Link to="/clothing" className="dropbtn">Clothing</Link>
-                <div className="dropdown-content">
-                  <Link to="/clothing/men">Men's Clothing</Link>
-                  <Link to="/clothing/women">Women's Clothing</Link>
-                  <Link to="/clothing/kids">Kid's Clothing</Link>
-                </div>
-              </li>
-              <li className="dropdown">
-                <Link to="/footwear" className="dropbtn">Footwear</Link>
-                <div className="dropdown-content">
-                  <Link to="/footwear/men">Men's Footwear</Link>
-                  <Link to="/footwear/women">Women's Footwear</Link>
-                  <Link to="/footwear/kids">Kid's Footwear</Link>
-                </div>
-              </li>
-              <li className="dropdown">
-                <Link to="/gear" className="dropbtn">Gear</Link>
-                <div className="dropdown-content">
-                  <Link to="/gear/furniture">Camp Furniture</Link>
-                  <Link to="/gear/kitchen">Camp Kitchen</Link>
-                  <Link to="/gear/packs">Packs</Link>
-                  <Link to="/gear/sleep">Sleep Systems</Link>
-                  <Link to="/gear/tents">Tents & Bivvies</Link>
-                  <Link to="/gear/additional">Additional Gear</Link>
-                </div>
-              </li>
-              <li className="dropdown">
-                <Link to="/accessories" className="dropbtn">Accessories</Link>
-                <div className="dropdown-content">
-                  <Link to="/accessories/headwear">Headwear</Link>
-                  <Link to="/accessories/clothing">Clothing Accessories</Link>
-                  <Link to="/accessories/footwear">Footwear Accessories</Link>
-                  <Link to="/accessories/backpack">Backpack Accessories</Link>
-                </div>
-              </li>
-              <li>
-                <Link to="/cart" className="cart-link">Cart</Link>
-              </li>
-            </ul>
-          </nav>
-
-          <main>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/clothing" element={<Clothing />} />
-              <Route path="/clothing/men" element={<MensClothing />} />
-              <Route path="/clothing/women" element={<WomensClothing />} />
-              <Route path="/clothing/kids" element={<KidsClothing />} />
-              <Route path="/footwear" element={<Footwear />} />
-              <Route path="/footwear/men" element={<MenFootwear />} />
-              <Route path="/footwear/women" element={<WomenFootwear />} />
-              <Route path="/footwear/kids" element={<KidFootwear />} />
-              <Route path="/gear" element={<Gear />} />
-              <Route path="/footwear-accessories" component={FootwearAccess} />
-              <Route path="/headwear" component={Headwear} />
-              <Route path="/gear/campfurniture" element={<CampFurniture />} />
-              <Route path="/gear/kitchen" element={<CampKitchen />} />
-              <Route path="/accessories" element={<Accessories />} />
-              <Route path="/accessories/backpack" element={<BagpackAccess />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path='/SignUP' element={<signUp />} />
-              <Route path='/SignIn' element={<Home />} />
-              <Route path="/supplier-dashboard" element={<SupplierDashboard />} /> {/* New route */}
-            </Routes>
-          </main>
-
-          <Footer />
-        </div>
-      </Router>
-=======
+ 
+ 
       <UserAuthContextProvider>
         <Router>
           <div className="App">
@@ -207,6 +117,8 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
+
               </Routes>
             </main>
 
@@ -214,7 +126,7 @@ function App() {
           </div>
         </Router>
       </UserAuthContextProvider>
->>>>>>> Stashed changes
+
     </CartProvider>
   );
 }

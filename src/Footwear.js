@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { CartContext } from './CartContext';
 import ProductService from './ProductService';
-import AddProduct from './AddProduct';
 import './footwear.css';
 
 function Footwear() {
@@ -15,13 +14,11 @@ function Footwear() {
   useEffect(() => {
     const fetchFootwearItems = async () => {
       try {
-        const footwearSnapshot = await ProductService.getAllProducts();
-        const footwearList = footwearSnapshot.docs
-          .map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }))
-          .filter(item => item.category === 'Footwear'); // Filter items by category
+        const footwearSnapshot = await ProductService.getProductsByCategoryAndSubcategory('Footwear', 'Men'); // Change 'Men' to the subcategory you need
+        const footwearList = footwearSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
         setFootwearItems(footwearList);
 
         const initialQuantities = {};
@@ -71,15 +68,12 @@ function Footwear() {
     <div className="Footwear">
       <h2>Footwear</h2>
       <p>Explore our selection of hiking boots and shoes designed for every terrain.</p>
-      <AddProduct />
+      
       <div className="footwear-list">
         {footwearItems.map((item) => (
           <div key={item.id} className={`footwear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            {/* Show the image only if the category is Footwear */}
-            {item.category === 'Footwear' && (
-              <img src={item.image} alt={item.name} />
-            )}
+            <img src={item.image} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
             <p className="price">${item.pricePerDay}/day</p>

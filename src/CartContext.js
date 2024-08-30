@@ -27,8 +27,7 @@ export const CartProvider = ({ children }) => {
 
   const getTotalCost = () => {
     return cart.reduce((total, item) => {
-      const priceString = typeof item.price === 'string' ? item.price : '';
-      const pricePerDay = parseFloat(priceString.replace('$', '').replace('/day', '')) || 0;
+      const pricePerDay = item.pricePerDay || 0;
       return total + (pricePerDay * item.quantity * item.days);
     }, 0);
   };
