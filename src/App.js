@@ -11,13 +11,9 @@ import MenFootwear from './MenFootwear';
 import WomenFootwear from './WomenFootwear';
 import KidFootwear from './KidFootwear';
 import Gear from './Gear';
-import FootwearAccess from './FootwearAccess';
-import Headwear from './Headwear';
-import ClothingAccess from './ClothingAccess';
 import SleepSystem from './SleepSystem';
 import Packs from './Packs';
 import Tents from './Tents';
-import CampFurniture from './CampFurniture';
 import BagpackAccess from './BagpackAccess';
 import Accessories from './Accessories';
 import Contact from './Contact';
@@ -29,12 +25,11 @@ import CampKitchen from './CampKitchen';
 import { CartProvider } from './CartContext';
 import { UserAuthContextProvider } from './UserAuth';
 import SignIn from './SignIn';
-import UserDataServices from './UserDataServices';
 import SignUP from './SignUP';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
 import UserDashboard from './UserDashboard';
-import SignUp from './SignUP';
-import SupplierDashboard from './SupplierDashboard';
+import AdditionalGear from './AdditionalGear';
+// import SupplierDashboard from './SupplierDashboard';
 import { CardLink } from 'react-bootstrap';
 
 
@@ -75,7 +70,6 @@ function App() {
                 <li className="dropdown">
                   <Link to="/gear" className="dropbtn">Gear</Link>
                   <div className="dropdown-content">
-                    <Link to="/gear/furniture">Camp Furniture</Link>
                     <Link to="/gear/kitchen">Camp Kitchen</Link>
                     <Link to="/gear/packs">Packs</Link>
                     <Link to="/gear/sleep">Sleep Systems</Link>
