@@ -14,7 +14,6 @@ function Footwear() {
   useEffect(() => {
     const fetchFootwearItems = async () => {
       try {
-        // Use ProductService to fetch all products
         const footwearSnapshot = await ProductService.getAllProducts();
         const footwearList = footwearSnapshot.docs.map(doc => ({
           id: doc.id,
