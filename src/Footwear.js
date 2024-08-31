@@ -17,11 +17,7 @@ function Footwear() {
     const fetchFootwearItems = async () => {
       try {
 
-        const footwearSnapshot = await ProductService.getProductsByCategoryAndSubcategory('Footwear', 'Men'); // Change 'Men' to the subcategory you need
-        const footwearList = footwearSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        
 
         const footwearSnapshot = await ProductService.getAllProducts();
         const footwearList = footwearSnapshot.docs.map(doc => ({
