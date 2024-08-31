@@ -1,0 +1,60 @@
+.dashboard-container {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.welcome-message {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.dashboard-card {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 10px;
+  background: #f8f9fa;
+}
+
+.dashboard-card .card-title {
+  margin-bottom: 15px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.dashboard-card .card-text {
+  font-size: 1rem;
+  color: #495057;
+}
+
+.dashboard-buttons {
+  margin-top: 20px;
+}
+
+.dashboard-buttons .btn {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 1rem;
+}
+
+.shadow-lg {
+  box-shadow: 0 4px 8px rgba(239, 246, 247, 0.1);
+}
+
+/* Updated styles for .btn-danger with rounded edges */
+.btn-danger {
+  background-color: #3a6178; /* Custom button color */
+  border: none;
+  color: white; /* Text color */
+  border-radius: 15px; /* Rounded edges, adjust for more or less rounding */
+  padding: 10px 20px; /* Button padding for size */
+  display: inline-block; /* Ensures button behaves as an inline element */
+  font-size: 1rem; /* Font size for button text */
+  text-align: center; /* Center text horizontally */
+}
+
+.btn-danger:hover {
+  background-color: #284251; /* Hover color */
+}

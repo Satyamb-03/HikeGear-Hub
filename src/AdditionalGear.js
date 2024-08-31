@@ -19,7 +19,7 @@ function Tents() {
         const tentList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Gear' && item.subcategory === 'Tents');
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Additional');
         setTentItems(tentList);
 
         // Initialize quantities for each item
@@ -68,8 +68,8 @@ function Tents() {
 
   return (
     <div className="Gear">
-      <h2>Tents</h2>
-      <p>Discover our range of tents for all your camping needs.</p>
+      <h2>Additional Gear</h2>
+      <p>Explore a variety of additional gear for your outdoor adventures.</p>
 
       <div className="gear-list">
         {tentItems.map((item) => (

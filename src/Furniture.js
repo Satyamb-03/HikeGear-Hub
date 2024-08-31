@@ -3,8 +3,8 @@ import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { CartContext } from './CartContext';
 import ProductService from './ProductService';
 
-function Tents() {
-  const [tentItems, setTentItems] = useState([]);
+function Furniture() {
+  const [furnitureItems, setFurnitureItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
@@ -12,30 +12,30 @@ function Tents() {
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
-    const fetchTentItems = async () => {
+    const fetchFurnitureItems = async () => {
       try {
-        // Fetch all products and filter by 'Gear' and 'Tents'
+        // Fetch all products and filter by 'Gear' and 'Furniture'
         const gearSnapshot = await ProductService.getAllProducts();
-        const tentList = gearSnapshot.docs.map(doc => ({
+        const furnitureList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Gear' && item.subcategory === 'Tents');
-        setTentItems(tentList);
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Furniture');
+        setFurnitureItems(furnitureList);
 
         // Initialize quantities for each item
         const initialQuantities = {};
-        tentList.forEach(item => {
+        furnitureList.forEach(item => {
           initialQuantities[item.id] = 1;
         });
         setQuantities(initialQuantities);
       } catch (error) {
-        console.error("Error fetching tent items:", error);
+        console.error("Error fetching furniture items:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTentItems();
+    fetchFurnitureItems();
   }, []);
 
   const handleQuantityChange = (id, value) => {
@@ -63,23 +63,40 @@ function Tents() {
   };
 
   if (loading) {
-    return <p>Loading tent items...</p>;
+    return <p>Loading furniture items...</p>;
   }
 
   return (
     <div className="Gear">
-      <h2>Tents</h2>
-      <p>Discover our range of tents for all your camping needs.</p>
+      <h2>Furniture</h2>
+      <p>Browse our collection of furniture for your outdoor adventures.</p>
 
       <div className="gear-list">
-        {tentItems.map((item) => (
+        {furnitureItems.map((item) => (
           <div key={item.id} className={`gear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
             <p className="price">{item.pricePerDay}/day</p>
-           
+            <label>
+              Quantity:
+              <input
+                type="number"
+                value={quantities[item.id]}
+                min="1"
+                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
+              />
+            </label>
+            <label>
+              Days:
+              <input
+                type="number"
+                value={days}
+                min="1"
+                onChange={(e) => setDays(parseInt(e.target.value, 10))}
+              />
+            </label>
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -112,4 +129,4 @@ function Tents() {
   );
 }
 
-export default Tents;
+export default Furniture;

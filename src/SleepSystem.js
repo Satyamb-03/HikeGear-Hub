@@ -1,54 +1,57 @@
-import React, { useState } from 'react';
-import './Gear.css';
+import React, { useState, useEffect, useContext } from 'react';
+import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
+import { CartContext } from './CartContext';
+import ProductService from './ProductService';
 
-const gearItems = [
-  {
-  id: 1,
-  name: 'Rumpl The Stuffable Pillowcase',
-  description: 'Add a jacket, hoodie or some other clothing items into The Stuffable Pillowcase and you have a choose....',
-  fullDescription: 'Add a jacket, hoodie or some other clothing items into The Stuffable Pillowcase and you have a choose-your-own comfort instant pillow. Made from 100% post-consumer recycled polar fleece (top) and ripstop polyester (bottom). When it is time to pack up, just take out what you used for stuffing and stow it into the attached stuff sack for compact storage.',
-  price: '$10/day',
-  image: '/gear/ss2.jpg',
-  moreImages: ['/gear/ss2.jpg','/gear/ss3.jpg'],
-  newArrival: true,
-},
-{
-  id: 2,
-  name: 'Sea to Summit Breeze Sleeping Bag Liner',
-  description: 'The Breeze Sleeping Bag Liners provide versatility to suit a range of climates and conditions....',
-  fullDescription: 'The Breeze Sleeping Bag Liners provide versatility to suit a range of climates and conditions. They are made with a knitted, blended COOLMAX® EcoMade/TENCEL™ Lyocell fabric that provides incredible stretch and freedom of movement, feels soft against your skin and wicks moisture to keep you comfortable while you sleep. The Mummy version stretches to fit any sleeping bag shape and has shoulder and foot drawcords that integrate with Free Flow Zip system Sea to Summit bags. The Rectangular version has a built-in pillow sleeve and is ideal for travellers.',
-  price: '$10/day',
-  image: '/gear/slBg.jpg',
-  moreImages: ['/gear/slBg.jpg','/gear/s1.jpg','/gear/s2.jpg'],
-  newArrival: true,
-},
-{
-id: 3,
-name: 'Sea to Summit Women Ascent -1 Down Sleeping Bag',
-description: 'The Women Ascent -1 Down Sleeping Bag is a female-specific...',
-fullDescription: 'The Women Ascent -1 Down Sleeping Bag is a female-specific, versatile bag designed for comfort and adaptability and suited to a wide range of adventures. It features ULTRA-DRY 750+ loft goose down, 20D recycled polyester shell and lining, a non-PFC durable water repellent finish and a triple-zip Free Flow Zip System that allows for multiple configurations and ventilation, including opening the bag right out. Comes with a compression sack and a storage cell.',
-price: '$10/day',
-image: '/gear/ss1.jpg',
-moreImages: ['/gear/ss1.jpg','/gear/ss1.1.jpg','/gear/ss.1.2.jpg'],
-},
-{
-  id: 4,
-  name: 'Exped ULTRA Duo 3R Sleeping Mats',
-  description: 'The ULTRA 3R Duo Sleeping Mats are lightweight, packable mats for two with light...',
-  fullDescription: 'The ULTRA 3R Duo Sleeping Mats are lightweight, packable mats for two with light insulation for human-powered adventures from spring through to autumn. Features include two independent sides to customise the mat for each sleeper, a tapered shape to shave weight and bulk, a recycled 20D ripstop face fabric, 60gm/2 Texpedloft microfibre insulation and 7cm-thick chambers with fatter chambers at the sides to reduce the chance of you rolling off. Certified carbon neutral by myclimate™.',
-  price: '$10/day',
-  image: '/gear/m.jpg',
-  moreImages: ['/gear/m2.jpg','/gear/m.jpg','/gear/m3.jpg'],
-  newArrival: true,
-},
-
-];
-
-function Gear() {
+function SleepingSystems() {
+  const [sleepingItems, setSleepingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [quantities, setQuantities] = useState({});
+  const [days, setDays] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const { addToCart } = useContext(CartContext);
+
+  useEffect(() => {
+    const fetchSleepingItems = async () => {
+      try {
+        // Fetch all products and filter by 'Gear' and 'Sleep'
+        const gearSnapshot = await ProductService.getAllProducts();
+        const sleepingList = gearSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Sleep');
+        setSleepingItems(sleepingList);
+
+        // Initialize quantities for each item
+        const initialQuantities = {};
+        sleepingList.forEach(item => {
+          initialQuantities[item.id] = 1;
+        });
+        setQuantities(initialQuantities);
+      } catch (error) {
+        console.error("Error fetching sleeping systems items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSleepingItems();
+  }, []);
+
+  const handleQuantityChange = (id, value) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [id]: value
+    }));
+  };
 
   const handleAddToCart = (item) => {
-    console.log(`${item.name} added to cart!`);
+    addToCart(item, quantities[item.id], days);
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [item.id]: 1
+    }));
+    setDays(1);
   };
 
   const handleItemClick = (item) => {
@@ -59,26 +62,26 @@ function Gear() {
     setSelectedItem(null);
   };
 
+  if (loading) {
+    return <p>Loading sleeping systems items...</p>;
+  }
+
   return (
     <div className="Gear">
-      <h2>Gear</h2>
-      <p>Get top-notch hiking gear, from tents to backpacks.</p>
+      <h2>Sleeping Systems</h2>
+      <p>Explore a range of sleeping systems for a comfortable night under the stars.</p>
 
       <div className="gear-list">
-        {gearItems.map((item) => (
-          <div 
-            key={item.id} 
-            className={`gear-item ${item.newArrival ? 'new-arrival' : ''}`}
-          >
+        {sleepingItems.map((item) => (
+          <div key={item.id} className={`gear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            <img src={item.image} alt={item.name} />
-            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
-              {item.name}
-            </h3>
+            <img src={item.mainImage} alt={item.name} />
+            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
-            <p className="price">{item.price}</p>
+            <p className="price">{item.pricePerDay}/day</p>
+           
             <button
-              className="add-to-cart-btn"
+              className="confirm-btn"
               onClick={() => handleAddToCart(item)}
             >
               Add to Cart
@@ -92,23 +95,16 @@ function Gear() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription || selectedItem.description}</p>
+            <p>{selectedItem.fullDescription}</p>
             <div className="popup-images">
-              {selectedItem.moreImages && selectedItem.moreImages.length > 0 ? (
-                selectedItem.moreImages.map((image, index) => (
+              {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
+                selectedItem.additionalImages.map((image, index) => (
                   <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} />
                 ))
               ) : (
-                <p>No additional images available.</p>
+                <p>No additional images available</p>
               )}
             </div>
-            <p className="price">{selectedItem.price}</p>
-            <button
-              className="add-to-cart-btn"
-              onClick={() => handleAddToCart(selectedItem)}
-            >
-              Add to Cart
-            </button>
           </div>
         </div>
       )}
@@ -116,4 +112,4 @@ function Gear() {
   );
 }
 
-export default Gear;
+export default SleepingSystems;

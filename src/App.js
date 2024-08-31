@@ -13,7 +13,7 @@ import KidFootwear from './KidFootwear';
 import Gear from './Gear';
 import FootwearAccess from './FootwearAccess';
 import Headwear from './Headwear';
-// import ClothingAccess from './ClothingAccess';
+import ClothingAccess from './ClothingAccess';
 import SleepSystem from './SleepSystem';
 import Packs from './Packs';
 import Tents from './Tents';
@@ -29,17 +29,18 @@ import CampKitchen from './CampKitchen';
 import { CartProvider } from './CartContext';
 import { UserAuthContextProvider } from './UserAuth';
 import SignIn from './SignIn';
-import SignUp from './SignUP';
 import UserDataServices from './UserDataServices';
+import SignUP from './SignUP';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
-
+import UserDashboard from './UserDashboard';
+import SignUp from './SignUP';
+import SupplierDashboard from './SupplierDashboard';
+import { CardLink } from 'react-bootstrap';
 
 
 function App() {
   return (
     <CartProvider>
- 
- 
       <UserAuthContextProvider>
         <Router>
           <div className="App">
@@ -116,9 +117,14 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
+                <Route path="/signup" element={<SignUP />} />
                 <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
-
+                <Route path="/user-dashboard" element={<UserDashboard />} />
+                <Route path='/gear/sleep' element={<SleepSystem />} />
+                <Route path='/gear/kitchen' element={<CampKitchen/>} />
+                <Route path='/gear/Packs' element={<Packs />} />
+                <Route path='/gear/Tents' element={<Tents />}/>
+                <Route path='/gear/Additional' element={<AdditionalGear/>}/>
               </Routes>
             </main>
 
@@ -126,7 +132,6 @@ function App() {
           </div>
         </Router>
       </UserAuthContextProvider>
-
     </CartProvider>
   );
 }
@@ -153,6 +158,9 @@ function Home() {
       </p>
       <Link to="/supplier-dashboard">
         <button className="go-to-dashboard-button">Go to Supplier Dashboard</button>
+      </Link>
+      <Link to="/user-dashboard">
+        <button className="go-to-dashboard-button">Go to User Dashboard</button>
       </Link>
     </div>
   );

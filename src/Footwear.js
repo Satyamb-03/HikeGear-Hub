@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import './footwear.css';
 import { CartContext } from './CartContext';
 import ProductService from './ProductService';
-import './footwear.css';
-
 
 function Footwear() {
   const [footwearItems, setFootwearItems] = useState([]);
@@ -16,15 +14,11 @@ function Footwear() {
   useEffect(() => {
     const fetchFootwearItems = async () => {
       try {
-
-        
-
         const footwearSnapshot = await ProductService.getAllProducts();
         const footwearList = footwearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Footwear');
-
+        })).filter(item => item.category === 'Footwear'); // Filter by 'Footwear'
         setFootwearItems(footwearList);
 
         // Initialize quantities for each item
@@ -74,34 +68,16 @@ function Footwear() {
   return (
     <div className="Footwear">
       <h2>Footwear</h2>
-      <p>Explore our selection of hiking boots and shoes designed for every terrain.</p>
-
+      <p>Discover the best footwear for your hiking adventures.</p>
       <div className="footwear-list">
         {footwearItems.map((item) => (
           <div key={item.id} className={`footwear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            <img src={item.image} alt={item.name} />
+            <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
-            <p className="price">${item.pricePerDay}/day</p>
-            <label>
-              Quantity:
-              <input
-                type="number"
-                value={quantities[item.id]}
-                min="1"
-                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
-              />
-            </label>
-            <label>
-              Days:
-              <input
-                type="number"
-                value={days}
-                min="1"
-                onChange={(e) => setDays(parseInt(e.target.value, 10))}
-              />
-            </label>
+            <p className="price">{item.pricePerDay}/day</p>
+           
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -119,8 +95,8 @@ function Footwear() {
             <h2>{selectedItem.name}</h2>
             <p>{selectedItem.fullDescription}</p>
             <div className="popup-images">
-              {selectedItem.moreImages && selectedItem.moreImages.length > 0 ? (
-                selectedItem.moreImages.map((image, index) => (
+              {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
+                selectedItem.additionalImages.map((image, index) => (
                   <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} />
                 ))
               ) : (
