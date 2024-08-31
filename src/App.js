@@ -31,7 +31,6 @@ import SignIn from './SignIn';
 import SignUp from './SignUP';
 import SupplierDashboard from './SupplierDashboard';
 import { CardLink } from 'react-bootstrap';
-import Furniture from './Furniture';
 
 function App() {
   return (
@@ -71,7 +70,6 @@ function App() {
                   <Link to="/gear" className="dropbtn">Gear</Link>
                   <div className="dropdown-content">
                     <Link to="/gear/kitchen">Camp Kitchen</Link>
-                    <Link to= "/gear/Furniture">Camp Furniture</Link>
                     <Link to="/gear/packs">Packs</Link>
                     <Link to="/gear/sleep">Sleep Systems</Link>
                     <Link to="/gear/tents">Tents & Bivvies</Link>
@@ -119,7 +117,6 @@ function App() {
                 <Route path='/gear/Packs' element={<Packs />} />
                 <Route path='/gear/Tents' element={<Tents />}/>
                 <Route path='/gear/Additional' element={<AdditionalGear/>}/>
-                <Route path='/gear/Furniture' element={<Furniture />}/>
               </Routes>
             </main>
 

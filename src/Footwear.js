@@ -78,24 +78,7 @@ function Footwear() {
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
             <p className="price">{item.pricePerDay}/day</p>
-            <label>
-              Quantity:
-              <input
-                type="number"
-                value={quantities[item.id]}
-                min="1"
-                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
-              />
-            </label>
-            <label>
-              Days:
-              <input
-                type="number"
-                value={days}
-                min="1"
-                onChange={(e) => setDays(parseInt(e.target.value, 10))}
-              />
-            </label>
+           
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}

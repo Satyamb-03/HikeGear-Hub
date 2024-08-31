@@ -6,18 +6,28 @@ import ProductService from './ProductService';
 function Clothing() {
   const [clothingItems, setClothingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [quantities, setQuantities] = useState({});
+  const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchClothingItems = async () => {
       try {
+        // Use ProductService to fetch all products
         const clothingSnapshot = await ProductService.getAllProducts();
         const clothingList = clothingSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        }));
+        })).filter(item => item.category === 'Clothing'); // Filter by 'Clothing'
         setClothingItems(clothingList);
+
+        // Initialize quantities for each item
+        const initialQuantities = {};
+        clothingList.forEach(item => {
+          initialQuantities[item.id] = 1;
+        });
+        setQuantities(initialQuantities);
       } catch (error) {
         console.error("Error fetching clothing items:", error);
       } finally {
@@ -28,8 +38,20 @@ function Clothing() {
     fetchClothingItems();
   }, []);
 
+  const handleQuantityChange = (id, value) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [id]: value
+    }));
+  };
+
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); // Default quantity and days
+    addToCart(item, quantities[item.id], days);
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [item.id]: 1
+    }));
+    setDays(1);
   };
 
   const handleItemClick = (item) => {
@@ -55,8 +77,15 @@ function Clothing() {
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
-            <p className="price">${item.pricePerDay}/day</p>
-            <button onClick={() => handleAddToCart(item)}>Add to Cart</button>
+            <p className="price">{item.pricePerDay}/day</p>
+           
+            
+            <button
+              className="confirm-btn"
+              onClick={() => handleAddToCart(item)}
+            >
+              Add to Cart
+            </button>
           </div>
         ))}
       </div>
@@ -66,7 +95,7 @@ function Clothing() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.description}</p>
+            <p>{selectedItem.fullDescription}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (
