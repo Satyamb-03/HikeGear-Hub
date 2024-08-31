@@ -1,52 +1,70 @@
-import React, { useState } from 'react';
-import './Gear.css';
+import React, { useState, useEffect, useContext } from 'react';
+import './Gear.css'; // Ensure this CSS file contains styles for the Gear category
+import { CartContext } from './CartContext';
+import ProductService from './ProductService';
 
-const gearItems = [
-  {
-    id: 1,
-    name: 'OZtrail Deluxe Kitchen with Sink',
-    description: 'The Deluxe Kitchen with Sink is a compact all-in-one camp kitchen solution...',
-    fullDescription: 'The Deluxe Kitchen with Sink is a compact all-in-one camp kitchen solution. It has a built-in sink, paper towel holder, lantern pole for hanging your light and cooking after the sun goes down, a double cupboard with MDF shelves for storing food and kitchen items and a generous bench top that can take a large format stove. A great choice when you want it all but dont have a lot of space at camp..',
-    price: '$10/day',
-    image: '/gear/sink.jpg',
-    moreImages: ['/gear/sink.jpg','/gear/sink1.jpg','/gear/sink2.jpg'],
-    newArrival: true,
-  },
-  {
-    id: 2,
-    name: 'Coleman Folding Card Table',
-    description: 'If you are looking for a lightweight, portable table for your campsite or an extra...',
-    fullDescription: 'If you are looking for a lightweight, portable table for your campsite or an extra table for your card games at home, this Folding Card Table is just the thing. It has a steel frame, a vacuum-moulded top, a safety lock so it wont collapse on you and is rated to carry weight up to 180kg.',
-    price: '$80/day',
-    image: '/gear/table.jpg',
-    moreImages: ['/gear/table.jpg'],
-  },
-  {
-    id: 3,
-    name: 'Helinox Personal Shade Chair Attachment',
-    description: 'The Personal Shade attaches to most Helinox chairs to provide a shady...',
-    fullDescription: 'The Personal Shade attaches to most Helinox chairs to provide a shady, sun-protected spot to rest in on your adventures. Each side can move independently so you can adjust it according to where the sun is in the sky.',
-    price: '$10/day',
-    image: '/gear/cc.jpg',
-    moreImages: ['/gear/cc.jpg','/gear/cc1.jpg','/gear/cc2.jpg'],
-    newArrival: true,
-  },
-  {
-    id: 4,
-    name: 'OZtrail Velour Air Mattress Queen Bed',
-    description: 'With a nice fat air mat like this Queen-sized mattress from OZtrail....',
-    fullDescription: 'With a nice fat air mat like this Queen-sized mattress from OZtrail means you dont have to rough out the night when you’re out camping or when an unexpected visitor stays the night. It features air support coil construction for excellent comfort, a dual-lock push valve for easy inflation and deflation and a velour top that is luxurious to the touch. Comes with a handy storage bag and a repair kit should the worst happe.',
-    price: '$10/day',
-    image: '/gear/bed.jpg',
-    moreImages: ['/gear/bed.jpg','/gear/b1.jpg'],
-  },
-];
-
-function Gear() {
+function CampFurniture() {
+  const [furnitureItems, setFurnitureItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [quantities, setQuantities] = useState({});
+  const [days, setDays] = useState({});
+  const [loading, setLoading] = useState(true);
+  const { addToCart } = useContext(CartContext);
+
+  useEffect(() => {
+    const fetchFurnitureItems = async () => {
+      try {
+        // Fetch all products and filter by 'Gear' and 'Furniture'
+        const gearSnapshot = await ProductService.getAllProducts();
+        const FurnitureList = gearSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Furniture');
+        setFurnitureItems(FurnitureList);
+
+        // Initialize quantities and days for each item
+        const initialQuantities = {};
+        const initialDays = {};
+        FurnitureList.forEach(item => {
+          initialQuantities[item.id] = 1;
+          initialDays[item.id] = 1;
+        });
+        setQuantities(initialQuantities);
+        setDays(initialDays);
+      } catch (error) {
+        console.error("Error fetching camp furniture items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFurnitureItems();
+  }, []);
+
+  const handleQuantityChange = (id, value) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [id]: value
+    }));
+  };
+
+  const handleDaysChange = (id, value) => {
+    setDays(prevDays => ({
+      ...prevDays,
+      [id]: value
+    }));
+  };
 
   const handleAddToCart = (item) => {
-    console.log(`${item.name} added to cart!`);
+    addToCart(item, quantities[item.id], days[item.id]);
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [item.id]: 1
+    }));
+    setDays(prevDays => ({
+      ...prevDays,
+      [item.id]: 1
+    }));
   };
 
   const handleItemClick = (item) => {
@@ -57,26 +75,44 @@ function Gear() {
     setSelectedItem(null);
   };
 
+  if (loading) {
+    return <p>Loading camp furniture items...</p>;
+  }
+
   return (
     <div className="Gear">
-      <h2>Gear</h2>
-      <p>Get top-notch hiking gear, from tents to backpacks.</p>
+      <h2>Camp Furniture</h2>
+      <p>Find the perfect furniture for your camping trips and outdoor adventures.</p>
 
       <div className="gear-list">
-        {gearItems.map((item) => (
-          <div 
-            key={item.id} 
-            className={`gear-item ${item.newArrival ? 'new-arrival' : ''}`}
-          >
+        {furnitureItems.map((item) => (
+          <div key={item.id} className={`gear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            <img src={item.image} alt={item.name} />
-            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
-              {item.name}
-            </h3>
+            {/* Display main image */}
+            <img src={item.mainImage} alt={item.name} className="gear-item-image" />
+            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
-            <p className="price">{item.price}</p>
+            <p className="price">{item.pricePerDay}/day</p>
+            <label>
+              Quantity:
+              <input
+                type="number"
+                value={quantities[item.id]}
+                min="1"
+                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
+              />
+            </label>
+            <label>
+              Days:
+              <input
+                type="number"
+                value={days[item.id]}
+                min="1"
+                onChange={(e) => handleDaysChange(item.id, parseInt(e.target.value, 10))}
+              />
+            </label>
             <button
-              className="add-to-cart-btn"
+              className="confirm-btn"
               onClick={() => handleAddToCart(item)}
             >
               Add to Cart
@@ -90,23 +126,16 @@ function Gear() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription || selectedItem.description}</p>
+            <p>{selectedItem.fullDescription}</p>
             <div className="popup-images">
-              {selectedItem.moreImages && selectedItem.moreImages.length > 0 ? (
-                selectedItem.moreImages.map((image, index) => (
-                  <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} />
+              {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
+                selectedItem.additionalImages.map((image, index) => (
+                  <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} className="popup-image" />
                 ))
               ) : (
-                <p>No additional images available.</p>
+                <p>No additional images available</p>
               )}
             </div>
-            <p className="price">{selectedItem.price}</p>
-            <button
-              className="add-to-cart-btn"
-              onClick={() => handleAddToCart(selectedItem)}
-            >
-              Add to Cart
-            </button>
           </div>
         </div>
       )}
@@ -114,4 +143,4 @@ function Gear() {
   );
 }
 
-export default Gear;
+export default CampFurniture;

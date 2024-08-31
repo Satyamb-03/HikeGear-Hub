@@ -3,8 +3,8 @@ import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { CartContext } from './CartContext';
 import ProductService from './ProductService';
 
-function SleepingSystems() {
-  const [sleepingItems, setSleepingItems] = useState([]);
+function Furniture() {
+  const [furnitureItems, setFurnitureItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
@@ -12,30 +12,30 @@ function SleepingSystems() {
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
-    const fetchSleepingItems = async () => {
+    const fetchFurnitureItems = async () => {
       try {
-        // Fetch all products and filter by 'Gear' and 'Sleep'
+        // Fetch all products and filter by 'Gear' and 'Furniture'
         const gearSnapshot = await ProductService.getAllProducts();
-        const sleepingList = gearSnapshot.docs.map(doc => ({
+        const furnitureList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Gear' && item.subcategory === 'Sleep');
-        setSleepingItems(sleepingList);
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Furniture');
+        setFurnitureItems(furnitureList);
 
         // Initialize quantities for each item
         const initialQuantities = {};
-        sleepingList.forEach(item => {
+        furnitureList.forEach(item => {
           initialQuantities[item.id] = 1;
         });
         setQuantities(initialQuantities);
       } catch (error) {
-        console.error("Error fetching sleeping systems items:", error);
+        console.error("Error fetching furniture items:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSleepingItems();
+    fetchFurnitureItems();
   }, []);
 
   const handleQuantityChange = (id, value) => {
@@ -63,16 +63,16 @@ function SleepingSystems() {
   };
 
   if (loading) {
-    return <p>Loading sleeping systems items...</p>;
+    return <p>Loading furniture items...</p>;
   }
 
   return (
     <div className="Gear">
-      <h2>Sleeping Systems</h2>
-      <p>Explore a range of sleeping systems for a comfortable night under the stars.</p>
+      <h2>Furniture</h2>
+      <p>Browse our collection of furniture for your outdoor adventures.</p>
 
       <div className="gear-list">
-        {sleepingItems.map((item) => (
+        {furnitureItems.map((item) => (
           <div key={item.id} className={`gear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
@@ -129,4 +129,4 @@ function SleepingSystems() {
   );
 }
 
-export default SleepingSystems;
+export default Furniture;
