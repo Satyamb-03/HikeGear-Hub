@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import './Gear';
+import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { CartContext } from './CartContext';
 import ProductService from './ProductService';
 
@@ -14,13 +14,15 @@ function CampKitchen() {
   useEffect(() => {
     const fetchKitchenItems = async () => {
       try {
-        const kitchenSnapshot = await ProductService.getAllProducts();
-        const kitchenList = kitchenSnapshot.docs.map(doc => ({
+        // Fetch all products and filter by 'Gear' and 'CampKitchen'
+        const gearSnapshot = await ProductService.getAllProducts();
+        const kitchenList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.subcategory === 'Kitchen');
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Kitchen');
         setKitchenItems(kitchenList);
 
+        // Initialize quantities for each item
         const initialQuantities = {};
         kitchenList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -61,40 +63,23 @@ function CampKitchen() {
   };
 
   if (loading) {
-    return <p>Loading kitchen items...</p>;
+    return <p>Loading camp kitchen items...</p>;
   }
 
   return (
-    <div className="CampKitchen">
+    <div className="Gear">
       <h2>Camp Kitchen</h2>
-      <p>Find all your essential kitchen gear for outdoor adventures.</p>
+      <p>Explore our camp kitchen gear to make your outdoor cooking experience easier and more enjoyable.</p>
 
-      <div className="kitchen-list">
+      <div className="gear-list">
         {kitchenItems.map((item) => (
-          <div key={item.id} className={`kitchen-item ${item.newArrival ? 'new-arrival' : ''}`}>
+          <div key={item.id} className={`gear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
-            <p className="price">${item.pricePerDay}/day</p>
-            <label>
-              Quantity:
-              <input
-                type="number"
-                value={quantities[item.id]}
-                min="1"
-                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
-              />
-            </label>
-            <label>
-              Days:
-              <input
-                type="number"
-                value={days}
-                min="1"
-                onChange={(e) => setDays(parseInt(e.target.value, 10))}
-              />
-            </label>
+            <p className="price">{item.pricePerDay}/day</p>
+           
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -110,7 +95,7 @@ function CampKitchen() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.description}</p>
+            <p>{selectedItem.fullDescription}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (

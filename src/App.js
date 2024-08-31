@@ -33,6 +33,9 @@ import UserDataServices from './UserDataServices';
 import SignUP from './SignUP';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
 import UserDashboard from './UserDashboard';
+import SignUp from './SignUP';
+import SupplierDashboard from './SupplierDashboard';
+import { CardLink } from 'react-bootstrap';
 
 function App() {
   return (
@@ -116,6 +119,11 @@ function App() {
                 <Route path="/signup" element={<SignUP />} />
                 <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
                 <Route path="/user-dashboard" element={<UserDashboard />} />
+                <Route path='/gear/sleep' element={<SleepSystem />} />
+                <Route path='/gear/kitchen' element={<CampKitchen/>} />
+                <Route path='/gear/Packs' element={<Packs />} />
+                <Route path='/gear/Tents' element={<Tents />}/>
+                <Route path='/gear/Additional' element={<AdditionalGear/>}/>
               </Routes>
             </main>
 
