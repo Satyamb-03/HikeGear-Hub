@@ -15,6 +15,11 @@ const AddProduct = () => {
     setAdditionalImageFiles(e.target.files);
   };
 
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+    setSubcategory(''); // Reset subcategory when category changes
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -96,10 +101,12 @@ const AddProduct = () => {
         Category:
         <select
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          disabled
+          onChange={handleCategoryChange}
         >
           <option value="Clothing">Clothing</option>
+          <option value="Footwear">Footwear</option>
+          <option value="Gear">Gear</option>
+          <option value="Accessories">Accessories</option>
         </select>
       </label>
       <label>
@@ -108,9 +115,38 @@ const AddProduct = () => {
           value={subcategory}
           onChange={(e) => setSubcategory(e.target.value)}
         >
-          <option value="Men">Men's Clothing</option>
-          <option value="Women">Women's Clothing</option>
-          <option value="Kids">Kids' Clothing</option>
+          {category === 'Clothing' && (
+            <>
+              <option value="Men">Men's Clothing</option>
+              <option value="Women">Women's Clothing</option>
+              <option value="Kids">Kids' Clothing</option>
+            </>
+          )}
+          {category === 'Footwear' && (
+            <>
+              <option value="Men">Men's Footwear</option>
+              <option value="Women">Women's Footwear</option>
+              <option value="Kids">Kids' Footwear</option>
+            </>
+          )}
+          {category === 'Gear' && (
+            <>
+              <option value="Furniture">Camp Furniture</option>
+              <option value="Kitchen">Camp Kitchen</option>
+              <option value="Packs">Packs</option>
+              <option value="Sleep">Sleep Systems</option>
+              <option value="Tents">Tents & Bivvies</option>
+              <option value="Additional">Additional Gear</option>
+            </>
+          )}
+          {category === 'Accessories' && (
+            <>
+              <option value="Headwear">Headwear</option>
+              <option value="Clothing">Clothing Accessories</option>
+              <option value="Footwear">Footwear Accessories</option>
+              <option value="Backpack">Backpack Accessories</option>
+            </>
+          )}
         </select>
       </label>
       <button type="submit">Add Product</button>

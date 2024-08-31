@@ -13,11 +13,9 @@ import KidFootwear from './KidFootwear';
 import Gear from './Gear';
 import FootwearAccess from './FootwearAccess';
 import Headwear from './Headwear';
-import ClothingAccess from './ClothingAccess';
 import SleepSystem from './SleepSystem';
 import Packs from './Packs';
 import Tents from './Tents';
-import CampFurniture from './CampFurniture';
 import BagpackAccess from './BagpackAccess';
 import Accessories from './Accessories';
 import Contact from './Contact';
@@ -26,18 +24,19 @@ import PrivacyPolicy from './PrivacyPolicy';
 import Footer from './Footer';
 import Cart from './Cart';
 import CampKitchen from './CampKitchen';
+import AdditionalGear from './AdditionalGear';
 import { CartProvider } from './CartContext';
 import { UserAuthContextProvider } from './UserAuth';
 import SignIn from './SignIn';
-import UserDataServices from './UserDataServices';
-import SignUP from './SignUP';
-import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
-
+import SignUp from './SignUP';
+import SupplierDashboard from './SupplierDashboard';
+import { CardLink } from 'react-bootstrap';
+import Furniture from './Furniture';
 
 function App() {
   return (
-    <CartProvider>
-      <UserAuthContextProvider>
+    <UserAuthContextProvider>
+      <CartProvider>
         <Router>
           <div className="App">
             <header className="App-header">
@@ -71,8 +70,8 @@ function App() {
                 <li className="dropdown">
                   <Link to="/gear" className="dropbtn">Gear</Link>
                   <div className="dropdown-content">
-                    <Link to="/gear/furniture">Camp Furniture</Link>
                     <Link to="/gear/kitchen">Camp Kitchen</Link>
+                    <Link to= "/gear/Furniture">Camp Furniture</Link>
                     <Link to="/gear/packs">Packs</Link>
                     <Link to="/gear/sleep">Sleep Systems</Link>
                     <Link to="/gear/tents">Tents & Bivvies</Link>
@@ -113,16 +112,22 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUP />} />
-                <Route path='/Supplier-DashBoard' element={<SupplierDashboard />} /> 
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
+                <Route path='/gear/sleep' element={<SleepSystem />} />
+                <Route path='/gear/kitchen' element={<CampKitchen/>} />
+                <Route path='/gear/Packs' element={<Packs />} />
+                <Route path='/gear/Tents' element={<Tents />}/>
+                <Route path='/gear/Additional' element={<AdditionalGear/>}/>
+                <Route path='/gear/Furniture' element={<Furniture />}/>
               </Routes>
             </main>
 
             <Footer />
           </div>
         </Router>
-      </UserAuthContextProvider>
-    </CartProvider>
+      </CartProvider>
+    </UserAuthContextProvider>
   );
 }
 

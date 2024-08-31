@@ -1,77 +1,132 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './footwear.css';
+import { CartContext } from './CartContext';
+import ProductService from './ProductService';
 
-const footwearItems = [
-  
-  {
-    id: 1,
-    name: 'SCARPA Womens Moraine Mid GTX',
-    description: 'The 4-Quattro XT is a light, stiff hybrid ski boot featuring...',
-    fullDescription: 'The 4-Quattro XT is a light, stiff hybrid ski boot featuring a GripWalk sole and compatible with GripWalk bindings for both downhill skiing and touring. It features a plant-based Grilamid® shell and cuff to maintain performance with a reduction in CO2 emissions during production, four buckles and a Booster strap for reliable, progressive flex in any conditions comfortable and thermoformable Intuition Foam liners for a custom fit and warmth. It works with a wide range of ski setups, letting you choose your adventure for the day without needing to swap boots.',
-    price: '$40/day',
-    image: '/footwear/scarpa.jpg',
-    moreImages: ['/footwear/scarpa.jpg','/footwear/1.1.jpg','/footwear/1.2.jpg'],
-  },
-  {
-    id: 2,
-    name: 'SCARPA Women Rush Trek GTX',
-    description:'The Rush Trek GTX balances the light weight and agility of a trail... ',
-    fullDescription: 'The Rush Trek GTX balances the light weight and agility of a trail running shoe with the support and protection of a hiking boot to ensure long-lasting support and protection on your outdoor adventures. Features include suede uppers, a waterproof/breathable GORE-TEX® lining, progressive impact absorption and excellent traction, including on downhill and uphill terrain.',
-    price: '$45/day',
-    image: '/footwear/women.jpg',
-    moreImages:['/footwear/women.jpg','/footwear/w1.1.jpg','/footwear/w1.2.jpg'],
-    newArrival: true,
-  },
-  {
-    id: 3,
-    name: 'Altra Women Lone Peak 8 Trail Running Shoe',
-    description:'The women specific Lone Peak 8 is Altra newest version of their best...',
-    fullDescription: 'The women specific Lone Peak 8 is Altra newest version of their best-selling trail shoe. It has a more refined, more durable seamless upper, fewer overlays for a streamlined, clean look and StoneGuard™ rock plates for extra protection underfoot. Version 8 retains its responsive and comfortable Altra EGO™ midsole with a 0mm heel-to-toe drop, reliable MaxTrac™ sole for a sticky grip and the original FootShape™ fit that allows your feet to move naturally.',
-    price: '$15/day',
-    image: '/footwear/w2.jpg',
-    moreImages:['/footwear/w2.jpg','/footwear/w2.1.jpg','/footwear/w2.2.jpg'],
-    newArrival: true,
-  },
-  {
-  id: 4,
-  name: 'Teva Women Tirra Sandal',
-  description:'Tackle your summer adventure in style and comfort with the women-specific,...',
-  fullDescription: 'Tackle your summer adventure in style and comfort with the women-specific, multi-purpose Tirra Sandal. Adjustable straps enable a custom fit while the Spider Rubber outsole is grippy, especially on wet surfaces, and the EVA midsole, shank and Shoc Pad in the heel give you a stable, secure and comfy ride.',
-  price: '$25/day',
-  image: '/footwear/sandal.jpg',
-  moreImages:['/footwear/sandal.jpg','/footwear/5.1.jpg','/footwear/5.2.jpg']
-  }
-];
+function WomensFootwear() {
+  const [footwearItems, setFootwearItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [quantities, setQuantities] = useState({});
+  const [days, setDays] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const { addToCart } = useContext(CartContext);
 
-function WomenFootwear() {
-  const handleAddToCart = (item) => {
-    // Logic to handle adding the item to the cart can go here
-    console.log(`${item.name} added to cart!`);
+  useEffect(() => {
+    const fetchFootwearItems = async () => {
+      try {
+        // Fetch all products and filter by 'Footwear' and 'Women'
+        const footwearSnapshot = await ProductService.getAllProducts();
+        const footwearList = footwearSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })).filter(item => item.category === 'Footwear' && item.subcategory === 'Women'); // Filter by 'Footwear' and 'Women'
+        setFootwearItems(footwearList);
+
+        // Initialize quantities for each item
+        const initialQuantities = {};
+        footwearList.forEach(item => {
+          initialQuantities[item.id] = 1;
+        });
+        setQuantities(initialQuantities);
+      } catch (error) {
+        console.error("Error fetching women's footwear items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFootwearItems();
+  }, []);
+
+  const handleQuantityChange = (id, value) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [id]: value
+    }));
   };
-  
+
+  const handleAddToCart = (item) => {
+    addToCart(item, quantities[item.id], days);
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [item.id]: 1
+    }));
+    setDays(1);
+  };
+
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedItem(null);
+  };
+
+  if (loading) {
+    return <p>Loading women's footwear items...</p>;
+  }
+
   return (
     <div className="Footwear">
       <h2>Women's Footwear</h2>
-      <p>Find the best hiking boots and shoes for your next adventure.</p>
+      <p>Discover the best footwear for your adventures and everyday needs.</p>
 
       <div className="footwear-list">
         {footwearItems.map((item) => (
           <div key={item.id} className={`footwear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            <img src={item.image} alt={item.name} />
-            <h3>{item.name}</h3>
+            <img src={item.mainImage} alt={item.name} />
+            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
-            <p className="price">{item.price}</p>
-            <button 
-              className="add-to-cart-btn" 
-              onClick={() => handleAddToCart(item)}>
+            <p className="price">{item.pricePerDay}/day</p>
+            <label>
+              Quantity:
+              <input
+                type="number"
+                value={quantities[item.id]}
+                min="1"
+                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
+              />
+            </label>
+            <label>
+              Days:
+              <input
+                type="number"
+                value={days}
+                min="1"
+                onChange={(e) => setDays(parseInt(e.target.value, 10))}
+              />
+            </label>
+            <button
+              className="confirm-btn"
+              onClick={() => handleAddToCart(item)}
+            >
               Add to Cart
             </button>
           </div>
         ))}
       </div>
+
+      {selectedItem && (
+        <div className="popup" onClick={handleClosePopup}>
+          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close-btn" onClick={handleClosePopup}>&times;</span>
+            <h2>{selectedItem.name}</h2>
+            <p>{selectedItem.fullDescription}</p>
+            <div className="popup-images">
+              {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
+                selectedItem.additionalImages.map((image, index) => (
+                  <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} />
+                ))
+              ) : (
+                <p>No additional images available</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default WomenFootwear;
+export default WomensFootwear;

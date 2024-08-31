@@ -1,67 +1,130 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './footwear.css';
-
-const footwearItems = [
-  
-  {
-    id: 1,
-    name: 'Keen Junior Kanyon Sport Sandal',
-    description:'A smaller version of the Men Kanyon, this sandal is ideal for your younger...',
-    fullDescription: 'A smaller version of the Men Kanyon, this sandal is ideal for your younger counterparts for around town, park and trails and, because they are in all black, can be worn in most New Zealand schools.',
-    price: '$15/day',
-    image: '/footwear/kidshoe.jpg',
-    moreImages:['/footwear/kidshoe.jpg','/footwear/6.1.jpg','/footwear/6.2.jpg'],
-    newArrival: true,
-   
-  },
-  {
-    id: 2,
-  name: 'Hi-Tec Kids Altitude VI Lite WP Hiking Boots',
-  description:'Perfect for adventurous kids, these waterproof synthetic...',
-  fullDescription: 'Perfect for adventurous kids, these waterproof synthetic boots are comfortable and supportive with a volume adjuster insole for growing feet.',
-  price: '$25/day',
-  image: '/footwear/k2.jpg',
-  moreImages:['/footwear/k2.jpg','/footwear/k2.1.jpg','/footwear/k2.2.jpg']
-  },
-  {
-    id: 3,
-  name: 'Targhee IV Low Waterproof Hiking Shoes',
-  description:'Updated to fit better, last longer and go farther than before....',
-  fullDescription: 'Updated to fit better, last longer and go farther than before, the KEEN Targhee IV Low Waterproof hiking shoes for little kids offer the comfort, protection and durability that young explorers need.',
-  price: '$25/day',
-  image: '/footwear/k3.jpeg',
-  moreImages:['/footwear/k3.jpeg','/footwear/k3.1.jpeg','/footwear/k3.2.jpeg']
-  },
- 
-];
+import { CartContext } from './CartContext';
+import ProductService from './ProductService';
 
 function KidFootwear() {
-  const handleAddToCart = (item) => {
-    // Logic to handle adding the item to the cart can go here
-    console.log(`${item.name} added to cart!`);
+  const [footwearItems, setFootwearItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [quantities, setQuantities] = useState({});
+  const [days, setDays] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const { addToCart } = useContext(CartContext);
+
+  useEffect(() => {
+    const fetchFootwearItems = async () => {
+      try {
+        // Fetch all products and filter by 'Footwear' and 'Kids'
+        const footwearSnapshot = await ProductService.getAllProducts();
+        const footwearList = footwearSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })).filter(item => item.category === 'Footwear' && item.subcategory === 'Kids'); // Filter by 'Footwear' and 'Kids'
+        setFootwearItems(footwearList);
+
+        // Initialize quantities for each item
+        const initialQuantities = {};
+        footwearList.forEach(item => {
+          initialQuantities[item.id] = 1;
+        });
+        setQuantities(initialQuantities);
+      } catch (error) {
+        console.error("Error fetching kids' footwear items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFootwearItems();
+  }, []);
+
+  const handleQuantityChange = (id, value) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [id]: value
+    }));
   };
-  
+
+  const handleAddToCart = (item) => {
+    addToCart(item, quantities[item.id], days);
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [item.id]: 1
+    }));
+    setDays(1);
+  };
+
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedItem(null);
+  };
+
+  if (loading) {
+    return <p>Loading kids' footwear items...</p>;
+  }
+
   return (
     <div className="Footwear">
-      <h2>Women's Footwear</h2>
-      <p>Find the best hiking boots and shoes for your next adventure.</p>
+      <h2>Kids' Footwear</h2>
+      <p>Discover the best footwear for your young adventurers.</p>
 
       <div className="footwear-list">
         {footwearItems.map((item) => (
           <div key={item.id} className={`footwear-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            <img src={item.image} alt={item.name} />
-            <h3>{item.name}</h3>
+            <img src={item.mainImage} alt={item.name} />
+            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description}</p>
-            <p className="price">{item.price}</p>
-            <button 
-              className="add-to-cart-btn" 
-              onClick={() => handleAddToCart(item)}>
+            <p className="price">{item.pricePerDay}/day</p>
+            <label>
+              Quantity:
+              <input
+                type="number"
+                value={quantities[item.id]}
+                min="1"
+                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
+              />
+            </label>
+            <label>
+              Days:
+              <input
+                type="number"
+                value={days}
+                min="1"
+                onChange={(e) => setDays(parseInt(e.target.value, 10))}
+              />
+            </label>
+            <button
+              className="confirm-btn"
+              onClick={() => handleAddToCart(item)}
+            >
               Add to Cart
             </button>
           </div>
         ))}
       </div>
+
+      {selectedItem && (
+        <div className="popup" onClick={handleClosePopup}>
+          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close-btn" onClick={handleClosePopup}>&times;</span>
+            <h2>{selectedItem.name}</h2>
+            <p>{selectedItem.fullDescription}</p>
+            <div className="popup-images">
+              {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
+                selectedItem.additionalImages.map((image, index) => (
+                  <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} />
+                ))
+              ) : (
+                <p>No additional images available</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
