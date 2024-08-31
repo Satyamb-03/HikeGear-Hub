@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'; 
-import { auth, db } from './firebase'; 
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { auth, db } from './firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -10,17 +10,20 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
+
 const UserAuthContext = createContext();
+
 
 export const UserAuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const signUp = async (email, password, name, age, mobile) => {
     try {
+ 
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Add user data to Firestore with user.uid as document ID
+      
       await setDoc(doc(db, 'users', user.uid), {
         email,
         name,
@@ -32,28 +35,30 @@ export const UserAuthContextProvider = ({ children }) => {
       return user;
     } catch (error) {
       console.error('Sign Up Error:', error.message);
-      throw new Error(error.message); // Optionally handle the error here
+      throw new Error(error.message); 
     }
   };
+
 
   const logIn = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user); // Set user in state
+      setUser(userCredential.user); 
       return userCredential.user;
     } catch (error) {
       console.error('Log In Error:', error.message);
-      throw new Error(error.message); // Optionally handle the error here
+      throw new Error(error.message); 
     }
   };
 
+  // Sign Out function
   const signOutUser = async () => {
     try {
       await signOut(auth);
-      setUser(null); // Clear user from state
+      setUser(null); 
     } catch (error) {
       console.error('Sign Out Error:', error.message);
-      throw new Error(error.message); // Optionally handle the error here
+      throw new Error(error.message);
     }
   };
 
@@ -65,10 +70,11 @@ export const UserAuthContextProvider = ({ children }) => {
       return result.user;
     } catch (error) {
       console.error('Google Sign In Error:', error.message);
-      throw new Error(error.message);
+      throw new Error(error.message); 
     }
   };
 
+ 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -85,6 +91,7 @@ export const UserAuthContextProvider = ({ children }) => {
     </UserAuthContext.Provider>
   );
 };
+
 
 export const useUserAuth = () => {
   return useContext(UserAuthContext);
