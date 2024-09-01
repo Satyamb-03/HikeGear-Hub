@@ -1,8 +1,6 @@
-// src/firebase.js
-
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc } from 'firebase/firestore'; // Import deleteDoc and doc
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // Firebase configuration
@@ -24,4 +22,4 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 // Export Firebase services and functions
-export { auth, db, collection, getDocs, addDoc, storage, ref, uploadBytes, getDownloadURL };
+export { auth, db, collection, getDocs, addDoc, doc, deleteDoc, storage, ref, uploadBytes, getDownloadURL };
