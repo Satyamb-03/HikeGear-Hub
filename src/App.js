@@ -29,7 +29,7 @@ import SignUP from './SignUP';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
 import UserDashboard from './UserDashboard';
 import AdditionalGear from './AdditionalGear';
-// import SupplierDashboard from './SupplierDashboard';
+import AdminDashboard from './AdminDashboard';
 import { CardLink } from 'react-bootstrap';
 
 
@@ -119,6 +119,7 @@ function App() {
                 <Route path='/gear/Packs' element={<Packs />} />
                 <Route path='/gear/Tents' element={<Tents />}/>
                 <Route path='/gear/Additional' element={<AdditionalGear/>}/>
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
               </Routes>
             </main>
 
@@ -155,6 +156,9 @@ function Home() {
       </Link>
       <Link to="/user-dashboard">
         <button className="go-to-dashboard-button">Go to User Dashboard</button>
+      </Link>
+      <Link to="/admin-dashboard">
+        <button className="go-to-dashboard-button">Go to Admin Dashboard</button>
       </Link>
     </div>
   );

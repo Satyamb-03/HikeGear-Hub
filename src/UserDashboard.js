@@ -3,7 +3,7 @@ import { useUserAuth } from './UserAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Card } from 'react-bootstrap';
 import './UserDashboard.css'; 
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase'; 
 
 const UserDashboard = () => {
@@ -59,6 +59,17 @@ const UserDashboard = () => {
     }
   };
 
+  const handleApplyForSupplier = async () => {
+    try {
+      const userDocRef = doc(db, 'users', user.uid);
+      await setDoc(userDocRef, { ...userData, supplierRequest: 'pending' }, { merge: true });
+      alert('Application submitted. You will be notified once it is reviewed.');
+    } catch (error) {
+      console.error('Error applying to be a supplier:', error);
+      setError('Error submitting application');
+    }
+  };
+
   if (loading) {
     return <p>Loading...</p>; 
   }
@@ -84,6 +95,7 @@ const UserDashboard = () => {
         </Card.Body>
       </Card>
       <div className="dashboard-buttons">
+        <Button variant="warning" onClick={handleApplyForSupplier}>Apply to be a Supplier</Button>
         <Button variant="danger" onClick={handleLogout}>Log Out</Button>
       </div>
     </Container>
