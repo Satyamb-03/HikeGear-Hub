@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Gear.css';
-import { CartContext } from './CartContext';
+import { useCart } from './CartContext'; // Use useCart hook
 import ProductService from './ProductService';
 
 function Gear() {
@@ -9,12 +9,11 @@ function Gear() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useContext(CartContext);
+  const { addToCart } = useCart(); // Use useCart hook
 
   useEffect(() => {
     const fetchGearItems = async () => {
       try {
-        // Use ProductService to fetch all products
         const gearSnapshot = await ProductService.getAllProducts();
         const gearList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -22,7 +21,6 @@ function Gear() {
         })).filter(item => item.category === 'Gear');
         setGearItems(gearList);
 
-        // Initialize quantities for each item
         const initialQuantities = {};
         gearList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -76,9 +74,9 @@ function Gear() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description}</p>
+            {/* Display short description */}
+            <p>{item.description.split('. ')[0] + '...'}</p> 
             <p className="price">{item.pricePerDay}/day</p>
-            
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -94,7 +92,8 @@ function Gear() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription}</p>
+            {/* Display full description in popup */}
+            <p> {selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (

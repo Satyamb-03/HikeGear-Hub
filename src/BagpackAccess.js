@@ -1,53 +1,36 @@
-import React, { useState } from 'react';
-import './BagpackAccess.css';
 
-const backpackAccessItems = [
-  {
-    id: 1,
-    name: 'Hydration Reservoir',
-    description: 'Stay hydrated with this easy-to-fill reservoir.',
-    fullDescription: 'This hydration reservoir fits most backpacks and includes a wide-mouth opening for easy filling and cleaning.',
-    price: '$15/day',
-    image: '/Accessories/HydrationReservoir.jpg',
-    moreImages: ['/Accessories/HydrationReservoir.p.jpg', '/Accessories/HydrationReservoir.b.jpg'],
-    newArrival: true,
-  },
-  {
-    id: 2,
-    name: 'Backpack Waist Belt',
-    description: 'Enhance comfort with this adjustable waist belt.',
-    fullDescription: 'This backpack waist belt provides additional support and stability, reducing strain on your shoulders during long hikes.',
-    price: '$12/day',
-    image: '/Accessories/WaistBelt.jpg',
-    moreImages: ['/Accessories/WaistBelt.p.jpg', '/Accessories/WaistBelt.b.jpg'],
-    newArrival: false,
-  },
-  {
-    id: 3,
-    name: 'First Aid Kit',
-    description: 'Compact and essential first aid kit for hiking emergencies.',
-    fullDescription: 'This first aid kit includes basic supplies for treating minor injuries and handling emergencies on the trail.',
-    price: '$20/day',
-    image: '/Accessories/FirstAidKit.jpg',
-    moreImages: ['/Accessories/FirstAidKit.p.jpg', '/Accessories/FirstAidKit.b.jpg'],
-  },
-  {
-    id: 4,
-    name: 'Compression Sack',
-    description: 'Compress your gear to save space in your backpack.',
-    fullDescription: 'This compression sack helps you pack more efficiently by reducing the volume of your gear, ideal for sleeping bags and clothing.',
-    price: '$8/day',
-    image: '/Accessories/CompressionSack.jpg',
-    moreImages: ['/Accessories/CompressionSack.p.jpg', '/Accessories/CompressionSack.b.jpg'],
-    newArrival: true,
-  },
-];
+import React, { useState, useEffect, useContext } from 'react';
+import './Accessories.css'; // Ensure this file has the correct styles for Accessories
+import { CartContext } from './CartContext';
+import ProductService from './ProductService';
 
 function BackpackAccess() {
+  const [backpackItems, setBackpackItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { addToCart } = useContext(CartContext);
+
+  useEffect(() => {
+    const fetchBackpackItems = async () => {
+      try {
+        const productSnapshot = await ProductService.getAllProducts();
+        const backpackList = productSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })).filter(item => item.category === 'Accessories' && item.subcategory === 'Backpack');
+        setBackpackItems(backpackList);
+      } catch (error) {
+        console.error("Error fetching backpack items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBackpackItems();
+  }, []);
 
   const handleAddToCart = (item) => {
-    console.log(`${item.name} added to cart!`);
+    addToCart(item, 1, 1); // Default quantity and days
   };
 
   const handleItemClick = (item) => {
@@ -58,23 +41,28 @@ function BackpackAccess() {
     setSelectedItem(null);
   };
 
-  return (
-    <div className="backpackaccess">
-      <h2>Backpack Accessories</h2>
-      <p>Explore our collection of backpack accessories to enhance your hiking experience and stay prepared.</p>
+  if (loading) {
+    return <p>Loading backpack items...</p>;
+  }
 
-      <div className="backpackaccess-list">
-        {backpackAccessItems.map((item) => (
-          <div key={item.id} className={`backpackaccess-item ${item.newArrival ? 'new-arrival' : ''}`}>
+  return (
+    <div className="Accessories"> {/* Use the same class name as in Accessories.css */}
+      <h2>Backpack Accessories</h2>
+      <p>Discover essential backpack accessories to enhance your hiking experience.</p>
+
+      <div className="accessories-list"> {/* Match class name used in Accessories */}
+        {backpackItems.map((item) => (
+          <div key={item.id} className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}> {/* Match class names */}
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            <img src={item.image} alt={item.name} />
-            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description}</p>
-            <p className="price">{item.price}</p>
-            <button
-              className="add-to-cart-btn"
-              onClick={() => handleAddToCart(item)}
-            >
+            <img src={item.mainImage} alt={item.name} /> {/* Ensure the image field matches */}
+            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
+              {item.name}
+            </h3>
+            <p className="description-preview">
+              {item.description.split('. ')[0] + '...'}
+            </p> {/* Match class name */}
+            <p className="price">${item.pricePerDay}/day</p> {/* Ensure the price field matches */}
+            <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
               Add to Cart
             </button>
           </div>
@@ -83,24 +71,22 @@ function BackpackAccess() {
 
       {selectedItem && (
         <div className="popup" onClick={handleClosePopup}>
-          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-            <span className="close-btn" onClick={handleClosePopup}>&times;</span>
+          <div className="popup-content" onClick={e => e.stopPropagation()}>
+            <span className="close-btn" onClick={handleClosePopup}>
+              &times;
+            </span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription}</p>
+            {/* Display full description */}
+            <p>{selectedItem.fullDescription || selectedItem.description}</p>
             <div className="popup-images">
-              {selectedItem.moreImages.length > 0
-                ? selectedItem.moreImages.map((image, index) => (
-                    <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} />
-                  ))
-                : <p>No additional images available.</p>}
+              {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
+                selectedItem.additionalImages.map((image, index) => (
+                  <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} />
+                ))
+              ) : (
+                <p>No additional images available</p>
+              )}
             </div>
-            <p className="price">{selectedItem.price}</p>
-            <button
-              className="add-to-cart-btn"
-              onClick={() => handleAddToCart(selectedItem)}
-            >
-              Add to Cart
-            </button>
           </div>
         </div>
       )}

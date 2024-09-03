@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Form, Button } from 'react-bootstrap';
 import GoogleButton from 'react-google-button';
 import { useUserAuth } from './UserAuth'; // Adjust path if needed
@@ -9,16 +9,31 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { logIn, googleSignIn } = useUserAuth();
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [alreadyLoggedIn, setAlreadyLoggedIn] = useState(false); // Add state for login status
+
+  const { logIn, googleSignIn, user } = useUserAuth(); // Ensure user is provided by useUserAuth
   const navigate = useNavigate(); // Get the navigate function
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      if (user) {
+        setAlreadyLoggedIn(true);
+        navigate("/user-dashboard"); // Redirect to user dashboard if already logged in
+      } else {
+        setLoading(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
       await logIn(email, password);
-      // Redirect or handle successful login
-      navigate("/home"); // Navigate to Home on successful login
+      navigate("/user-dashboard"); // Navigate to user dashboard on successful login
     } catch (err) {
       setError(err.message);
     }
@@ -28,19 +43,28 @@ const SignIn = () => {
     e.preventDefault();
     try {
       await googleSignIn();
-      navigate("/"); // Navigate to Home on successful Google sign-in
+      navigate("/user-dashboard"); // Navigate to user dashboard on successful Google sign-in
     } catch (error) {
       console.log(error.message);
       setError(error.message); // Set error state if needed
     }
   };
 
+  if (loading) {
+    return <p>Loading...</p>; // Show loading message while checking auth status
+  }
+
+  if (alreadyLoggedIn) {
+    return <div className="p-4 box"><Alert variant="info">You are already logged in. Redirecting...</Alert></div>;
+  }
+
   return (
     <div className="p-4 box">
       <h2 className="mb-3">Sign In</h2>
       {error && <Alert variant="danger">{error}</Alert>}
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicEmail"><label  style={{ fontWeight: 700, marginRight: 10 }}>Username:</label>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <label style={{ fontWeight: 700, marginRight: 10 }}>Username:</label>
           <Form.Control
             type="email"
             placeholder="Username"
@@ -48,7 +72,8 @@ const SignIn = () => {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword"><label  style={{ fontWeight: 700, marginRight: 10 }}>Password:</label>
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <label style={{ fontWeight: 700, marginRight: 10 }}>Password:</label>
           <Form.Control
             type="password"
             placeholder="Password"

@@ -1,7 +1,9 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-export const CartContext = createContext();
+// Create context
+const CartContext = createContext();
 
+// Create provider component
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
@@ -15,21 +17,22 @@ export const CartProvider = ({ children }) => {
             ? { ...cartItem, quantity, days }
             : cartItem
         );
+      } else {
+        // Add new item
+        return [...prevCart, { ...item, quantity, days }];
       }
-      // Add new item if not already in cart
-      return [...prevCart, { ...item, quantity, days }];
     });
   };
 
   const removeFromCart = (id) => {
-    setCart(prevCart => prevCart.filter(cartItem => cartItem.id !== id));
+    setCart(prevCart => prevCart.filter(item => item.id !== id));
   };
 
   const getTotalCost = () => {
-    return cart.reduce((total, item) => {
-      const pricePerDay = item.pricePerDay || 0;
-      return total + (pricePerDay * item.quantity * item.days);
-    }, 0);
+    // Logic to calculate total cost
+    return cart.reduce((total, item) => 
+      total + (parseFloat(item.pricePerDay) || 0) * item.quantity * item.days, 0
+    );
   };
 
   return (
@@ -37,4 +40,13 @@ export const CartProvider = ({ children }) => {
       {children}
     </CartContext.Provider>
   );
+};
+
+// Custom hook to use CartContext
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
 };

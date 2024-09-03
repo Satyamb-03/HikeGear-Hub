@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'; 
-import { auth, db } from './firebase'; 
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { auth, db } from './firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -10,11 +10,14 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
+// Create context
 const UserAuthContext = createContext();
 
-export const UserAuthContextProvider = ({ children }) => {
+// Create provider component
+export const UserAuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  // Sign up function
   const signUp = async (email, password, name, age, mobile) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -28,40 +31,43 @@ export const UserAuthContextProvider = ({ children }) => {
         mobile,
       });
 
-      setUser(user); 
+      setUser(user);
       return user;
     } catch (error) {
       console.error('Sign Up Error:', error.message);
-      throw new Error(error.message); // Optionally handle the error here
+      throw new Error(error.message);
     }
   };
 
+  // Log in function
   const logIn = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user); // Set user in state
+      setUser(userCredential.user);
       return userCredential.user;
     } catch (error) {
       console.error('Log In Error:', error.message);
-      throw new Error(error.message); // Optionally handle the error here
+      throw new Error(error.message);
     }
   };
 
+  // Sign out function
   const signOutUser = async () => {
     try {
       await signOut(auth);
-      setUser(null); // Clear user from state
+      setUser(null);
     } catch (error) {
       console.error('Sign Out Error:', error.message);
-      throw new Error(error.message); // Optionally handle the error here
+      throw new Error(error.message);
     }
   };
 
+  // Google sign-in function
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      setUser(result.user); 
+      setUser(result.user);
       return result.user;
     } catch (error) {
       console.error('Google Sign In Error:', error.message);
@@ -69,6 +75,7 @@ export const UserAuthContextProvider = ({ children }) => {
     }
   };
 
+  // Set user state on auth state change
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -86,6 +93,11 @@ export const UserAuthContextProvider = ({ children }) => {
   );
 };
 
+// Custom hook to use the UserAuthContext
 export const useUserAuth = () => {
-  return useContext(UserAuthContext);
+  const context = useContext(UserAuthContext);
+  if (!context) {
+    throw new Error('useUserAuth must be used within a UserAuthProvider');
+  }
+  return context;
 };
