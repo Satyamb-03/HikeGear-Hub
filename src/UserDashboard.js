@@ -148,9 +148,18 @@ const UserDashboard = () => {
       <h2 className="welcome-message">Welcome, {userData?.name || "User"}!</h2>
       <Card className="dashboard-card shadow-lg">
         <Card.Body>
-          <Card.Title>User Profile</Card.Title>
+          <Card.Title>Your Profile</Card.Title> {/* Changed text from "User Profile" to "Your Profile" */}
           {isEditing ? (
             <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Name</Form.Label> {/* Moved Name field to the top */}
+                <Form.Control
+                  type="text"
+                  name="name"
+                  value={editForm.name}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Age</Form.Label>
                 <Form.Control
@@ -169,24 +178,16 @@ const UserDashboard = () => {
                   onChange={handleInputChange}
                 />
               </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  value={editForm.name}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
               <Button variant="success" onClick={handleSaveChanges}>Save Changes</Button>
               <Button variant="secondary" onClick={handleEditToggle}>Cancel</Button>
             </Form>
           ) : (
             <>
-              <Card.Text><strong>Age:</strong> {userData?.age || 'Not provided'}</Card.Text>
-              <Card.Text><strong>Email:</strong> {user.email}</Card.Text>
-              <Card.Text><strong>Mobile:</strong> {userData?.mobile || 'Not provided'}</Card.Text>
+              {/* Reordered the display of user data fields */}
               <Card.Text><strong>Name:</strong> {userData?.name || 'Not provided'}</Card.Text>
+              <Card.Text><strong>Age:</strong> {userData?.age || 'Not provided'}</Card.Text>
+              <Card.Text><strong>Mobile:</strong> {userData?.mobile || 'Not provided'}</Card.Text>
+              <Card.Text><strong>Email:</strong> {user.email}</Card.Text>
               <Button variant="primary" onClick={handleEditToggle}>Edit Profile</Button>
             </>
           )}
@@ -197,15 +198,16 @@ const UserDashboard = () => {
       <div className="supplier-form-container">
         <Button variant="info" onClick={handleApplyForSupplier}>Apply to be a Supplier</Button>
       </div>
-
+  
       {/* Navigation Button to Supplier Dashboard */}
       <Button variant="info" onClick={() => navigate('/supplier-dashboard')}>
         Go to Supplier Dashboard
       </Button>
-
+  
       <Button variant="danger" onClick={handleLogout}>Logout</Button>
     </Container>
   );
+  
 };
 
 export default UserDashboard;
