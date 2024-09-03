@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './footwear.css';
-import { CartContext } from './CartContext';
 import ProductService from './ProductService';
+import { useCart } from './CartContext'; // Use useCart hook
 
 function MensFootwear() {
   const [footwearItems, setFootwearItems] = useState([]);
@@ -9,7 +9,7 @@ function MensFootwear() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useContext(CartContext);
+  const { addToCart } = useCart(); // Use useCart hook
 
   useEffect(() => {
     const fetchFootwearItems = async () => {
@@ -77,7 +77,8 @@ function MensFootwear() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description}</p>
+            <p>{item.description.split('. ')[0] + '...'}</p> 
+
             <p className="price">{item.pricePerDay}/day</p>
            
             <button
@@ -95,7 +96,7 @@ function MensFootwear() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription}</p>
+            <p>{selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (

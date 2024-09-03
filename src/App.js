@@ -23,7 +23,7 @@ import Footer from './Footer';
 import Cart from './Cart';
 import CampKitchen from './CampKitchen';
 import { CartProvider } from './CartContext';
-import { UserAuthContextProvider } from './UserAuth';
+import { UserAuthProvider } from './UserAuth';
 import SignIn from './SignIn';
 import SignUP from './SignUP';
 import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
@@ -36,7 +36,7 @@ import { CardLink } from 'react-bootstrap';
 function App() {
   return (
     <CartProvider>
-      <UserAuthContextProvider>
+      <UserAuthProvider>
         <Router>
           <div className="App">
             <header className="App-header">
@@ -126,7 +126,7 @@ function App() {
             <Footer />
           </div>
         </Router>
-      </UserAuthContextProvider>
+      </UserAuthProvider>
     </CartProvider>
   );
 }

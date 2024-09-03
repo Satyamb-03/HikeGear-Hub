@@ -1,20 +1,22 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
-import { CartContext } from './CartContext';
 import ProductService from './ProductService';
+import { useCart } from './CartContext';
+import { useUserAuth } from './UserAuth';
 
-function Tents() {
+function Additional() {
   const [tentItems, setTentItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useContext(CartContext);
+  const { addToCart } = useCart(); // Use useCart hook
+  const { user } = useUserAuth();
 
   useEffect(() => {
     const fetchTentItems = async () => {
       try {
-        // Fetch all products and filter by 'Gear' and 'Tents'
+        // Fetch all products and filter by 'Gear' and 'Additional'
         const gearSnapshot = await ProductService.getAllProducts();
         const tentList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -63,7 +65,7 @@ function Tents() {
   };
 
   if (loading) {
-    return <p>Loading tent items...</p>;
+    return <p>Loading additional gear...</p>;
   }
 
   return (
@@ -77,9 +79,9 @@ function Tents() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description}</p>
+            {/* Display short description */}
+            <p>{item.description.split('. ')[0] + (item.description.split('. ')[0].endsWith('.') ? '' : '...') }</p>
             <p className="price">{item.pricePerDay}/day</p>
-           
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -95,7 +97,8 @@ function Tents() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription}</p>
+            {/* Display full description in popup */}
+            <p>{selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (
@@ -112,4 +115,4 @@ function Tents() {
   );
 }
 
-export default Tents;
+export default Additional;

@@ -1,49 +1,113 @@
+/* Cart.css */
+
+/* Styles for the cart component */
 .Cart {
-    padding: 20px;
-  }
-  
-  .cart-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .cart-item img {
-    width: 100px;
-    height: auto;
-    margin-right: 20px;
-  }
-  
-  .item-details {
-    flex: 1;
-  }
-  
-  .item-details h3 {
-    margin: 0;
-  }
-  
-  .item-details .price {
-    font-size: 1.2em;
-  }
-  
-  .checkout-btn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .checkout-btn:hover {
-    background-color: #0056b3;
-  }
-  .popup-content label {
-    display: block;
-    margin-top: 10px;
-  }
-  
-  .popup-content input[type="number"] {
-    width: 50px;
-    margin-left: 10px;
-  }
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  position: relative; /* Ensure the container is relative */
+}
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.cart-items {
+  margin-top: 20px;
+  margin: bottom 20px; ;
+}
+.cart-items ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cart-items .cart-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  margin-bottom: 10px;
+}
+.cart-items .cart-item img {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  margin-right: 15px;
+  border-radius: 5px;
+}
+.cart-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.item-details {
+  margin-left: 10px;
+}
+
+.checkout-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.checkout-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Modal styles */
+.modal-dialog {
+  position: absolute; /* Absolute positioning relative to the .Cart container */
+  top: 20px; /* Adjust distance from the top as needed */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust horizontal centering */
+  margin: 0; /* Remove default margin */
+}
+
+.modal-content {
+  background-color: white; /* Set background color to white */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px; /* Increased padding for a larger box */
+  max-width: 600px; /* Larger max width */
+  width: 100%; /* Full width within max width */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between elements */
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Space between elements in each section */
+}
+
+.modal-header {
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 15px; /* Space below header */
+  font-size: 1.25rem; /* Larger font size for header */
+}
+
+.modal-body {
+  text-align: center; /* Center text in the body */
+  font-size: 1.125rem; /* Larger font size for body */
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding-top: 15px; /* Space above footer */
+  font-size: 1rem; /* Larger font size for footer */
+}
+
+.modal-footer .btn {
+  margin: 0; /* Remove default button margins */
+  font-size: 1rem; /* Ensure button font size is consistent */
+}
