@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import ProductService from './ProductService';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -14,6 +15,9 @@ const AdminDashboard = () => {
   const [subcategory, setSubcategory] = useState('Men');
   const [users, setUsers] = useState([]);
   const [supplierRequests, setSupplierRequests] = useState([]);
+  const [showProductForm, setShowProductForm] = useState(false);
+
+  const navigate = useNavigate(); // Get the navigate function
 
   useEffect(() => {
     fetchUsers();
@@ -26,13 +30,12 @@ const AdminDashboard = () => {
       const usersList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setUsers(usersList);
 
-      // Filter users with supplier requests and include user info
       const requests = usersList
         .filter(user => user.supplierRequest)
         .map(user => ({
           id: user.id,
-          userName: user.name, // Assuming `name` field exists
-          userEmail: user.email // Assuming `email` field exists
+          userName: user.name,
+          userEmail: user.email
         }));
       setSupplierRequests(requests);
     } catch (error) {
@@ -62,6 +65,7 @@ const AdminDashboard = () => {
       setPricePerDay('');
       setMainImageFile(null);
       setAdditionalImageFiles([]);
+      setShowProductForm(false); // Close the form after submission
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -69,10 +73,7 @@ const AdminDashboard = () => {
 
   const handleDeleteUser = async (userId) => {
     try {
-      // Delete the user document from Firestore
       await deleteDoc(doc(db, 'users', userId));
-
-      // Remove from local state
       setUsers(users.filter(user => user.id !== userId));
       setSupplierRequests(supplierRequests.filter(request => request.id !== userId));
     } catch (error) {
@@ -82,14 +83,11 @@ const AdminDashboard = () => {
 
   const handleApproveSupplier = async (userId) => {
     try {
-      // Update user document to reflect supplier approval
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, {
         isSupplier: true,
-        supplierRequest: null // Clear the supplier request after approval
+        supplierRequest: null
       });
-
-      // Remove from local state
       setSupplierRequests(supplierRequests.filter(request => request.id !== userId));
     } catch (error) {
       console.error('Error approving supplier request:', error);
@@ -98,150 +96,196 @@ const AdminDashboard = () => {
 
   const handleDenySupplier = async (userId) => {
     try {
-      // Remove supplier request field
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, {
         supplierRequest: null
       });
-
-      // Remove from local state
       setSupplierRequests(supplierRequests.filter(request => request.id !== userId));
     } catch (error) {
       console.error('Error denying supplier request:', error);
     }
   };
 
+  const handleLogout = () => {
+    // Add your logout logic here
+    // For example, clearing user session and redirecting to Sign In page
+    navigate('/signin'); // Redirect to Sign In page
+  };
+
   return (
     <div className="admin-dashboard">
-      <div className="form-container">
-        <form onSubmit={handleSubmit} className="add-product-form">
-          <label>
-            Name:
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            Description:
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            Price per Day:
-            <input
-              type="number"
-              value={pricePerDay}
-              onChange={(e) => setPricePerDay(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            Main Image:
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setMainImageFile(e.target.files[0])}
-              required
-            />
-          </label>
-          <label>
-            Additional Images:
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleAdditionalImagesChange}
-            />
-            {additionalImageFiles.length > 0 && (
-              <div className="image-preview">
-                {Array.from(additionalImageFiles).map((file, index) => (
-                  <img key={index} src={URL.createObjectURL(file)} alt={`Additional ${index + 1}`} />
-                ))}
-              </div>
-            )}
-          </label>
-          <label>
-            Category:
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="Clothing">Clothing</option>
-              <option value="Footwear">Footwear</option>
-              <option value="Gear">Gear</option>
-              <option value="Accessories">Accessories</option>
-            </select>
-          </label>
-          <label>
-            Subcategory:
-            <select
-              value={subcategory}
-              onChange={(e) => setSubcategory(e.target.value)}
-            >
-              {category === 'Clothing' && (
-                <>
-                  <option value="Men">Men's Clothing</option>
-                  <option value="Women">Women's Clothing</option>
-                  <option value="Kids">Kids' Clothing</option>
-                </>
-              )}
-              {category === 'Footwear' && (
-                <>
-                  <option value="Men">Men's Footwear</option>
-                  <option value="Women">Women's Footwear</option>
-                  <option value="Kids">Kids' Footwear</option>
-                </>
-              )}
-              {category === 'Gear' && (
-                <>
-                  <option value="Kitchen">Camp Kitchen</option>
-                  <option value="Packs">Packs</option>
-                  <option value="Sleep">Sleep Systems</option>
-                  <option value="Tents">Tents & Bivvies</option>
-                  <option value="Additional">Additional Gear</option>
-                </>
-              )}
-              {category === 'Accessories' && (
-                <>
-                  <option value="Headwear">Headwear</option>
-                  <option value="Clothing">Clothing Accessories</option>
-                  <option value="Footwear">Footwear Accessories</option>
-                  <option value="Backpack">Backpack Accessories</option>
-                </>
-              )}
-            </select>
-          </label>
-          <button type="submit">Add Product</button>
-        </form>
+      <header className="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <button className="logout-button" onClick={handleLogout}>Logout</button> {/* Logout button */}
+      </header>
+
+      <div className="content">
+        <div className="user-list">
+          <h2>User List</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user.id}>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="supplier-requests">
+          <h2>Supplier Requests</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {supplierRequests.map(request => (
+                <tr key={request.id}>
+                  <td>{request.userName}</td>
+                  <td>{request.userEmail}</td>
+                  <td>
+                    <button onClick={() => handleApproveSupplier(request.id)} className="approve-button">Approve</button>
+                    <button onClick={() => handleDenySupplier(request.id)} className="deny-button">Deny</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div className="user-list">
-        <h2>All Users</h2>
-        <ul>
-          {users.map(user => (
-            <li key={user.id}>
-              {user.name} - {user.email}
-              <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="supplier-requests">
-        <h2>Supplier Requests</h2>
-        <ul>
-          {supplierRequests.map(request => (
-            <li key={request.id}>
-              {request.userName} - {request.userEmail}
-              <button onClick={() => handleApproveSupplier(request.id)}>Approve</button>
-              <button onClick={() => handleDenySupplier(request.id)}>Deny</button>
-            </li>
-          ))}
-        </ul>
+
+      <div className="add-product-section">
+        <button className="open-form-button" onClick={() => setShowProductForm(true)}>
+          Add Product
+        </button>
+
+        {showProductForm && (
+          <div className="form-popup">
+            <div className="form-container">
+              <form onSubmit={handleSubmit} className="add-product-form">
+                <label>
+                  Name:
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </label>
+                <label>
+                  Description:
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                  />
+                </label>
+                <label>
+                  Price per Day:
+                  <input
+                    type="number"
+                    value={pricePerDay}
+                    onChange={(e) => setPricePerDay(e.target.value)}
+                    required
+                  />
+                </label>
+                <label>
+                  Main Image:
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setMainImageFile(e.target.files[0])}
+                    required
+                  />
+                </label>
+                <label>
+                  Additional Images:
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleAdditionalImagesChange}
+                  />
+                  {additionalImageFiles.length > 0 && (
+                    <div className="image-preview">
+                      {Array.from(additionalImageFiles).map((file, index) => (
+                        <img key={index} src={URL.createObjectURL(file)} alt={`Additional ${index + 1}`} />
+                      ))}
+                    </div>
+                  )}
+                </label>
+                <label>
+                  Category:
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="Clothing">Clothing</option>
+                    <option value="Footwear">Footwear</option>
+                    <option value="Gear">Gear</option>
+                    <option value="Accessories">Accessories</option>
+                  </select>
+                </label>
+                <label>
+                  Subcategory:
+                  <select
+                    value={subcategory}
+                    onChange={(e) => setSubcategory(e.target.value)}
+                  >
+                    {category === 'Clothing' && (
+                      <>
+                        <option value="Men">Men's Clothing</option>
+                        <option value="Women">Women's Clothing</option>
+                        <option value="Kids">Kids' Clothing</option>
+                      </>
+                    )}
+                    {category === 'Footwear' && (
+                      <>
+                        <option value="Men">Men's Footwear</option>
+                        <option value="Women">Women's Footwear</option>
+                        <option value="Kids">Kids' Footwear</option>
+                      </>
+                    )}
+                    {category === 'Gear' && (
+                      <>
+                        <option value="Kitchen">Camp Kitchen</option>
+                        <option value="Packs">Packs</option>
+                        <option value="Sleep">Sleep Systems</option>
+                        <option value="Tents">Tents & Bivvies</option>
+                        <option value="Additional">Additional Gear</option>
+                      </>
+                    )}
+                    {category === 'Accessories' && (
+                      <>
+                        <option value="Clothing">Clothing Accessories</option>
+                        <option value="Footwear">Footwear Accessories</option>
+                        <option value="Backpack">Backpack Accessories</option>
+                      </>
+                    )}
+                  </select>
+                </label>
+                <button type="submit">Add Product</button>
+                <button type="button" onClick={() => setShowProductForm(false)}>Close</button>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

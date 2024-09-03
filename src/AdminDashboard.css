@@ -1,34 +1,202 @@
-.admin-dashboard {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-  }
-  
-  .form-container {
-    width: 50%;
-  }
-  
-  .add-product-form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .add-product-form label {
-    margin-bottom: 10px;
-  }
-  
-  .user-list {
-    width: 40%;
-  }
-  
-  .user-list ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .user-list li {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  
+.admin-header {
+  background-color: #074088; /* Match the App header background color */
+  padding: 20px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-header .logo-link {
+  font-family: 'Kaushan Script', cursive;
+  font-size: 24px;
+  color: white;
+  text-decoration: none;
+}
+
+.admin-header .logo-link:hover {
+  text-decoration: underline;
+}
+
+.admin-nav {
+  background-color: #5289A1; /* Match the App nav background color */
+  padding: 10px;
+}
+
+.admin-nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-around; /* Spread items evenly */
+}
+
+.admin-nav ul li {
+  flex-grow: 1; /* Ensures each list item takes up equal space */
+  text-align: center; /* Centers the text within each item */
+}
+
+.admin-nav ul li a {
+  display: block;
+  color: white; /* Text color */
+  padding: 14px 20px;
+  text-decoration: none;
+}
+
+.admin-nav ul li a:hover {
+  background-color: #3a6178; /* Adjusted hover background color */
+}
+
+/* Existing admin dashboard styles for consistency */
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+  font-size: 24px;
+  color: #333;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.user-list, .supplier-requests {
+  width: 45%;
+}
+
+.user-list ul, .supplier-requests ul {
+  list-style: none;
+  padding: 0;
+}
+
+.user-list li, .supplier-requests li {
+  margin-bottom: 10px;
+}
+
+.add-product-section {
+  text-align: center;
+}
+
+.open-form-button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.open-form-button:hover {
+  background-color: #0056b3;
+}
+
+.form-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.add-product-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-product-form label {
+  margin-bottom: 10px;
+}
+
+.image-preview {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.image-preview img {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+.add-product-form button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.add-product-form button:hover {
+  background-color: #0056b3;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.approve-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.approve-button:hover {
+  background-color: #218838;
+}
+
+.deny-button {
+  background-color: #ffc107;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin-left: 10px;
+}
+
+.deny-button:hover {
+  background-color: #e0a800;
+}
+
+.table th, .table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f4f4f4;
+}
