@@ -137,7 +137,6 @@ const SupplierDashboard = () => {
               )}
               {category === 'Accessories' && (
                 <>
-                  <option value="Headwear">Headwear</option>
                   <option value="Clothing">Clothing Accessories</option>
                   <option value="Footwear">Footwear Accessories</option>
                   <option value="Backpack">Backpack Accessories</option>

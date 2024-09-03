@@ -132,3 +132,33 @@ html, body {
   max-width: 100%; /* Ensure the image scales properly */
   height: auto; /* Maintain aspect ratio */
 }
+.admin-header {
+  background-color: #f8f8f8; /* or another color for the admin dashboard */
+}
+
+.admin-nav {
+  background-color: #e8e8e8; /* or another color for the admin navigation */
+}
+
+.admin-nav ul {
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+}
+
+.admin-nav ul li {
+  margin-right: 10px;
+}
+
+.admin-nav ul li a {
+  text-decoration: none;
+  color: #333;
+}
+
+.admin-nav ul li a:hover {
+  text-decoration: underline;
+}
+
+.go-to-dashboard-button {
+  margin: 10px;
+}
