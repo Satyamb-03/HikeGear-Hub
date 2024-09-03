@@ -14,7 +14,6 @@ import Gear from './Gear';
 import SleepSystem from './SleepSystem';
 import Packs from './Packs';
 import Tents from './Tents';
-import BagpackAccess from './BagpackAccess';
 import Accessories from './Accessories';
 import Contact from './Contact';
 import About from './About';
@@ -26,12 +25,14 @@ import { CartProvider } from './CartContext';
 import { UserAuthProvider } from './UserAuth';
 import SignIn from './SignIn';
 import SignUP from './SignUP';
-import SupplierDashboard from './SupplierDashboard'; // Import SupplierDashboard
+import SupplierDashboard from './SupplierDashboard';
 import UserDashboard from './UserDashboard';
 import AdditionalGear from './AdditionalGear';
 import AdminDashboard from './AdminDashboard';
 import { CardLink } from 'react-bootstrap';
-
+import ClothingAccess from './ClothingAccess';
+import FootwearAccess from './FootwearAccess';
+import BagpackAccess from './BagpackAccess';
 
 function App() {
   return (
@@ -80,7 +81,7 @@ function App() {
                 <li className="dropdown">
                   <Link to="/accessories" className="dropbtn">Accessories</Link>
                   <div className="dropdown-content">
-                    <Link to="/accessories/headwear">Headwear</Link>
+                
                     <Link to="/accessories/clothing">Clothing Accessories</Link>
                     <Link to="/accessories/footwear">Footwear Accessories</Link>
                     <Link to="/accessories/backpack">Backpack Accessories</Link>
@@ -104,8 +105,13 @@ function App() {
                 <Route path="/footwear/women" element={<WomenFootwear />} />
                 <Route path="/footwear/kids" element={<KidFootwear />} />
                 <Route path="/gear" element={<Gear />} />
+                
                 <Route path="/accessories" element={<Accessories />} />
+               
                 <Route path="/accessories/backpack" element={<BagpackAccess />} />
+                <Route path="/accessories/clothing" element={<ClothingAccess />} />
+                <Route path="/accessories/footwear" element={<FootwearAccess />} />
+
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -115,10 +121,10 @@ function App() {
                 <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
                 <Route path="/user-dashboard" element={<UserDashboard />} />
                 <Route path='/gear/sleep' element={<SleepSystem />} />
-                <Route path='/gear/kitchen' element={<CampKitchen/>} />
-                <Route path='/gear/Packs' element={<Packs />} />
-                <Route path='/gear/Tents' element={<Tents />}/>
-                <Route path='/gear/Additional' element={<AdditionalGear/>}/>
+                <Route path='/gear/kitchen' element={<CampKitchen />} />
+                <Route path='/gear/packs' element={<Packs />} />
+                <Route path='/gear/tents' element={<Tents />} />
+                <Route path='/gear/additional' element={<AdditionalGear />} />
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
               </Routes>
             </main>
