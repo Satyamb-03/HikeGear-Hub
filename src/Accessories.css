@@ -1,3 +1,4 @@
+/* Updated styles for the ClothingAccess component */
 .Accessories {
   text-align: center;
   margin: 20px;
@@ -23,6 +24,7 @@
   width: 100%;
   height: auto;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .accessories-item:hover {
@@ -82,7 +84,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-y: auto;
+  overflow-y: auto; /* Enable vertical scrolling */
   z-index: 1000;
 }
 
@@ -92,10 +94,11 @@
   border-radius: 10px;
   width: 80%;
   max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: 90vh; /* Limits the height to 90% of the viewport */
+  overflow-y: auto; /* Enables scrolling within the popup */
   text-align: left;
   position: relative;
+  white-space: normal;
 }
 
 .close-btn {
@@ -111,4 +114,12 @@
   width: 100%;
   margin-top: 10px;
   border-radius: 8px;
+}
+
+.accessories-item p {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-height: 3em; /* Adjust this based on the line-height to show two lines */
+  line-height: 1.5em; /* Adjust the line-height if necessary */
 }
