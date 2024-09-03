@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useUserAuth } from './UserAuth'; // Import the user auth context
 
 // Create context
 const CartContext = createContext();
@@ -6,8 +7,14 @@ const CartContext = createContext();
 // Create provider component
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const { user } = useUserAuth(); // Access the user from the user auth context
 
   const addToCart = (item, quantity, days) => {
+    if (!user) {
+      alert('You need to sign in to add items to the cart.');
+      return; // Exit the function if the user is not signed in
+    }
+
     setCart(prevCart => {
       const existingItemIndex = prevCart.findIndex(cartItem => cartItem.id === item.id);
       if (existingItemIndex !== -1) {
