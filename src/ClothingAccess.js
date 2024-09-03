@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Accessories.css'; // Ensure this file has the correct styles for Accessories
-import { CartContext } from './CartContext';
+import { useCart } from './CartContext';
 import ProductService from './ProductService';
 
 function ClothingAccess() {
   const [clothingAccessItems, setClothingAccessItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useContext(CartContext);
+  const { addToCart } = useCart(); // Use useCart hook
 
   useEffect(() => {
     const fetchClothingAccessItems = async () => {
