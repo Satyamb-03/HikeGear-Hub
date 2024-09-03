@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
-import { CartContext } from './CartContext';
+import { useCart } from './CartContext';
 import ProductService from './ProductService';
 
 function Packs() {
@@ -9,7 +9,8 @@ function Packs() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useContext(CartContext);
+  const { addToCart } = useCart(); // Use useCart hook
+
 
   useEffect(() => {
     const fetchPackItems = async () => {
@@ -77,7 +78,8 @@ function Packs() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description}</p>
+            <p>{item.description.split('. ')[0] + '...'}</p> 
+               
             <p className="price">{item.pricePerDay}/day</p>
            
             <button
@@ -95,7 +97,7 @@ function Packs() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription}</p>
+            <p> {selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useContext } from 'react';
 import './Accessories.css'; // Ensure this file has the correct styles for Accessories
 import { CartContext } from './CartContext';
