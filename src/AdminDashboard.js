@@ -4,6 +4,8 @@ import { db } from './firebase';
 import ProductService from './ProductService';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './AdminDashboard.css';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 const AdminDashboard = () => {
   const [name, setName] = useState('');
@@ -114,6 +116,8 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
+      <Header/>
+      <NavBar/>
       <header className="dashboard-header">
         <h1>Admin Dashboard</h1>
         <button className="logout-button" onClick={handleLogout}>Logout</button> {/* Logout button */}

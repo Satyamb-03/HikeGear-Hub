@@ -3,6 +3,8 @@ import './footwear.css';
 import { useCart } from './CartContext'; // Use useCart hook
 import ProductService from './ProductService';
 import { useUserAuth } from './UserAuth';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function Footwear() {
   const [footwearItems, setFootwearItems] = useState([]);
@@ -69,6 +71,8 @@ function Footwear() {
 
   return (
     <div className="Footwear">
+      <Header/>
+      <NavBar/>
       <h2>Footwear</h2>
       <p>Discover the best footwear for your hiking adventures.</p>
       <div className="footwear-list">

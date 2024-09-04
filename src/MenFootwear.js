@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './footwear.css';
 import ProductService from './ProductService';
 import { useCart } from './CartContext'; // Use useCart hook
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function MensFootwear() {
   const [footwearItems, setFootwearItems] = useState([]);
@@ -68,6 +70,8 @@ function MensFootwear() {
 
   return (
     <div className="Footwear">
+      <Header/>
+      <NavBar/>
       <h2>Men's Footwear</h2>
       <p>Discover the best shoes and boots for your outdoor adventures.</p>
 

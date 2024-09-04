@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Clothing.css';
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function KidsClothing() {
   const [clothingItems, setClothingItems] = useState([]);
@@ -46,6 +48,8 @@ function KidsClothing() {
 
   return (
     <div className="Clothing">
+      <Header/>
+      <NavBar/>
       <h2>Kids' Clothing</h2>
       <p>Find durable and comfortable outdoor clothing for kids of all ages.</p>
       <div className="clothing-list">

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function Packs() {
   const [packItems, setPackItems] = useState([]);
@@ -69,6 +71,8 @@ function Packs() {
 
   return (
     <div className="Gear">
+      <Header/>
+      <NavBar/>
       <h2>Packs</h2>
       <p>Explore a variety of packs for your outdoor adventures.</p>
 

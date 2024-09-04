@@ -4,6 +4,8 @@ import GoogleButton from 'react-google-button';
 import { useUserAuth } from './UserAuth'; // Adjust path if needed
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import './SignIn.css';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -60,6 +62,8 @@ const SignIn = () => {
 
   return (
     <div className="p-4 box">
+      <Header/>
+      <NavBar/>
       <h2 className="mb-3">Sign In</h2>
       {error && <Alert variant="danger">{error}</Alert>}
       <Form onSubmit={handleSubmit}>

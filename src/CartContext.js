@@ -9,6 +9,7 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const { user } = useUserAuth(); // Access the user from the user auth context
 
+  console.log('User from CartProvider:', user);
   const addToCart = (item, quantity, days) => {
     if (!user) {
       alert('You need to sign in to add items to the cart.');

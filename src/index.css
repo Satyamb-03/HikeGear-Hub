@@ -1,5 +1,10 @@
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Prevent horizontal overflow */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -7,7 +12,25 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  margin: 0; /* Ensure no margin around the body */
+  font-family: sans-serif; /* Use sans-serif for consistent font styling */
+}
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Ensure header and navbar take full width without extra space */
+.App-header, .custom-navbar {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Full width for main content to align with header and navbar */
+.App-main {
+  width: 100%;
+  box-sizing: border-box;
 }

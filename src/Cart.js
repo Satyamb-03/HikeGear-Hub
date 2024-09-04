@@ -3,6 +3,8 @@ import { useCart } from './CartContext';
 import { useUserAuth } from './UserAuth'; // Import your custom hook
 import { Link } from 'react-router-dom';
 import './Cart.css'; // Ensure you have the CSS for styling
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function Cart() {
   const { user } = useUserAuth(); // Destructure user from context
@@ -36,6 +38,8 @@ function Cart() {
 
   return (
     <div className="Cart">
+      <Header/>
+      <NavBar/>
       <h2>Your Cart</h2>
       {user ? (
         <div className="cart-items">
