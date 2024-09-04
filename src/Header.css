@@ -1,0 +1,53 @@
+.App-header {
+    background-color: #074088;
+    color: white;
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+    width: 100vw; /* Full width */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+    position: relative; /* Ensure header is positioned relative to its container */
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px; /* Adjust padding as needed */
+    width: 100%;
+}
+
+.site-title-link {
+    text-decoration: none; /* Remove the underline from the link */
+    color: white; /* Match the text color with the header */
+}
+
+.site-title-link:hover {
+    text-decoration: underline; /* Add underline on hover for better UX */
+}
+
+.site-title {
+    font-family: 'Kaushan Script', cursive;
+    font-size: 24px;
+    margin: 0; /* Remove any margin from the h1 */
+}
+
+.auth-links a {
+    color: #61dafb;
+    margin-left: 15px;
+    text-decoration: none;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+.logout-button {
+    background: none;
+    border: none;
+    color: #61dafb;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.logout-button:hover {
+    text-decoration: underline;
+}

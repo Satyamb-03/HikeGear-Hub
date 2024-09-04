@@ -6,6 +6,8 @@ import './UserDashboard.css';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import ProductService from './ProductService';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 const UserDashboard = () => {
   const { user, signOutUser } = useUserAuth();
@@ -145,6 +147,8 @@ const UserDashboard = () => {
 
   return (
     <Container className="dashboard-container">
+      <Header/>
+      <NavBar/>
       <h2 className="welcome-message">Welcome, {userData?.name || "User"}!</h2>
       <Card className="dashboard-card shadow-lg">
         <Card.Body>

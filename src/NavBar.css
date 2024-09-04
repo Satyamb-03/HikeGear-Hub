@@ -1,0 +1,211 @@
+/* General App styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif; /* Change the font to sans-serif */
+}
+
+.App {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensures the container takes up at least the full viewport height */
+}
+
+.App-header {
+    background-color: #074088;
+    padding: 20px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.auth-buttons button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    background-color: #61dafb;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+.custom-navbar {
+    background-color: #5289A1;
+    margin: 0; /* Ensure no margin */
+    padding: 0; /* Ensure no padding */
+    width: 100vw; /* Full width */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+    border-bottom: 1px solid #ddd;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    justify-content: space-around; /* Distribute space evenly */
+    margin: 0; /* Remove margin */
+    padding: 0; /* Remove padding */
+}
+
+
+
+.nav-item {
+    position: relative;
+    padding: 10px 25px; /* Increase horizontal padding for more space */
+    color: white;
+    text-decoration: none;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background-color: #3a6178; /* Adjusted hover background color */
+}
+
+/* Subcategories dropdown menu */
+.nav-item .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%; /* Position dropdown below nav item */
+    left: 0;
+    background-color: #3a6178; /* New background color for dropdown menu */
+    border: 1px solid #dee2e6;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.nav-item:hover .dropdown-menu,
+.nav-item.active .dropdown-menu {
+    display: block; /* Show dropdown on hover */
+}
+
+/* Subcategory items */
+.dropdown-item {
+    color: white; /* Adjust text color */
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    background-color: #3a6178; /* Same background color as the dropdown */
+}
+
+.dropdown-item:hover {
+    background-color: #5289A1; /* New hover color for dropdown items */
+    color: white; /* Maintain white text on hover */
+}
+
+/* For full-width and responsive navbar */
+.custom-navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around; /* Spread items evenly */
+}
+
+.custom-navbar ul li {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.custom-navbar ul li a {
+    display: block;
+    padding: 14px 20px;
+    color: white;
+    text-decoration: none;
+}
+
+.custom-navbar ul li a:hover {
+    background-color: #3a6178; /* Adjust hover background color */
+}
+
+/* Cart option styling (same as other items) */
+.custom-navbar ul li a.cart-link {
+    color: white; /* Set the same color for the Cart link */
+    text-decoration: none;
+}
+
+/* Main content styles */
+.App-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* Footer styles */
+.App-footer {
+    margin-top: auto;
+    background-color: #074088;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Image styling */
+.App-image img {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+}
+
+/* Logo link styles */
+.logo-link {
+    font-family: 'Kaushan Script', cursive;
+    font-size: 24px;
+    color: white;
+    text-decoration: none;
+}
+
+.logo-link:hover {
+    text-decoration: underline;
+}
+
+.Home {
+    text-align: center;
+    padding: 20px;
+}
+
+.home-image {
+    margin-bottom: 20px;
+}
+
+.home-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Admin Header & Nav for admin pages */
+.admin-header {
+    background-color: #f8f8f8;
+}
+
+.admin-nav {
+    background-color: #e8e8e8;
+}
+
+.admin-nav ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+}
+
+.admin-nav ul li {
+    margin-right: 10px;
+}
+
+.admin-nav ul li a {
+    text-decoration: none;
+    color: #333;
+}
+
+.admin-nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Button Styling */
+.go-to-dashboard-button {
+    margin: 10px;
+}
