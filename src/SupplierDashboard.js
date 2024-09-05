@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ProductService from './ProductService';
 import './SupplierDashboard.css';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 const SupplierDashboard = () => {
   const [name, setName] = useState('');
@@ -41,6 +43,8 @@ const SupplierDashboard = () => {
 
   return (
     <div className="supplier-dashboard">
+      <Header/>
+      <NavBar/>
       <div className="form-container">
         <form onSubmit={handleSubmit} className="add-product-form">
           <label>
