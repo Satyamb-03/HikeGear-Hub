@@ -29,29 +29,25 @@ import SupplierDashboard from './SupplierDashboard';
 import UserDashboard from './UserDashboard';
 import AdditionalGear from './AdditionalGear';
 import AdminDashboard from './AdminDashboard';
-import { CardLink } from 'react-bootstrap';
 import ClothingAccess from './ClothingAccess';
 import FootwearAccess from './FootwearAccess';
 import BagpackAccess from './BagpackAccess';
+
 import ProtectedRoute from './ProtectedRoute';
 import { AdminRoute } from './ProtectedRoute';
 
+import Header from './Header';
+import Home from './Home';
+
 function App() {
   return (
-    <CartProvider>
-      <UserAuthProvider>
+    <UserAuthProvider>
+      <CartProvider>
+      
         <Router>
           <div className="App">
-            <header className="App-header">
-              <h1>
-                <Link to="/" className="logo-link">HikeGear Hub</Link>
-              </h1>
-              <div className="auth-buttons">
-                <Link to="/signin"><button>Sign In</button></Link>
-                <Link to="/signup"><button>Sign Up</button></Link>
-              </div>
-            </header>
             
+
             <nav className="App-nav">
               <ul>
                 <li className="dropdown">
@@ -94,6 +90,7 @@ function App() {
               </ul>
             </nav>
 
+
             <main>
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -134,8 +131,9 @@ function App() {
             <Footer />
           </div>
         </Router>
-      </UserAuthProvider>
-    </CartProvider>
+      
+      </CartProvider>
+    </UserAuthProvider>
   );
 }
 
@@ -171,5 +169,6 @@ function Home() {
     </div>
   );
 }
+
 
 export default App;

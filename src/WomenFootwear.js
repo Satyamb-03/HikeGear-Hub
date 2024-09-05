@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './footwear.css';
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function WomensFootwear() {
   const [footwearItems, setFootwearItems] = useState([]);
@@ -69,6 +71,8 @@ function WomensFootwear() {
 
   return (
     <div className="Footwear">
+      <Header/>
+      <NavBar/>
       <h2>Women's Footwear</h2>
       <p>Discover the best footwear for your adventures and everyday needs.</p>
 

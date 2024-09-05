@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Container, Card, Form } from 'react-bootstrap';
 import './UserDashboard.css'; 
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from './firebase';
-import ProductService from './ProductService';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from './firebase';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 const UserDashboard = () => {
   const { user, signOutUser } = useUserAuth();
@@ -15,15 +17,10 @@ const UserDashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ age: '', mobile: '', name: '' });
   const [isSupplierFormVisible, setIsSupplierFormVisible] = useState(false);
-
-  // Supplier Form States
-  const [productName, setProductName] = useState('');
-  const [description, setDescription] = useState('');
-  const [pricePerDay, setPricePerDay] = useState('');
-  const [mainImageFile, setMainImageFile] = useState(null);
-  const [additionalImageFiles, setAdditionalImageFiles] = useState([]);
-  const [category, setCategory] = useState('Clothing');
-  const [subcategory, setSubcategory] = useState('Men');
+  const [idFile, setIdFile] = useState(null);
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isApplicationSubmitted, setIsApplicationSubmitted] = useState(false); 
 
   const navigate = useNavigate();
 
@@ -60,24 +57,34 @@ const UserDashboard = () => {
     fetchUserData();
   }, [user]);
 
-  const handleLogout = async () => {
-    try {
-      await signOutUser();
-      navigate('/signin');
-    } catch (error) {
-      console.error("Logout Error:", error);
-      setError('Error logging out');
-    }
-  };
-
   const handleApplyForSupplier = async () => {
+    if (!idFile || !termsAgreed) {
+      setError("Please upload an ID and agree to all terms.");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
+      const idFileRef = ref(storage, `supplier-ids/${idFile.name}`);
+      const snapshot = await uploadBytes(idFileRef, idFile);
+      const idFileUrl = await getDownloadURL(idFileRef);
+
       const userDocRef = doc(db, 'users', user.uid);
-      await setDoc(userDocRef, { ...userData, supplierRequest: 'pending' }, { merge: true });
-      alert('Application submitted. You will be notified once it is reviewed.');
+      await setDoc(userDocRef, { 
+        ...userData, 
+        supplierRequest: {
+          status: 'pending', 
+          idFileUrl, 
+          termsAgreed 
+        } 
+      }, { merge: true });
+
+      setIsApplicationSubmitted(true); 
     } catch (error) {
       console.error('Error applying to be a supplier:', error);
       setError('Error submitting application');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -103,32 +110,16 @@ const UserDashboard = () => {
     }
   };
 
-  const handleAdditionalImagesChange = (e) => {
-    setAdditionalImageFiles(e.target.files);
+  const handleFileChange = (e) => {
+    setIdFile(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleTermsChange = (e) => {
+    setTermsAgreed(e.target.checked);
+  };
 
-    const newProduct = {
-      name: productName,
-      description,
-      pricePerDay: parseInt(pricePerDay),
-      category,
-      subcategory
-    };
-
-    try {
-      await ProductService.addProduct(newProduct, mainImageFile, additionalImageFiles);
-      setProductName('');
-      setDescription('');
-      setPricePerDay('');
-      setMainImageFile(null);
-      setAdditionalImageFiles([]);
-      setIsSupplierFormVisible(false); // Hide form after submission
-    } catch (error) {
-      console.error("Error adding product:", error);
-    }
+  const toggleSupplierFormVisibility = () => {
+    setIsSupplierFormVisible(!isSupplierFormVisible);
   };
 
   if (loading) {
@@ -145,12 +136,23 @@ const UserDashboard = () => {
 
   return (
     <Container className="dashboard-container">
+      <Header />
+      <NavBar />
       <h2 className="welcome-message">Welcome, {userData?.name || "User"}!</h2>
       <Card className="dashboard-card shadow-lg">
         <Card.Body>
-          <Card.Title>User Profile</Card.Title>
+          <Card.Title>Your Profile</Card.Title>
           {isEditing ? (
             <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  value={editForm.name}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Age</Form.Label>
                 <Form.Control
@@ -169,41 +171,79 @@ const UserDashboard = () => {
                   onChange={handleInputChange}
                 />
               </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  value={editForm.name}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
               <Button variant="success" onClick={handleSaveChanges}>Save Changes</Button>
               <Button variant="secondary" onClick={handleEditToggle}>Cancel</Button>
             </Form>
           ) : (
             <>
-              <Card.Text><strong>Age:</strong> {userData?.age || 'Not provided'}</Card.Text>
-              <Card.Text><strong>Email:</strong> {user.email}</Card.Text>
-              <Card.Text><strong>Mobile:</strong> {userData?.mobile || 'Not provided'}</Card.Text>
               <Card.Text><strong>Name:</strong> {userData?.name || 'Not provided'}</Card.Text>
+              <Card.Text><strong>Age:</strong> {userData?.age || 'Not provided'}</Card.Text>
+              <Card.Text><strong>Mobile:</strong> {userData?.mobile || 'Not provided'}</Card.Text>
+              <Card.Text><strong>Email:</strong> {user.email}</Card.Text>
               <Button variant="primary" onClick={handleEditToggle}>Edit Profile</Button>
             </>
           )}
         </Card.Body>
       </Card>
-      
-      {/* Apply to be a Supplier Form */}
-      <div className="supplier-form-container">
-        <Button variant="info" onClick={handleApplyForSupplier}>Apply to be a Supplier</Button>
-      </div>
 
-      {/* Navigation Button to Supplier Dashboard */}
-      <Button variant="info" onClick={() => navigate('/supplier-dashboard')}>
+      {/* Button to toggle supplier form visibility */}
+      {!isApplicationSubmitted && (
+        <div className="supplier-form-toggle">
+          <Button variant="info" onClick={toggleSupplierFormVisibility}>
+            {isSupplierFormVisible ? "Hide Supplier Form" : "Want to Become a Supplier?"}
+          </Button>
+        </div>
+      )}
+
+      {/* Apply to be a Supplier Form */}
+      {isSupplierFormVisible && !isApplicationSubmitted && (
+        <Card className="supplier-application-card shadow-lg mt-4">
+          <Card.Body>
+            <Card.Title>Apply to be a Supplier</Card.Title>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Upload ID (Passport, License, etc.)</Form.Label>
+                <Form.Control type="file" onChange={handleFileChange} className="file-upload" />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Check
+                  type="checkbox"
+                  label={
+                    <div>
+                      I agree to the terms and conditions:
+                      <ul>
+                        <li> All information provided must be accurate.</li>
+                        <li> The uploaded ID must be valid and clear.</li>
+                        <li> We reserve the right to verify all details provided.</li>
+                        <li> Any misuse of our platform may lead to termination of application.</li>
+                      </ul>
+                    </div>
+                  }
+                  checked={termsAgreed}
+                  onChange={handleTermsChange}
+                />
+              </Form.Group>
+              <Button
+                variant="info"
+                disabled={!idFile || !termsAgreed || isSubmitting}
+                onClick={handleApplyForSupplier}
+                className="apply-btn"
+              >
+                {isSubmitting ? 'Submitting...' : 'Apply to be a Supplier'}
+              </Button>
+              {error && <p className="error-text">{error}</p>}
+            </Form>
+          </Card.Body>
+        </Card>
+      )}
+
+      {isApplicationSubmitted && (
+        <p className="application-status mt-4">Your request is in review. We will notify you once it is reviewed.</p>
+      )}
+
+      <Button variant="info" className="mt-4" onClick={() => navigate('/supplier-dashboard')}>
         Go to Supplier Dashboard
       </Button>
-
-      <Button variant="danger" onClick={handleLogout}>Logout</Button>
     </Container>
   );
 };

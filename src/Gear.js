@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Gear.css';
 import { useCart } from './CartContext'; // Use useCart hook
 import ProductService from './ProductService';
-
+import Header from "./Header";
+import NavBar from "./NavBar";
 function Gear() {
   const [gearItems, setGearItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -66,6 +67,8 @@ function Gear() {
 
   return (
     <div className="Gear">
+      <Header/>
+      <NavBar/>
       <h2>Gear</h2>
       <p>Get top-notch hiking gear, from tents to backpacks.</p>
       <div className="gear-list">

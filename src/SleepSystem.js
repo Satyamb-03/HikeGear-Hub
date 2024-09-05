@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function SleepingSystems() {
   const [sleepingItems, setSleepingItems] = useState([]);
@@ -69,6 +71,8 @@ function SleepingSystems() {
 
   return (
     <div className="Gear">
+      <Header/>
+      <NavBar/>
       <h2>Sleeping Systems</h2>
       <p>Explore a range of sleeping systems for a comfortable night under the stars.</p>
 

@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Accessories.css'; // Ensure this file has the correct styles for Accessories
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function BackpackAccess() {
   const [backpackItems, setBackpackItems] = useState([]);
@@ -47,6 +49,8 @@ function BackpackAccess() {
 
   return (
     <div className="Accessories"> {/* Use the same class name as in Accessories.css */}
+    <Header/>
+    <NavBar/>
       <h2>Backpack Accessories</h2>
       <p>Discover essential backpack accessories to enhance your hiking experience.</p>
 
@@ -76,7 +80,6 @@ function BackpackAccess() {
               &times;
             </span>
             <h2>{selectedItem.name}</h2>
-            {/* Display full description */}
             <p>{selectedItem.fullDescription || selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (

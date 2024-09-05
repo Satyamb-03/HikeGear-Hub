@@ -3,9 +3,14 @@ import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firesto
 import { db } from './firebase';
 import ProductService from './ProductService';
 import { useNavigate } from 'react-router-dom';
+
 import { signOut } from 'firebase/auth'; // Import signOut from Firebase Auth
 import { auth } from './firebase'; // Import Firebase auth
+
+
 import './AdminDashboard.css';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 const AdminDashboard = () => {
   const [name, setName] = useState('');
@@ -108,6 +113,7 @@ const AdminDashboard = () => {
     }
   };
 
+
   const handleLogout = async () => {
     try {
       await signOut(auth); // Sign out using Firebase Auth
@@ -117,11 +123,16 @@ const AdminDashboard = () => {
     }
   };
 
+
   return (
     <div className="admin-dashboard">
+      <Header/>
+      <NavBar/>
       <header className="dashboard-header">
         <h1>Admin Dashboard</h1>
+
         <button className="logout-button" onClick={handleLogout}>Logout</button>
+
       </header>
 
       <div className="content">
@@ -269,15 +280,29 @@ const AdminDashboard = () => {
                     )}
                     {category === 'Gear' && (
                       <>
-                        <option value="Kitchen">Camp Kitchen</option>
+                        <option value="Camp Furniture">Camp Furniture</option>
+                        <option value="Camp Kitchen">Camp Kitchen</option>
                         <option value="Packs">Packs</option>
+
                         <option value="Furniture">Camp Furniture</option>
+
+                        <option value="Sleep Systems">Sleep Systems</option>
+                        <option value="Tents & Bivvies">Tents & Bivvies</option>
+                        <option value="Additional Gear">Additional Gear</option>
+
                       </>
                     )}
                     {category === 'Accessories' && (
                       <>
+
                         <option value="Clothing">Clothing Accessories</option>
                         <option value="Gear">Gear Accessories</option>
+
+                        <option value="Headwear">Headwear</option>
+                        <option value="Clothing Accessories">Clothing Accessories</option>
+                        <option value="Footwear Accessories">Footwear Accessories</option>
+                        <option value="Backpack Accessories">Backpack Accessories</option>
+
                       </>
                     )}
                   </select>

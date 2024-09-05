@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Alert } from "react-bootstrap";
@@ -6,6 +7,16 @@ import GoogleButton from "react-google-button";
 import { useUserAuth } from "./UserAuth"; // Adjust the import path if needed
 import { getDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "./firebase"; // Adjust the import path if needed
+
+import React, { useState, useEffect } from 'react';
+import { Alert, Form, Button } from 'react-bootstrap';
+import GoogleButton from 'react-google-button';
+import { useUserAuth } from './UserAuth'; // Adjust path if needed
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import './SignIn.css';
+import Header from "./Header";
+import NavBar from "./NavBar";
+
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -79,9 +90,15 @@ const SignIn = () => {
   };
 
   return (
+
     <div className="main-content">
     
       <div className="form-section">
+
+    <div className="p-4 box">
+      <Header/>
+      <NavBar/>
+
       <h2 className="mb-3">Sign In</h2>
         <div className="p-4 box">
           {error && <Alert variant="danger">{error}</Alert>}

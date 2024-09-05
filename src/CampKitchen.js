@@ -3,6 +3,8 @@ import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { useCart } from './CartContext'; // Use useCart hook
 import ProductService from './ProductService';
 import { useUserAuth } from './UserAuth';
+import Header from "./Header";
+import NavBar from "./NavBar";
 
 function CampKitchen() {
   const [kitchenItems, setKitchenItems] = useState([]);
@@ -70,6 +72,8 @@ function CampKitchen() {
 
   return (
     <div className="Gear">
+      <Header/>
+      <NavBar/>
       <h2>Camp Kitchen</h2>
       <p>Explore our camp kitchen gear to make your outdoor cooking experience easier and more enjoyable.</p>
 
