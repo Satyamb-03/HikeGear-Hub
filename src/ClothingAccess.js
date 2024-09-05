@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Accessories.css'; // Ensure this file has the correct styles for Accessories
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
-import Header from "./Header";
-import NavBar from "./NavBar";
+ 
 
 function ClothingAccess() {
   const [clothingAccessItems, setClothingAccessItems] = useState([]);
@@ -52,8 +51,7 @@ function ClothingAccess() {
 
   return (
     <div className="Accessories">
-      <Header/>
-      <NavBar/>
+   
       <h2>Clothing Accessories</h2>
       <p>Discover essential clothing accessories to enhance your hiking experience.</p>
 

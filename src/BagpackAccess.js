@@ -3,8 +3,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Accessories.css'; // Ensure this file has the correct styles for Accessories
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
-import Header from "./Header";
-import NavBar from "./NavBar";
 
 function BackpackAccess() {
   const [backpackItems, setBackpackItems] = useState([]);
@@ -48,13 +46,12 @@ function BackpackAccess() {
   }
 
   return (
-    <div className="Accessories"> {/* Use the same class name as in Accessories.css */}
-    <Header/>
-    <NavBar/>
+    <div className="Accessories">  
+
       <h2>Backpack Accessories</h2>
       <p>Discover essential backpack accessories to enhance your hiking experience.</p>
 
-      <div className="accessories-list"> {/* Match class name used in Accessories */}
+      <div className="accessories-list">  
         {backpackItems.map((item) => (
           <div key={item.id} className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}> {/* Match class names */}
             {item.newArrival && <span className="new-badge">New Arrival</span>}
