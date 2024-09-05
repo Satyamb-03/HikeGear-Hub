@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import ProductService from './ProductService';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
 import Header from "./Header";
 import NavBar from "./NavBar";
@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   const [supplierRequests, setSupplierRequests] = useState([]);
   const [showProductForm, setShowProductForm] = useState(false);
 
-  const navigate = useNavigate(); // Get the navigate function
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
       setPricePerDay('');
       setMainImageFile(null);
       setAdditionalImageFiles([]);
-      setShowProductForm(false); // Close the form after submission
+      setShowProductForm(false);
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -108,19 +108,12 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    // Add your logout logic here
-    // For example, clearing user session and redirecting to Sign In page
-    navigate('/signin'); // Redirect to Sign In page
-  };
-
   return (
     <div className="admin-dashboard">
       <Header/>
       <NavBar/>
       <header className="dashboard-header">
         <h1>Admin Dashboard</h1>
-        <button className="logout-button" onClick={handleLogout}>Logout</button> {/* Logout button */}
       </header>
 
       <div className="content">
@@ -268,18 +261,20 @@ const AdminDashboard = () => {
                     )}
                     {category === 'Gear' && (
                       <>
-                        <option value="Kitchen">Camp Kitchen</option>
+                        <option value="Camp Furniture">Camp Furniture</option>
+                        <option value="Camp Kitchen">Camp Kitchen</option>
                         <option value="Packs">Packs</option>
-                        <option value="Sleep">Sleep Systems</option>
-                        <option value="Tents">Tents & Bivvies</option>
-                        <option value="Additional">Additional Gear</option>
+                        <option value="Sleep Systems">Sleep Systems</option>
+                        <option value="Tents & Bivvies">Tents & Bivvies</option>
+                        <option value="Additional Gear">Additional Gear</option>
                       </>
                     )}
                     {category === 'Accessories' && (
                       <>
-                        <option value="Clothing">Clothing Accessories</option>
-                        <option value="Footwear">Footwear Accessories</option>
-                        <option value="Backpack">Backpack Accessories</option>
+                        <option value="Headwear">Headwear</option>
+                        <option value="Clothing Accessories">Clothing Accessories</option>
+                        <option value="Footwear Accessories">Footwear Accessories</option>
+                        <option value="Backpack Accessories">Backpack Accessories</option>
                       </>
                     )}
                   </select>

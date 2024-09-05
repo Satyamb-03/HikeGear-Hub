@@ -80,7 +80,6 @@ function BackpackAccess() {
               &times;
             </span>
             <h2>{selectedItem.name}</h2>
-            {/* Display full description */}
             <p>{selectedItem.fullDescription || selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
