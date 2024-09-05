@@ -32,8 +32,14 @@ import AdminDashboard from './AdminDashboard';
 import ClothingAccess from './ClothingAccess';
 import FootwearAccess from './FootwearAccess';
 import BagpackAccess from './BagpackAccess';
+
+import ProtectedRoute from './ProtectedRoute';
+import { AdminRoute } from './ProtectedRoute';
+
 import Header from './Header';
 import Home from './Home';
+import Checkout from './Checkout';
+ 
 
 function App() {
   return (
@@ -43,7 +49,50 @@ function App() {
         <Router>
           <div className="App">
             
-            
+
+            <nav className="App-nav">
+              <ul>
+                <li className="dropdown">
+                  <Link to="/clothing" className="dropbtn">Clothing</Link>
+                  <div className="dropdown-content">
+                    <Link to="/clothing/men">Men's Clothing</Link>
+                    <Link to="/clothing/women">Women's Clothing</Link>
+                    <Link to="/clothing/kids">Kid's Clothing</Link>
+                  </div>
+                </li>
+                <li className="dropdown">
+                  <Link to="/footwear" className="dropbtn">Footwear</Link>
+                  <div className="dropdown-content">
+                    <Link to="/footwear/men">Men's Footwear</Link>
+                    <Link to="/footwear/women">Women's Footwear</Link>
+                    <Link to="/footwear/kids">Kid's Footwear</Link>
+                  </div>
+                </li>
+                <li className="dropdown">
+                  <Link to="/gear" className="dropbtn">Gear</Link>
+                  <div className="dropdown-content">
+                    <Link to="/gear/kitchen">Camp Kitchen</Link>
+                    <Link to="/gear/packs">Packs</Link>
+                    <Link to="/gear/sleep">Sleep Systems</Link>
+                    <Link to="/gear/tents">Tents & Bivvies</Link>
+                    <Link to="/gear/additional">Additional Gear</Link>
+                  </div>
+                </li>
+                <li className="dropdown">
+                  <Link to="/accessories" className="dropbtn">Accessories</Link>
+                  <div className="dropdown-content">
+                    <Link to="/accessories/clothing">Clothing Accessories</Link>
+                    <Link to="/accessories/footwear">Footwear Accessories</Link>
+                    <Link to="/accessories/backpack">Backpack Accessories</Link>
+                  </div>
+                </li>
+                <li>
+                  <Link to="/cart" className="cart-link">Cart</Link>
+                </li>
+              </ul>
+            </nav>
+
+
             <main>
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -56,12 +105,14 @@ function App() {
                 <Route path="/footwear/women" element={<WomenFootwear />} />
                 <Route path="/footwear/kids" element={<KidFootwear />} />
                 <Route path="/gear" element={<Gear />} />
-                
                 <Route path="/accessories" element={<Accessories />} />
-               
                 <Route path="/accessories/backpack" element={<BagpackAccess />} />
                 <Route path="/accessories/clothing" element={<ClothingAccess />} />
                 <Route path="/accessories/footwear" element={<FootwearAccess />} />
+
+                <Route path="/checkout" element={<Checkout />} />
+              
+
 
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/about" element={<About />} />
@@ -69,14 +120,18 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUP />} />
-                <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
+                {/* Admin can access these routes */}
+                <Route path="/gear/sleep" element={<SleepSystem />} />
+                <Route path="/gear/kitchen" element={<CampKitchen />} />
+                <Route path="/gear/packs" element={<Packs />} />
+                <Route path="/gear/tents" element={<Tents />} />
+                <Route path="/gear/additional" element={<AdditionalGear />} />
+                {/* Protected routes for admin */}
+                <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                {/* Routes restricted for admin */}
                 <Route path="/user-dashboard" element={<UserDashboard />} />
-                <Route path='/gear/sleep' element={<SleepSystem />} />
-                <Route path='/gear/kitchen' element={<CampKitchen />} />
-                <Route path='/gear/packs' element={<Packs />} />
-                <Route path='/gear/tents' element={<Tents />} />
-                <Route path='/gear/additional' element={<AdditionalGear />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                <Route path="/supplier-dashboard" element={<AdminRoute><SupplierDashboard /></AdminRoute>} />
+
               </Routes>
             </main>
 
@@ -89,6 +144,38 @@ function App() {
   );
 }
 
+function Home() {
+  return (
+    <div className="Home">
+      <div className="home-image">
+        <img src="/Homepage1.jpg" alt="Hiking Gear" />
+      </div>
+      <h2>Welcome to Hike Gear Hub – Your Ultimate Adventure Partner!</h2>
+      <p>
+        Planning your next outdoor adventure? Whether you’re a seasoned hiker or a first-time explorer, we’ve got you covered with top-quality hiking gear available for rent. From tents to trekking poles, and everything in between, Hike Gear Hub offers a wide range of equipment to suit all your needs.
+      </p>
+      <h3>Why Rent with Us?</h3>
+      <ul>
+        <li><strong>Premium Gear:</strong> Access top brands and well-maintained equipment without the hassle of ownership.</li>
+        <li><strong>Affordable Prices:</strong> Enjoy great rates and flexible rental periods that fit your schedule and budget.</li>
+        <li><strong>Convenient Shopping:</strong> Easily browse our extensive product catalog, create an account, and manage your rentals all in one place.</li>
+      </ul>
+      <h3>Start Your Adventure Now!</h3>
+      <p>
+        Don’t let a lack of gear hold you back. Explore our catalog, choose your gear, and get ready to hit the trails. Your next adventure is just a few clicks away!
+      </p>
+      <Link to="/supplier-dashboard">
+        <button className="go-to-dashboard-button">Go to Supplier Dashboard</button>
+      </Link>
+      <Link to="/user-dashboard">
+        <button className="go-to-dashboard-button">Go to User Dashboard</button>
+      </Link>
+      <Link to="/admin">
+        <button className="go-to-dashboard-button">Go to Admin Dashboard</button>
+      </Link>
+    </div>
+  );
+}
 
 
 export default App;

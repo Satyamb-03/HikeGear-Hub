@@ -1,8 +1,7 @@
 import { collection, addDoc, getDocs, doc, deleteDoc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';  // Ensure you're using db, not firestore
 
-// Function to add a new user to Firestore
-export const addUser = async (userData) => {
+const addUser = async (userData) => {
   try {
     const userRef = await addDoc(collection(db, 'users'), userData);
     console.log('User added with ID: ', userRef.id);
@@ -11,8 +10,7 @@ export const addUser = async (userData) => {
   }
 };
 
-// Function to get all users from Firestore
-export const getAllUsers = async () => {
+const getAllUsers = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, 'users'));
     const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -23,8 +21,7 @@ export const getAllUsers = async () => {
   }
 };
 
-// Function to delete a user from Firestore
-export const deleteUser = async (userId) => {
+const deleteUser = async (userId) => {
   try {
     await deleteDoc(doc(db, 'users', userId));
     console.log('User deleted with ID: ', userId);
@@ -33,8 +30,7 @@ export const deleteUser = async (userId) => {
   }
 };
 
-// Function to update a user document in Firestore
-export const updateUser = async (userId, updatedData) => {
+const updateUser = async (userId, updatedData) => {
   try {
     const userDocRef = doc(db, 'users', userId);
     await setDoc(userDocRef, updatedData, { merge: true });
@@ -44,8 +40,7 @@ export const updateUser = async (userId, updatedData) => {
   }
 };
 
-// Function to approve a supplier request and move user to suppliers collection
-export const approveSupplierRequest = async (requestId) => {
+const approveSupplierRequest = async (requestId) => {
   try {
     const requestDocRef = doc(db, 'supplierRequests', requestId);
     const requestSnap = await getDoc(requestDocRef);
@@ -68,8 +63,7 @@ export const approveSupplierRequest = async (requestId) => {
   }
 };
 
-// Function to handle applying to become a supplier
-export const applyToBecomeSupplier = async (userId) => {
+const applyToBecomeSupplier = async (userId) => {
   try {
     const userDocRef = doc(db, 'users', userId);
     
@@ -88,3 +82,31 @@ export const applyToBecomeSupplier = async (userId) => {
     console.error('Error applying to become supplier: ', e);
   }
 };
+// Add this to UserServices.js
+const getUserData = async (userId) => {
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+      return userDocSnap;
+    } else {
+      throw new Error("User data not found");
+    }
+  } catch (e) {
+    console.error('Error fetching user data: ', e);
+    throw new Error(e.message);
+  }
+};
+
+// Update UserServices export
+const UserServices = {
+  addUser,
+  getAllUsers,
+  deleteUser,
+  updateUser,
+  approveSupplierRequest,
+  applyToBecomeSupplier,
+  getUserData // Add this line
+};
+
+export default UserServices;
