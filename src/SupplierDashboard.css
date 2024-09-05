@@ -1,68 +1,119 @@
-/* SupplierDashboard.css */
 .supplier-dashboard {
-    padding: 20px;
-    max-width: 800px; /* Limit the maximum width for better readability */
-    margin: auto; /* Center align the form */
-    background-color: #f9f9f9; /* Light background color for the form */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  }
-  
-  .form-container {
-    padding: 20px;
-    background-color: #ffffff; /* White background for the form box */
-    border-radius: 8px; /* Rounded corners for the form box */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for the form box */
-  }
-  
-  .add-product-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Space between form elements */
-  }
-  
-  .add-product-form label {
-    font-size: 16px;
-    font-weight: bold; /* Bold labels for better visibility */
-  }
-  
-  .add-product-form input, 
-  .add-product-form textarea, 
-  .add-product-form select {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px; /* Rounded corners for inputs */
-    font-size: 16px;
-  }
-  
-  .add-product-form textarea {
-    resize: vertical; /* Allow vertical resizing of textarea */
-  }
-  
-  .add-product-form button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff; /* Blue background color */
-    color: #fff; /* White text color */
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .add-product-form button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-  }
-  
-  .image-preview {
-    display: flex;
-    gap: 10px; /* Space between images */
-  }
-  
-  .image-preview img {
-    max-width: 100px;
-    max-height: 100px; /* Limit the height for better display */
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Dark transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Same shadow as Admin */
+}
+
+.add-product-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-product-form label {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.add-product-form input, 
+.add-product-form textarea, 
+.add-product-form select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.add-product-form textarea {
+  resize: vertical;
+}
+
+.image-preview {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.image-preview img {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+.add-product-form button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.add-product-form button:hover {
+  background-color: #0056b3;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.approve-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.approve-button:hover {
+  background-color: #218838;
+}
+
+.deny-button {
+  background-color: #ffc107;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin-left: 10px;
+}
+
+.deny-button:hover {
+  background-color: #e0a800;
+}

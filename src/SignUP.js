@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Alert, Form, Button } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import { useUserAuth } from './UserAuth';
+
+import "./SignIn.css"
+
+
 import Header from "./Header";
 import NavBar from "./NavBar";
 
@@ -11,22 +15,20 @@ const SignUp = () => {
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const { signUp } = useUserAuth();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Check if all fields are filled
     if (!name || !age || !mobile || !email || !password || !confirmPassword) {
       setError("All fields are required");
       return;
     }
 
-    // Check if passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -34,8 +36,13 @@ const SignUp = () => {
 
     try {
       await signUp(email, password, name, age, mobile);
-      // Redirect to Sign In page after successful sign up
-      navigate("/signin");
+
+      // Determine where to navigate based on role
+      if (email === "hikeGear@gmail.com") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/user-dashboard");
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -48,18 +55,19 @@ const SignUp = () => {
       <h2 className="mb-3">Sign Up</h2>
       {error && <Alert variant="danger">{error}</Alert>}
       <Form onSubmit={handleSubmit}>
+        {/* Form Fields */}
         <Form.Group className="mb-3" controlId="formBasicName">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>Name:</label>
+          <Form.Label>Name: </Form.Label>
           <Form.Control 
             type="text"
-            placeholder="Full Name"
+            placeholder="Full name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicAge">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>Age:</label>
+          <Form.Label>Age:</Form.Label>
           <Form.Control
             type="number"
             placeholder="Age"
@@ -69,17 +77,17 @@ const SignUp = () => {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicMobile">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>Mobile Number:</label>
+          <Form.Label>Mobile Number:</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Mobile Number"
+            placeholder=" Mobile number"
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
           />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicEmail">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>Username:</label>
+          <Form.Label>Username: </Form.Label>
           <Form.Control
             type="email"
             placeholder="Username"
@@ -89,30 +97,30 @@ const SignUp = () => {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicPassword">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>Password:</label>
+          <Form.Label>Password:</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Password"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>Confirm Password:</label>
+          <Form.Label>Confirm Password: </Form.Label>
           <Form.Control
             type="password"
-            placeholder="Confirm Password"
+            placeholder="Confirm your password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </Form.Group>
 
-        <div className="d-grid gap-2">
-          <Button variant="primary" type="submit">Sign Up</Button>
-        </div>
+        <Button variant="primary" type="submit">
+          Sign Up
+        </Button>
       </Form>
-      <div className="p-4 box mt-3 text-center">
+      <div className="mt-3">
         Already have an account? <Link to="/signin">Sign in</Link>
       </div>
     </div>
