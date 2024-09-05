@@ -3,8 +3,7 @@ import './Clothing.css';
 import { useCart } from './CartContext'; // Use useCart hook
 import ProductService from './ProductService';
 import { useUserAuth } from './UserAuth';
-import Header from "./Header";
-import NavBar from "./NavBar";
+ 
 
 function Clothing() {
   const [clothingItems, setClothingItems] = useState([]);
@@ -51,8 +50,7 @@ function Clothing() {
 
   return (
     <div className="Clothing">
-      <Header/>
-      <NavBar/>
+ 
       <h2>Clothing</h2>
       <p>Explore our wide range of outdoor clothing suitable for all weather conditions.</p>
       <div className="clothing-list">

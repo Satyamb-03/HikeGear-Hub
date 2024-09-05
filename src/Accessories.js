@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Accessories.css'; 
 import { useCart } from './CartContext';
-import Header from "./Header";
-import NavBar from "./NavBar";
 
 import ProductService from './ProductService';
 
@@ -51,8 +49,7 @@ function Accessories() {
 
   return (
     <div className="Accessories">
-      <Header/>
-      <NavBar/>
+
       <h2>Accessories</h2>
       <p>Discover essential accessories to make your hike comfortable and safe.</p>
 

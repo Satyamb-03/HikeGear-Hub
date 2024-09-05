@@ -1,22 +1,12 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Keep this import
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Alert } from "react-bootstrap";
-import { Button } from "react-bootstrap";
+import { Form, Alert, Button } from "react-bootstrap";
 import GoogleButton from "react-google-button";
 import { useUserAuth } from "./UserAuth"; // Adjust the import path if needed
 import { getDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "./firebase"; // Adjust the import path if needed
-
-import React, { useState, useEffect } from 'react';
-import { Alert, Form, Button } from 'react-bootstrap';
-import GoogleButton from 'react-google-button';
-import { useUserAuth } from './UserAuth'; // Adjust path if needed
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import './SignIn.css';
-import Header from "./Header";
-import NavBar from "./NavBar";
-
+ 
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -42,25 +32,24 @@ const SignIn = () => {
 
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        userRole = userData.role || await setDefaultUserRole(uid); // Set default role if not found
+        userRole = userData.role || await setDefaultUserRole(uid);
       } else {
-        userRole = await setDefaultUserRole(uid); // Set default role if no user doc exists
+        userRole = await setDefaultUserRole(uid);
       }
 
-      // Handle redirection based on role
       if (userRole === "admin") {
-        navigate("/admin"); // Redirect to Admin Dashboard
+        navigate("/admin");
       } else if (userRole === "supplier") {
         navigate("/supplier");
       } else if (userRole === "User") {
         navigate("/user-dashboard");
       } else {
         setError("Role not recognized.");
-        console.error("Unrecognized role:", userRole); // Log unrecognized role for debugging
+        console.error("Unrecognized role:", userRole);
       }
     } catch (err) {
       setError("Failed to fetch user data.");
-      console.error("Error fetching user data:", err); // Log error for debugging
+      console.error("Error fetching user data:", err);
     }
   };
 
@@ -70,8 +59,7 @@ const SignIn = () => {
     setError("");
     try {
       const userCredential = await logIn(email, password);
-      console.log("User Credential:", userCredential); // Log userCredential for debugging
-      await handleRoleBasedRedirect(userCredential.user.uid); // Fetch and redirect based on role
+      await handleRoleBasedRedirect(userCredential.user.uid);
     } catch (err) {
       setError(err.message);
     }
@@ -82,63 +70,52 @@ const SignIn = () => {
     e.preventDefault();
     try {
       const userCredential = await googleSignIn();
-      console.log("User Credential:", userCredential); // Log userCredential for debugging
-      await handleRoleBasedRedirect(userCredential.user.uid); // Fetch and redirect based on role
+      await handleRoleBasedRedirect(userCredential.user.uid);
     } catch (error) {
       setError(error.message);
     }
   };
 
   return (
-
     <div className="main-content">
-    
       <div className="form-section">
-
-    <div className="p-4 box">
-      <Header/>
-      <NavBar/>
-
-      <h2 className="mb-3">Sign In</h2>
         <div className="p-4 box">
-          {error && <Alert variant="danger">{error}</Alert>}
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Username: </Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Email address"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </Form.Group>
+ 
+          <h2 className="mb-3">Sign In</h2>
+          <div className="p-4 box">
+            {error && <Alert variant="danger">{error}</Alert>}
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Username: </Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Email address"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password: </Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>Password: </Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </Form.Group>
 
-            <div className="d-grid gap-2">
-              <Button variant="primary" type="submit">
-                Sign In
-              </Button>
+              <div className="d-grid gap-2">
+                <Button variant="primary" type="submit">
+                  Sign In
+                </Button>
+              </div>
+            </Form>
+            <hr />
+            <GoogleButton className="g-btn" type="dark" onClick={handleGoogleSignIn} />
+            <div className="p-4 box mt-3 text-center">
+              Don't have an account? <Link to="/signup">Sign up</Link>
             </div>
-          </Form>
-          <hr />
-          <div>
-            <GoogleButton
-              className="g-btn"
-              type="dark"
-              onClick={handleGoogleSignIn}
-            />
-          </div>
-          <div className="p-4 box mt-3 text-center">
-            Don't have an account? <Link to="/signup">Sign up</Link>
           </div>
         </div>
       </div>

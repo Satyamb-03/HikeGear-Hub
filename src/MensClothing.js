@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Clothing.css';
 import { useCart } from './CartContext'; // Use useCart hook
 import ProductService from './ProductService';
-import Header from "./Header";
-import NavBar from "./NavBar";
+ 
 
 function MensClothing() {
   const [clothingItems, setClothingItems] = useState([]);
@@ -49,8 +48,7 @@ function MensClothing() {
 
   return (
     <div className="Clothing">
-      <Header/>
-      <NavBar/>
+ 
       <h2>Men's Clothing</h2>
       <p>Discover a variety of clothing options for men, perfect for any outdoor adventure.</p>
       <div className="clothing-list">
