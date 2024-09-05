@@ -33,6 +33,8 @@ import { CardLink } from 'react-bootstrap';
 import ClothingAccess from './ClothingAccess';
 import FootwearAccess from './FootwearAccess';
 import BagpackAccess from './BagpackAccess';
+import ProtectedRoute from './ProtectedRoute';
+import { AdminRoute } from './ProtectedRoute';
 
 function App() {
   return (
@@ -81,7 +83,6 @@ function App() {
                 <li className="dropdown">
                   <Link to="/accessories" className="dropbtn">Accessories</Link>
                   <div className="dropdown-content">
-                
                     <Link to="/accessories/clothing">Clothing Accessories</Link>
                     <Link to="/accessories/footwear">Footwear Accessories</Link>
                     <Link to="/accessories/backpack">Backpack Accessories</Link>
@@ -105,27 +106,28 @@ function App() {
                 <Route path="/footwear/women" element={<WomenFootwear />} />
                 <Route path="/footwear/kids" element={<KidFootwear />} />
                 <Route path="/gear" element={<Gear />} />
-                
                 <Route path="/accessories" element={<Accessories />} />
-               
                 <Route path="/accessories/backpack" element={<BagpackAccess />} />
                 <Route path="/accessories/clothing" element={<ClothingAccess />} />
                 <Route path="/accessories/footwear" element={<FootwearAccess />} />
-
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUP />} />
-                <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
+                {/* Admin can access these routes */}
+                <Route path="/gear/sleep" element={<SleepSystem />} />
+                <Route path="/gear/kitchen" element={<CampKitchen />} />
+                <Route path="/gear/packs" element={<Packs />} />
+                <Route path="/gear/tents" element={<Tents />} />
+                <Route path="/gear/additional" element={<AdditionalGear />} />
+                {/* Protected routes for admin */}
+                <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                {/* Routes restricted for admin */}
                 <Route path="/user-dashboard" element={<UserDashboard />} />
-                <Route path='/gear/sleep' element={<SleepSystem />} />
-                <Route path='/gear/kitchen' element={<CampKitchen />} />
-                <Route path='/gear/packs' element={<Packs />} />
-                <Route path='/gear/tents' element={<Tents />} />
-                <Route path='/gear/additional' element={<AdditionalGear />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                <Route path="/supplier-dashboard" element={<AdminRoute><SupplierDashboard /></AdminRoute>} />
+
               </Routes>
             </main>
 
@@ -163,7 +165,7 @@ function Home() {
       <Link to="/user-dashboard">
         <button className="go-to-dashboard-button">Go to User Dashboard</button>
       </Link>
-      <Link to="/admin-dashboard">
+      <Link to="/admin">
         <button className="go-to-dashboard-button">Go to Admin Dashboard</button>
       </Link>
     </div>

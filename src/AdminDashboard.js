@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import ProductService from './ProductService';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import { signOut } from 'firebase/auth'; // Import signOut from Firebase Auth
+import { auth } from './firebase'; // Import Firebase auth
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -17,7 +19,7 @@ const AdminDashboard = () => {
   const [supplierRequests, setSupplierRequests] = useState([]);
   const [showProductForm, setShowProductForm] = useState(false);
 
-  const navigate = useNavigate(); // Get the navigate function
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
@@ -65,7 +67,7 @@ const AdminDashboard = () => {
       setPricePerDay('');
       setMainImageFile(null);
       setAdditionalImageFiles([]);
-      setShowProductForm(false); // Close the form after submission
+      setShowProductForm(false);
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -106,17 +108,20 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    // Add your logout logic here
-    // For example, clearing user session and redirecting to Sign In page
-    navigate('/signin'); // Redirect to Sign In page
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Sign out using Firebase Auth
+      navigate('/'); // Redirect to the home page after logging out
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   return (
     <div className="admin-dashboard">
       <header className="dashboard-header">
         <h1>Admin Dashboard</h1>
-        <button className="logout-button" onClick={handleLogout}>Logout</button> {/* Logout button */}
+        <button className="logout-button" onClick={handleLogout}>Logout</button>
       </header>
 
       <div className="content">
@@ -266,22 +271,25 @@ const AdminDashboard = () => {
                       <>
                         <option value="Kitchen">Camp Kitchen</option>
                         <option value="Packs">Packs</option>
-                        <option value="Sleep">Sleep Systems</option>
-                        <option value="Tents">Tents & Bivvies</option>
-                        <option value="Additional">Additional Gear</option>
+                        <option value="Furniture">Camp Furniture</option>
                       </>
                     )}
                     {category === 'Accessories' && (
                       <>
                         <option value="Clothing">Clothing Accessories</option>
-                        <option value="Footwear">Footwear Accessories</option>
-                        <option value="Backpack">Backpack Accessories</option>
+                        <option value="Gear">Gear Accessories</option>
                       </>
                     )}
                   </select>
                 </label>
-                <button type="submit">Add Product</button>
-                <button type="button" onClick={() => setShowProductForm(false)}>Close</button>
+                <button type="submit" className="submit-button">Submit</button>
+                <button
+                  type="button"
+                  onClick={() => setShowProductForm(false)}
+                  className="cancel-button"
+                >
+                  Cancel
+                </button>
               </form>
             </div>
           </div>

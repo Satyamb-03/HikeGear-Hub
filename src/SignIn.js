@@ -1,100 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, Form, Button } from 'react-bootstrap';
-import GoogleButton from 'react-google-button';
-import { useUserAuth } from './UserAuth'; // Adjust path if needed
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
-import './SignIn.css';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Form, Alert } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import GoogleButton from "react-google-button";
+import { useUserAuth } from "./UserAuth"; // Adjust the import path if needed
+import { getDoc, doc, setDoc } from "firebase/firestore";
+import { db } from "./firebase"; // Adjust the import path if needed
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [alreadyLoggedIn, setAlreadyLoggedIn] = useState(false); // Add state for login status
+  const { logIn, googleSignIn } = useUserAuth();
+  const navigate = useNavigate();
 
-  const { logIn, googleSignIn, user } = useUserAuth(); // Ensure user is provided by useUserAuth
-  const navigate = useNavigate(); // Get the navigate function
+  // Function to set default role as 'User' if not found
+  const setDefaultUserRole = async (uid) => {
+    const userDocRef = doc(db, "users", uid);
+    await setDoc(userDocRef, { role: "User" }, { merge: true });
+    return "User";
+  };
 
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      if (user) {
-        setAlreadyLoggedIn(true);
-        navigate("/user-dashboard"); // Redirect to user dashboard if already logged in
+  // Function to redirect users based on their role
+  const handleRoleBasedRedirect = async (uid) => {
+    try {
+      const userDocRef = doc(db, "users", uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      let userRole;
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        userRole = userData.role || await setDefaultUserRole(uid); // Set default role if not found
       } else {
-        setLoading(false);
+        userRole = await setDefaultUserRole(uid); // Set default role if no user doc exists
       }
-    };
 
-    checkAuthStatus();
-  }, [user, navigate]);
+      // Handle redirection based on role
+      if (userRole === "admin") {
+        navigate("/admin"); // Redirect to Admin Dashboard
+      } else if (userRole === "supplier") {
+        navigate("/supplier");
+      } else if (userRole === "User") {
+        navigate("/user-dashboard");
+      } else {
+        setError("Role not recognized.");
+        console.error("Unrecognized role:", userRole); // Log unrecognized role for debugging
+      }
+    } catch (err) {
+      setError("Failed to fetch user data.");
+      console.error("Error fetching user data:", err); // Log error for debugging
+    }
+  };
 
+  // Function to handle standard email/password sign-in
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      await logIn(email, password);
-      navigate("/user-dashboard"); // Navigate to user dashboard on successful login
+      const userCredential = await logIn(email, password);
+      console.log("User Credential:", userCredential); // Log userCredential for debugging
+      await handleRoleBasedRedirect(userCredential.user.uid); // Fetch and redirect based on role
     } catch (err) {
       setError(err.message);
     }
   };
 
+  // Function to handle Google sign-in
   const handleGoogleSignIn = async (e) => {
     e.preventDefault();
     try {
-      await googleSignIn();
-      navigate("/user-dashboard"); // Navigate to user dashboard on successful Google sign-in
+      const userCredential = await googleSignIn();
+      console.log("User Credential:", userCredential); // Log userCredential for debugging
+      await handleRoleBasedRedirect(userCredential.user.uid); // Fetch and redirect based on role
     } catch (error) {
-      console.log(error.message);
-      setError(error.message); // Set error state if needed
+      setError(error.message);
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>; // Show loading message while checking auth status
-  }
-
-  if (alreadyLoggedIn) {
-    return <div className="p-4 box"><Alert variant="info">You are already logged in. Redirecting...</Alert></div>;
-  }
-
   return (
-    <div className="p-4 box">
+    <div className="main-content">
+    
+      <div className="form-section">
       <h2 className="mb-3">Sign In</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>Username:</label>
-          <Form.Control
-            type="email"
-            placeholder="Username"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
+        <div className="p-4 box">
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>Username: </Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Email address"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-          <label style={{ fontWeight: 700, marginRight: 10 }}>Password:</label>
-          <Form.Control
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Label>Password: </Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-        <div className="d-grid gap-2">
-          <Button variant="primary" type="submit">Sign In</Button>
+            <div className="d-grid gap-2">
+              <Button variant="primary" type="submit">
+                Sign In
+              </Button>
+            </div>
+          </Form>
+          <hr />
+          <div>
+            <GoogleButton
+              className="g-btn"
+              type="dark"
+              onClick={handleGoogleSignIn}
+            />
+          </div>
+          <div className="p-4 box mt-3 text-center">
+            Don't have an account? <Link to="/signup">Sign up</Link>
+          </div>
         </div>
-      </Form>
-      <hr />
-      <div className="text-center">
-        <GoogleButton
-          className="g-btn"
-          type="dark"
-          onClick={handleGoogleSignIn}
-        />
-      </div>
-      <div className="p-4 box mt-3 text-center">
-        Don't have an account? <Link to="/signup">Sign up</Link>
       </div>
     </div>
   );
