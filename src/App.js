@@ -34,6 +34,8 @@ import FootwearAccess from './FootwearAccess';
 import BagpackAccess from './BagpackAccess';
 import Header from './Header';
 import Home from './Home';
+import Checkout from './Checkout';
+ 
 
 function App() {
   return (
@@ -62,6 +64,8 @@ function App() {
                 <Route path="/accessories/backpack" element={<BagpackAccess />} />
                 <Route path="/accessories/clothing" element={<ClothingAccess />} />
                 <Route path="/accessories/footwear" element={<FootwearAccess />} />
+                <Route path="/checkout" element={<Checkout />} />
+              \
 
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/about" element={<About />} />

@@ -111,3 +111,66 @@ h2 {
   margin: 0; /* Remove default button margins */
   font-size: 1rem; /* Ensure button font size is consistent */
 }
+.Cart {
+  padding: 20px;
+}
+
+.cart-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cart-items {
+  flex: 2;
+}
+
+.order-summary {
+  flex: 1;
+  margin-left: 20px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.date-selector p {
+  margin: 5px 0;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cart-item-image {
+  width: 100px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.item-details {
+  flex: 1;
+}
+
+.checkout-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+.checkout-btn.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.checkout-link.disabled-link {
+  pointer-events: none;
+  color: #999;
+}
+
+.date-error {
+  color: red;
+  margin-top: 10px;
+}
