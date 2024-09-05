@@ -32,7 +32,7 @@ import AdminDashboard from './AdminDashboard';
 import ClothingAccess from './ClothingAccess';
 import FootwearAccess from './FootwearAccess';
 import BagpackAccess from './BagpackAccess';
-
+import ProtectedSupplierDashboard from './SupplierProtectedRoute';
 import ProtectedRoute from './ProtectedRoute';
 import { AdminRoute } from './ProtectedRoute';
 
@@ -86,7 +86,7 @@ function App() {
                 <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                 {/* Routes restricted for admin */}
                 <Route path="/user-dashboard" element={<UserDashboard />} />
-                <Route path="/supplier-dashboard" element={<AdminRoute><SupplierDashboard /></AdminRoute>} />
+                <Route path="/supplier-dashboard" element={<ProtectedSupplierDashboard><SupplierDashboard /></ProtectedSupplierDashboard>} />
               </Routes>
             </main>
 

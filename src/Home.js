@@ -26,7 +26,7 @@ function Home() {
         <Link to="/user-dashboard">
           <button className="go-to-dashboard-button">Go to User Dashboard</button>
         </Link>
-        <Link to="/admin-dashboard">
+        <Link to="/admin">
           <button className="go-to-dashboard-button">Go to Admin Dashboard</button>
         </Link>
       </div>
