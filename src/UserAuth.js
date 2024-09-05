@@ -43,8 +43,8 @@ export const UserAuthProvider = ({ children }) => {
   const logIn = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user);
-      return userCredential.user;
+      console.log('Log In User Credential:', userCredential); // Log userCredential
+      return userCredential;
     } catch (error) {
       console.error('Log In Error:', error.message);
       throw new Error(error.message);
@@ -67,14 +67,13 @@ export const UserAuthProvider = ({ children }) => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      setUser(result.user);
-      return result.user;
+      console.log('Google Sign In Result:', result); // Log result
+      return result;
     } catch (error) {
       console.error('Google Sign In Error:', error.message);
       throw new Error(error.message);
     }
   };
-
   // Set user state on auth state change
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {

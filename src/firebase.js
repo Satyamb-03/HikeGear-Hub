@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, setDoc } from 'firebase/firestore'; // Import setDoc
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCTMEsOrcW_6nxQp2Bl4-BU-VHNkIuxLwA",
