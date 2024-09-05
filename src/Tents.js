@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
-import Header from "./Header";
-import NavBar from "./NavBar";
+ 
 
 function Tents() {
   const [tentItems, setTentItems] = useState([]);
@@ -71,8 +70,7 @@ function Tents() {
 
   return (
     <div className="Gear">
-      <Header/>
-      <NavBar/>
+ 
       <h2>Tents</h2>
       <p>Discover our range of tents for all your camping needs.</p>
 

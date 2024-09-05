@@ -1,14 +1,11 @@
-
-import React, { useState } from 'react';
-import React, { useContext, useState } from 'react';
-
+import React, { useState } from 'react'; // Remove the second duplicate import
 import { useCart } from './CartContext';
 import { useUserAuth } from './UserAuth'; // Import your custom hook
 import { Link } from 'react-router-dom';
 import { db, setDoc, doc } from './firebase'; // Import Firestore functions
 import './Cart.css'; // Ensure you have the CSS for styling
-import Header from "./Header";
-import NavBar from "./NavBar";
+ 
+
 
 function Cart() {
   const { user } = useUserAuth(); // Destructure user from context
@@ -45,23 +42,12 @@ function Cart() {
     }
   };
 
-
-  // State to store start and end dates for all items
   const [dates, setDates] = useState({
     startDate: '',
     endDate: '',
   });
 
-  // Update quantity and days in cart
-
-  // Handle quantity change
-  const handleQuantityChange = (id, newQuantity) => {
-    const item = cart.find(cartItem => cartItem.id === id);
-    if (item) {
-      addToCart(item, newQuantity, calculateDays(dates));
-    }
-  };
- // Update start and end dates and recalculate days for all items
+  // Handle date change
   const handleDateChange = (field, value) => {
     setDates(prevDates => ({
       ...prevDates,
@@ -69,7 +55,7 @@ function Cart() {
     }));
 
     // Apply new dates to all items in the cart
-    cartItems.forEach(item => {
+    cart.forEach(item => {
       addToCart(item, item.quantity, calculateDays({ ...dates, [field]: value }));
     });
   };
@@ -99,26 +85,14 @@ function Cart() {
   // Check if both startDate and endDate are provided
   const isDateRangeValid = dates.startDate && dates.endDate;
 
-
-  // Handle days change
-  const handleDaysChange = (id, newDays) => {
-    const item = cart.find(cartItem => cartItem.id === id);
-    if (item) {
-      addToCart(item, item.quantity, newDays);
-    }
-  };
-
-
   return (
     <div className="Cart">
-      <Header />
-      <NavBar />
+ 
       <div className="cart-container">
         <div className="cart-items">
-
           <h2>Your Cart</h2>
           {user ? (
-            <div>
+            <>
               <div className="date-selector">
                 <p>
                   Start Date:
@@ -137,21 +111,17 @@ function Cart() {
                   />
                 </p>
               </div>
-              {cartItems.length === 0 ? (
+              {cart.length === 0 ? (
                 <p>Your cart is empty</p>
               ) : (
                 <ul>
-                  {cartItems.map((cartItem) => {
+                  {cart.map((cartItem) => {
                     const { id, name, quantity, image, pricePerDay } = cartItem;
                     const total = (parseFloat(pricePerDay) || 0) * quantity * calculateDays(dates);
 
                     return (
                       <li key={id} className="cart-item">
-                        {image ? (
-                          <img src={image} alt={name} className="cart-item-image" />
-                        ) : (
-                          <img src={cartItem.mainImage} alt={cartItem.name} />
-                        )}
+                        <img src={image || cartItem.mainImage} alt={name} className="cart-item-image" />
                         <div className="item-details">
                           <h3>{name}</h3>
                           <p>
@@ -160,15 +130,11 @@ function Cart() {
                               type="number"
                               min="1"
                               value={quantity}
-                              onChange={(e) => handleQuantityChange(id, parseInt(e.target.value, 10))}
+                              onChange={(e) => addToCart(cartItem, parseInt(e.target.value, 10), calculateDays(dates))}
                             />
                           </p>
-                          <p>
-                            Price per Day: ${parseFloat(pricePerDay).toFixed(2)}
-                          </p>
-                          <p>
-                            Total Days: {calculateDays(dates)}
-                          </p>
+                          <p>Price per Day: ${parseFloat(pricePerDay).toFixed(2)}</p>
+                          <p>Total Days: {calculateDays(dates)}</p>
                           <p>Total: ${total.toFixed(2)}</p>
                           <button onClick={() => removeFromCart(id)}>Remove</button>
                         </div>
@@ -177,7 +143,7 @@ function Cart() {
                   })}
                 </ul>
               )}
-            </div>
+            </>
           ) : (
             <p>You need to be signed in to view your cart.</p>
           )}
@@ -185,24 +151,12 @@ function Cart() {
         {user && (
           <div className="order-summary">
             <h3>Order Summary</h3>
-            <p>
-              <strong>Start Date:</strong> {dates.startDate}
-            </p>
-            <p>
-              <strong>End Date:</strong> {dates.endDate}
-            </p>
-            <p>
-              <strong>Total Cost:</strong> ${totalCost.toFixed(2)}
-            </p>
-            <p>
-              <strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)
-            </p>
-            <p>
-              <strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}
-            </p>
-            <p>
-              <strong>Total with Fees:</strong> ${totalWithFee.toFixed(2)}
-            </p>
+            <p><strong>Start Date:</strong> {dates.startDate}</p>
+            <p><strong>End Date:</strong> {dates.endDate}</p>
+            <p><strong>Total Cost:</strong> ${totalCost.toFixed(2)}</p>
+            <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)</p>
+            <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
+            <p><strong>Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
             <button 
               className={`checkout-btn ${!isDateRangeValid ? 'disabled' : ''}`}
               disabled={!isDateRangeValid}
@@ -215,57 +169,6 @@ function Cart() {
           </div>
         )}
       </div>
-
-          {cart.length === 0 ? (
-            <p>Your cart is empty</p>
-          ) : (
-            <ul>
-              {cart.map((item) => {
-                const pricePerDay = item.pricePerDay || 0;
-                const total = pricePerDay * item.quantity * item.days;
-                return (
-                  <li key={item.id} className="cart-item">
-                    <img src={item.mainImage} alt={item.name} />
-                    <div className="item-details">
-                      <h3>{item.name}</h3>
-                      <p>
-                        Quantity: 
-                        <input
-                          type="number"
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
-                        />
-                      </p>
-                      <p>
-                        Days: 
-                        <input
-                          type="number"
-                          min="1"
-                          value={item.days}
-                          onChange={(e) => handleDaysChange(item.id, parseInt(e.target.value, 10))}
-                        />
-                      </p>
-                      <p className="price">Price per Day: ${pricePerDay.toFixed(2)}</p>
-                      <p>Total: ${total.toFixed(2)}</p>
-                      <button onClick={() => removeFromCart(item.id)}>Remove</button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      ) : (
-        <p>You need to be signed in to view your cart.</p>
-      )}
-      {user && (
-        <>
-          <h3>Total Cost: ${getTotalCost().toFixed(2)}</h3>
-          <Link to="/checkout" className="checkout-btn"  onClick={saveCartToFirestore}>Proceed to Checkout</Link>
-        </>
-      )}
-
     </div>
   );
 }

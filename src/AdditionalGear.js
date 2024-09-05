@@ -3,8 +3,6 @@ import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import ProductService from './ProductService';
 import { useCart } from './CartContext';
 import { useUserAuth } from './UserAuth';
-import Header from "./Header";
-import NavBar from "./NavBar";
 
 function Additional() {
   const [tentItems, setTentItems] = useState([]);
@@ -72,8 +70,6 @@ function Additional() {
 
   return (
     <div className="Gear">
-      <Header/>
-      <NavBar/>
       <h2>Additional Gear</h2>
       <p>Explore a variety of additional gear for your outdoor adventures.</p>
 

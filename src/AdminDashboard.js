@@ -9,8 +9,7 @@ import { auth } from './firebase'; // Import Firebase auth
 
 
 import './AdminDashboard.css';
-import Header from "./Header";
-import NavBar from "./NavBar";
+ 
 
 const AdminDashboard = () => {
   const [name, setName] = useState('');
@@ -126,8 +125,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      <Header/>
-      <NavBar/>
+      
       <header className="dashboard-header">
         <h1>Admin Dashboard</h1>
 

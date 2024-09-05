@@ -1,13 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Header from "./Header";
-import NavBar from "./NavBar";
+ 
 
 function Home() {
     return (
       <div className="Home">
-        <Header/>
-        <NavBar/>
+         
         <div className="home-image">
           <img src="/Homepage1.jpg" alt="Hiking Gear" />
         </div>
