@@ -25,7 +25,29 @@
   color: #333;
   margin-bottom: 15px;
 }
+.supplier-application-card {
+  max-width: 600px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(38, 96, 104, 0.1);
+  text-align: center;
+}
 
+.supplier-application-card .card-title {
+  font-size: 1.5rem;
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+.supplier-application-card .apply-btn {
+  margin-top: 10px;
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+}
 .dashboard-card .card-text strong {
   font-size: 1.3rem;
   font-weight: 600;
