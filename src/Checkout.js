@@ -1,31 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from './CartContext';
 import { useUserAuth } from './UserAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import './Checkout.css';
 
 function Checkout() {
   const { cart, getTotalCost } = useCart();
   const { user } = useUserAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const db = getFirestore(); // Initialize Firestore
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    street: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: 'NZ', // Default to New Zealand
+    pickupDate: '',
+    pickupTime: '',
+    address: '165 Queen Street, CBD' // Fixed address for Click & Collect
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-
   const [discountAmount] = useState(0); // Keeping discountAmount for future use
-  const serviceFeeRate = 0.1; // 10% service fee
-  const hiringFeeRate = 0.05; // 5% hiring fee
+
+  const totalCost = getTotalCost(); // Get total cost from the cart
+
+  // Calculate the dynamic hiring fee: $50 + $10 for every $30 over the base amount
+  const baseHiringFee = 50;
+  const additionalHiringFee = Math.floor(totalCost / 30) * 10;
+  const hiringFee = baseHiringFee + additionalHiringFee;
+
+  const serviceFeeRate = 0.2; // 20% service fee (from Cart)
+
+  // Calculate service fee and total cost including fees
+  const serviceFee = totalCost * serviceFeeRate;
+  const totalWithFee = Math.max(totalCost + hiringFee + serviceFee, 40);
+
+  useEffect(() => {
+    if (location.state && location.state.startDate) {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        pickupDate: location.state.startDate
+      }));
+    }
+  }, [location.state]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -35,19 +51,37 @@ function Checkout() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitted(true);
+
+    // Prepare data to be saved
+    const orderData = {
+      ...formData,
+      totalCost: totalCost,
+      serviceFee: serviceFee,
+      hiringFee: hiringFee,
+      discountAmount: discountAmount,
+      finalTotal: totalWithFee,
+      dateCreated: new Date(),
+      userName: user.displayName,
+      userId: user.uid,
+    };
+
+    try {
+      // Save data to Firestore in the 'checkout' collection
+      await addDoc(collection(db, 'checkout'), orderData);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
   const handleContinueShopping = () => {
     navigate('/cart');
   };
 
-  const totalCost = getTotalCost();
-  const serviceFee = totalCost * serviceFeeRate;
-  const hiringFee = totalCost * hiringFeeRate;
-  const finalTotal = totalCost + serviceFee + hiringFee - discountAmount;
+  const availablePickupDates = ['2024-09-07', '2024-09-08', '2024-09-09']; // Example available dates
+  const availablePickupTimes = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM']; // Example available times
 
   return (
     <div className="Checkout">
@@ -55,125 +89,62 @@ function Checkout() {
       {isSubmitted ? (
         <div className="ThankYou">
           <h2>Thank You for Your Purchase!</h2>
-          <p>Your order has been placed successfully.</p>
-          <button onClick={() => setIsSubmitted(false)}>Return to Cart</button>
-          <button onClick={handleContinueShopping}>Continue Shopping</button>
+          <p>Your order has been placed successfully. You can pick up your items at the selected time.</p>
+          <button onClick={() => setIsSubmitted(false)}>Back to Home</button>
         </div>
       ) : (
-        <>
-          {user ? (
-            <>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>First Name:</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Last Name:</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Email Address:</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Phone Number:</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Street:</label>
-                  <input
-                    type="text"
-                    name="street"
-                    value={formData.street}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>City:</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>State:</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>ZIP Code:</label>
-                  <input
-                    type="text"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Country:</label>
-                  <input
-                    type="text"
-                    name="country"
-                    value={formData.country}
-                    readOnly
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Estimated Total:</label>
-                  <div className="total-cost">
-                    ${finalTotal.toFixed(2)}
-                    <p>(Including Service Fee: ${serviceFee.toFixed(2)}, Hiring Fee: ${hiringFee.toFixed(2)}, and Discount: ${discountAmount.toFixed(2)})</p>
-                  </div>
-                </div>
-                <button type="submit">Submit Order</button>
-                <button
-                  type="button"
-                  onClick={handleContinueShopping}
-                  className="continue-shopping-btn"
-                >
-                  Continue Shopping
-                </button>
-              </form>
-            </>
-          ) : (
-            <p>Please sign in to proceed with checkout.</p>
-          )}
-        </>
+        <form onSubmit={handleSubmit}>
+  <div className="form-group">
+    <label htmlFor="pickupDate">Pickup Date:</label>
+    <input
+      type="date"
+      id="pickupDate"
+      name="pickupDate"
+      value={formData.pickupDate}
+      onChange={handleInputChange}
+      min={availablePickupDates[0]}
+      max={availablePickupDates[availablePickupDates.length - 1]}
+      required
+    />
+  </div>
+  <div className="form-group">
+    <label htmlFor="pickupTime">Pickup Time:</label>
+    <select
+      id="pickupTime"
+      name="pickupTime"
+      value={formData.pickupTime}
+      onChange={handleInputChange}
+      required
+    >
+      <option value="">Select a time</option>
+      {availablePickupTimes.map(time => (
+        <option key={time} value={time}>{time}</option>
+      ))}
+    </select>
+  </div>
+  <div className="form-group">
+    <label htmlFor="address">Click & Collect Address:</label>
+    <input
+      type="text"
+      id="address"
+      name="address"
+      value={formData.address}
+      disabled // Disable the input to make it non-editable
+    />
+  </div>
+  <div className="order-summary">
+    <h3>Order Summary</h3>
+    <p><strong>Total Cost:</strong> ${totalCost.toFixed(2)}</p>
+    <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)</p>
+    <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
+    <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
+  </div>
+  <div className="form-actions">
+    <button type="submit">Submit Order</button>
+    <button type="button" onClick={handleContinueShopping}>Back to Cart</button>
+  </div>
+</form>
+
       )}
     </div>
   );

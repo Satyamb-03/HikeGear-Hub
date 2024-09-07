@@ -1,51 +1,17 @@
-import React, { useState } from 'react'; // Remove the second duplicate import
+import React, { useState } from 'react';
 import { useCart } from './CartContext';
-import { useUserAuth } from './UserAuth'; // Import your custom hook
-import { Link } from 'react-router-dom';
-import { db, setDoc, doc } from './firebase'; // Import Firestore functions
-import './Cart.css'; // Ensure you have the CSS for styling
- 
-
+import { useUserAuth } from './UserAuth';
+import { Link, useNavigate } from 'react-router-dom';
+import './Cart.css';
 
 function Cart() {
-  const { user } = useUserAuth(); // Destructure user from context
+  const { user } = useUserAuth();
   const { cart, removeFromCart, addToCart, getTotalCost } = useCart();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Handle modal close
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  // Save cart to Firestore
-  const saveCartToFirestore = async () => {
-    if (user) {
-      const cartData = {
-        userId: user.uid,
-        totalCost: getTotalCost(),
-        items: cart.map(item => ({
-          productId: item.id,
-          total: item.pricePerDay * item.quantity * item.days,
-        })),
-      };
-
-      try {
-        const cartId = `${user.uid}-${Date.now()}`;
-        await setDoc(doc(db, 'carts', cartId), cartData);
-        alert('Cart saved successfully!');
-      } catch (error) {
-        console.error("Error saving cart: ", error);
-        alert('Failed to save cart.');
-      }
-    } else {
-      alert('You must be signed in to save the cart.');
-    }
-  };
-
   const [dates, setDates] = useState({
     startDate: '',
     endDate: '',
   });
+  const navigate = useNavigate();
 
   // Handle date change
   const handleDateChange = (field, value) => {
@@ -70,24 +36,26 @@ function Cart() {
     return 1;
   };
 
-  // Calculate the total cost
+  // Calculate total cost
   const totalCost = getTotalCost();
-  
-  // Rename bond fee to "Hiring Fee" and calculate it
-  const hiringFee = Math.ceil(totalCost / 80) * 40;
-  
-  // Calculate 20% service fee based on the total cost (excluding the hiring fee)
-  const serviceFee = totalCost * 0.20;
-  
-  // Ensure the total amount with hiring fee and service fee is at least $40
-  const totalWithFee = Math.max(totalCost + hiringFee + serviceFee, 40);
 
-  // Check if both startDate and endDate are provided
+  // Fixed hiring fee calculation: Starts at $50, increases by $10 for every $30 spent
+  const baseHiringFee = 50;
+  const increment = 10;
+  const threshold = 30;
+  const additionalHiringFee = Math.floor(totalCost / threshold) * increment;
+  const hiringFee = baseHiringFee + additionalHiringFee;
+
+  const serviceFee = totalCost * 0.20;
+  const totalWithFee = Math.max(totalCost + hiringFee + serviceFee, 40);
   const isDateRangeValid = dates.startDate && dates.endDate;
+
+  const handleProceedToCheckout = () => {
+    navigate('/checkout', { state: { startDate: dates.startDate } });
+  };
 
   return (
     <div className="Cart">
- 
       <div className="cart-container">
         <div className="cart-items">
           <h2>Your Cart</h2>
@@ -160,10 +128,9 @@ function Cart() {
             <button 
               className={`checkout-btn ${!isDateRangeValid ? 'disabled' : ''}`}
               disabled={!isDateRangeValid}
+              onClick={handleProceedToCheckout}
             >
-              <Link to={isDateRangeValid ? "/checkout" : "#"} className={`checkout-link ${!isDateRangeValid ? 'disabled-link' : ''}`}>
-                Proceed to Checkout
-              </Link>
+              Proceed to Checkout
             </button>
             {!isDateRangeValid && <p className="date-error">Please select both start and end dates to proceed.</p>}
           </div>
