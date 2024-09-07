@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProductService from './ProductService';
 import './SupplierDashboard.css';
- 
 
 const SupplierDashboard = () => {
   const [name, setName] = useState('');
@@ -11,7 +10,26 @@ const SupplierDashboard = () => {
   const [additionalImageFiles, setAdditionalImageFiles] = useState([]);
   const [category, setCategory] = useState('Clothing');
   const [subcategory, setSubcategory] = useState('Men');
-  const [showProductForm, setShowProductForm] = useState(false); // Add state to control form visibility
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [products, setProducts] = useState([]); // State to hold the products list
+
+  // Fetch products from Firestore when the component mounts
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsSnapshot = await ProductService.getAllProducts();
+        const productList = productsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProducts(productList);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []); // Empty dependency array means this runs once when component mounts
 
   const handleAdditionalImagesChange = (e) => {
     setAdditionalImageFiles(e.target.files);
@@ -25,11 +43,21 @@ const SupplierDashboard = () => {
       description,
       pricePerDay: parseInt(pricePerDay),
       category,
-      subcategory
+      subcategory,
     };
 
     try {
+      console.log("Submitting product:", newProduct);
       await ProductService.addProduct(newProduct, mainImageFile, additionalImageFiles);
+      
+      // After adding the product, fetch the updated list of products
+      const productsSnapshot = await ProductService.getAllProducts();
+      const productList = productsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setProducts(productList); // Update the product list
+
       // Clear the form or provide feedback
       setName('');
       setDescription('');
@@ -37,6 +65,7 @@ const SupplierDashboard = () => {
       setMainImageFile(null);
       setAdditionalImageFiles([]);
       setShowProductForm(false); // Hide the form after successful submission
+      console.log("Product successfully submitted!");
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -44,17 +73,14 @@ const SupplierDashboard = () => {
 
   return (
     <div className="supplier-dashboard">
- 
       <div className="content">
         <h1>Supplier Dashboard</h1>
 
         <div className="add-product-section">
-          {/* Button to show the product form */}
           <button className="open-form-button" onClick={() => setShowProductForm(true)}>
             Add Product
           </button>
 
-          {/* Conditional rendering of the form in a popup */}
           {showProductForm && (
             <div className="form-popup">
               <div className="form-container">
@@ -156,17 +182,39 @@ const SupplierDashboard = () => {
                         <>
                           <option value="Clothing Accessories">Clothing Accessories</option>
                           <option value="Footwear Accessories">Footwear Accessories</option>
-                          <option value="Backpack Accessories">Backpack Accessories</option>
+                          <option value="Additional Accessories">Additional Accessories</option>
                         </>
                       )}
                     </select>
                   </label>
-                  <button type="submit">Add Product</button>
+
+                  <button type="submit" className="add-product-button">
+                    Add product
+                  </button>
+                  <button className="close-form-button" onClick={() => setShowProductForm(false)}>
+                    Close
+                  </button>
                 </form>
-                {/* Close the form */}
-                <button onClick={() => setShowProductForm(false)} className="close-form-button">Close</button>
               </div>
             </div>
+          )}
+        </div>
+<br></br>
+        {/* Product History Section */}
+        <div className="product-history">
+          <h2>Product History</h2>
+          {products.length > 0 ? (
+            <ul>
+              {products.map((product) => (
+                <li key={product.id} className="product-item">
+                  <h3>{product.name}</h3>
+                  <p>{product.description}</p>
+                  <p>Price per Day: ${product.pricePerDay}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No products added yet.</p>
           )}
         </div>
       </div>
