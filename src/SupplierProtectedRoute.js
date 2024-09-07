@@ -9,6 +9,7 @@ const ProtectedSupplierDashboard = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSupplier, setIsSupplier] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [redirect, setRedirect] = useState(false); // State to trigger redirect after timeout
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -21,8 +22,8 @@ const ProtectedSupplierDashboard = ({ children }) => {
         } else {
           setShowWarning(true); // Show warning if not a supplier
           setTimeout(() => {
-            setShowWarning(false);
-          }, 3000); // Hide warning after 3 seconds
+            setRedirect(true); // Set redirect after 3 seconds
+          }, 3000); // Delay redirect for 3 seconds
         }
       }
       setIsLoading(false);
@@ -35,20 +36,20 @@ const ProtectedSupplierDashboard = ({ children }) => {
     return <div>Loading...</div>;
   }
 
-  if (!isSupplier) {
-    return (
-      <>
-        {showWarning && (
-          <div style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
-            You don't have access to this page. Redirecting...
-          </div>
-        )}
-        <Navigate to="/unauthorized" /> {/* Redirect to unauthorized page */}
-      </>
-    );
+  if (redirect) {
+    return <Navigate to="/unauthorized" />; // Redirect after the delay
   }
 
-  return children; // Render SupplierDashboard content
+  return (
+    <>
+      {showWarning && (
+        <div style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
+          You don't have access to this page. Redirecting in 3 seconds...
+        </div>
+      )}
+      {isSupplier && children}
+    </>
+  );
 };
 
 export default ProtectedSupplierDashboard;

@@ -6,7 +6,6 @@ import './UserDashboard.css';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebase';
- 
 
 const UserDashboard = () => {
   const { user, signOutUser } = useUserAuth();
@@ -19,7 +18,7 @@ const UserDashboard = () => {
   const [idFile, setIdFile] = useState(null);
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isApplicationSubmitted, setIsApplicationSubmitted] = useState(false); 
+  const [isApplicationSubmitted, setIsApplicationSubmitted] = useState(false);
 
   const navigate = useNavigate();
 
@@ -68,6 +67,7 @@ const UserDashboard = () => {
       const snapshot = await uploadBytes(idFileRef, idFile);
       const idFileUrl = await getDownloadURL(idFileRef);
 
+      // Update user document with supplier request
       const userDocRef = doc(db, 'users', user.uid);
       await setDoc(userDocRef, { 
         ...userData, 
@@ -78,7 +78,8 @@ const UserDashboard = () => {
         } 
       }, { merge: true });
 
-      setIsApplicationSubmitted(true); 
+      // Notify user of successful submission
+      setIsApplicationSubmitted(true);
     } catch (error) {
       console.error('Error applying to be a supplier:', error);
       setError('Error submitting application');
@@ -135,7 +136,6 @@ const UserDashboard = () => {
 
   return (
     <Container className="dashboard-container">
- 
       <h2 className="welcome-message">Welcome, {userData?.name || "User"}!</h2>
       <Card className="dashboard-card shadow-lg">
         <Card.Body>
