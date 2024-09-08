@@ -94,57 +94,56 @@ function Checkout() {
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-  <div className="form-group">
-    <label htmlFor="pickupDate">Pickup Date:</label>
-    <input
-      type="date"
-      id="pickupDate"
-      name="pickupDate"
-      value={formData.pickupDate}
-      onChange={handleInputChange}
-      min={availablePickupDates[0]}
-      max={availablePickupDates[availablePickupDates.length - 1]}
-      required
-    />
-  </div>
-  <div className="form-group">
-    <label htmlFor="pickupTime">Pickup Time:</label>
-    <select
-      id="pickupTime"
-      name="pickupTime"
-      value={formData.pickupTime}
-      onChange={handleInputChange}
-      required
-    >
-      <option value="">Select a time</option>
-      {availablePickupTimes.map(time => (
-        <option key={time} value={time}>{time}</option>
-      ))}
-    </select>
-  </div>
-  <div className="form-group">
-    <label htmlFor="address">Click & Collect Address:</label>
-    <input
-      type="text"
-      id="address"
-      name="address"
-      value={formData.address}
-      disabled // Disable the input to make it non-editable
-    />
-  </div>
-  <div className="order-summary">
-    <h3>Order Summary</h3>
-    <p><strong>Total Cost:</strong> ${totalCost.toFixed(2)}</p>
-    <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)</p>
-    <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
-    <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
-  </div>
-  <div className="form-actions">
-    <button type="submit">Submit Order</button>
-    <button type="button" onClick={handleContinueShopping}>Back to Cart</button>
-  </div>
-</form>
-
+          <div className="form-group">
+            <label htmlFor="pickupDate">Pickup Date:</label>
+            <input
+              type="date"
+              id="pickupDate"
+              name="pickupDate"
+              value={formData.pickupDate}
+              onChange={handleInputChange}
+              min={availablePickupDates[0]}
+              max={availablePickupDates[availablePickupDates.length - 1]}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="pickupTime">Pickup Time:</label>
+            <select
+              id="pickupTime"
+              name="pickupTime"
+              value={formData.pickupTime}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select a time</option>
+              {availablePickupTimes.map(time => (
+                <option key={time} value={time}>{time}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="address">Click & Collect Address:</label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              value={formData.address}
+              disabled // Disable the input to make it non-editable
+            />
+          </div>
+          <div className="order-summary">
+            <h3>Order Summary</h3>
+            <p><strong>Total Cost:</strong> ${totalCost.toFixed(2)}</p>
+            <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)</p>
+            <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
+            <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
+          </div>
+          <div className="form-actions">
+            <button type="submit">Submit Order</button>
+            <button type="button" onClick={handleContinueShopping}>Back to Cart</button>
+          </div>
+        </form>
       )}
     </div>
   );
