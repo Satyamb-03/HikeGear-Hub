@@ -3,13 +3,9 @@ import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firesto
 import { db } from './firebase';
 import ProductService from './ProductService';
 import { useNavigate } from 'react-router-dom';
-
-import { signOut } from 'firebase/auth'; // Import signOut from Firebase Auth
-import { auth } from './firebase'; // Import Firebase auth
-
-
+import { signOut } from 'firebase/auth'; 
+import { auth } from './firebase'; 
 import './AdminDashboard.css';
- 
 
 const AdminDashboard = () => {
   const [name, setName] = useState('');
@@ -22,11 +18,16 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [supplierRequests, setSupplierRequests] = useState([]);
   const [showProductForm, setShowProductForm] = useState(false);
+  const [showUserList, setShowUserList] = useState(false);
+  const [showSupplierRequests, setShowSupplierRequests] = useState(false);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [orderEarnings, setOrderEarnings] = useState([]); // For individual order earnings
 
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
+    fetchOrders();
   }, []);
 
   const fetchUsers = async () => {
@@ -46,6 +47,28 @@ const AdminDashboard = () => {
       setSupplierRequests(requests);
     } catch (error) {
       console.error('Error fetching users:', error);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const ordersCollection = collection(db, 'orders');
+      const querySnapshot = await getDocs(ordersCollection);
+      const ordersList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Calculate total earnings from service fees
+      const total = ordersList.reduce((acc, order) => acc + (order.serviceFee || 0), 0);
+      setTotalEarnings(total);
+
+      // Aggregate earnings for each order
+      const earningsByOrder = ordersList.map(order => ({
+        id: order.id,
+        totalEarnings: order.serviceFee || 0 // Assuming each order has a serviceFee
+      }));
+      setOrderEarnings(earningsByOrder);
+
+    } catch (error) {
+      console.error('Error fetching orders:', error);
     }
   };
 
@@ -112,87 +135,110 @@ const AdminDashboard = () => {
     }
   };
 
-
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Sign out using Firebase Auth
-      navigate('/'); // Redirect to the home page after logging out
+      await signOut(auth);
+      navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
 
-
   return (
     <div className="admin-dashboard">
-      
-      <header className="dashboard-header">
+      <header>
         <h1>Admin Dashboard</h1>
-
-        <button className="logout-button" onClick={handleLogout}>Logout</button>
-
+        <button onClick={handleLogout} className="logout-button">Log Out</button>
       </header>
-
-      <div className="content">
-        <div className="user-list">
-          <h2>User List</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(user => (
-                <tr key={user.id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="dashboard-content">
+        <div className="admin-actions">
+          <button onClick={() => setShowUserList(!showUserList)} className="action-button">
+            {showUserList ? 'Hide User List' : 'Show User List'}
+          </button>
+          <button onClick={() => setShowSupplierRequests(!showSupplierRequests)} className="action-button">
+            {showSupplierRequests ? 'Hide Supplier Requests' : 'Show Supplier Requests'}
+          </button>
+          <button onClick={() => setShowProductForm(true)} className="action-button add-product-button">
+            Add Product
+          </button>
         </div>
-
-        <div className="supplier-requests">
-          <h2>Supplier Requests</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {supplierRequests.map(request => (
-                <tr key={request.id}>
-                  <td>{request.userName}</td>
-                  <td>{request.userEmail}</td>
-                  <td>
-                    <button onClick={() => handleApproveSupplier(request.id)} className="approve-button">Approve</button>
-                    <button onClick={() => handleDenySupplier(request.id)} className="deny-button">Deny</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="total-earnings">
+          <h2>Total Earnings</h2>
+          <p>${totalEarnings.toFixed(2)}</p>
         </div>
-      </div>
-
-      <div className="add-product-section">
-        <button className="open-form-button" onClick={() => setShowProductForm(true)}>
-          Add Product
-        </button>
-
+        <div className="order-earnings">
+          <h2>Earnings by Order</h2>
+          <ul>
+            {orderEarnings.map(order => (
+              <li key={order.id}>
+                Order ID: {order.id} - Earnings: ${order.totalEarnings.toFixed(2)}
+              </li>
+            ))}
+          </ul>
+        </div>
+        {showUserList && (
+          <div className="form-popup">
+            <div className="form-container">
+              <button type="button" className="close-button" onClick={() => setShowUserList(false)}>Close</button>
+              <h2>User List</h2>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map(user => (
+                    <tr key={user.id}>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>
+                        <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        {showSupplierRequests && (
+          <div className="form-popup">
+            <div className="form-container">
+              <button type="button" className="close-button" onClick={() => setShowSupplierRequests(false)}>Close</button>
+              <h2>Supplier Requests</h2>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>User Name</th>
+                    <th>User Email</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {supplierRequests.map(request => (
+                    <tr key={request.id}>
+                      <td>{request.userName}</td>
+                      <td>{request.userEmail}</td>
+                      <td>
+                        <button onClick={() => handleApproveSupplier(request.id)} className="approve-button">Approve</button>
+                        <button onClick={() => handleDenySupplier(request.id)} className="deny-button">Deny</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
         {showProductForm && (
           <div className="form-popup">
             <div className="form-container">
-              <form onSubmit={handleSubmit} className="add-product-form">
+              <button type="button" className="close-button" onClick={() => setShowProductForm(false)}>Close</button>
+              <h2>Add Product</h2>
+              <form onSubmit={handleSubmit}>
                 <label>
                   Name:
                   <input
@@ -236,19 +282,13 @@ const AdminDashboard = () => {
                     multiple
                     onChange={handleAdditionalImagesChange}
                   />
-                  {additionalImageFiles.length > 0 && (
-                    <div className="image-preview">
-                      {Array.from(additionalImageFiles).map((file, index) => (
-                        <img key={index} src={URL.createObjectURL(file)} alt={`Additional ${index + 1}`} />
-                      ))}
-                    </div>
-                  )}
                 </label>
                 <label>
                   Category:
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
+                    required
                   >
                     <option value="Clothing">Clothing</option>
                     <option value="Footwear">Footwear</option>
@@ -261,6 +301,7 @@ const AdminDashboard = () => {
                   <select
                     value={subcategory}
                     onChange={(e) => setSubcategory(e.target.value)}
+                    required
                   >
                     {category === 'Clothing' && (
                       <>
@@ -281,38 +322,22 @@ const AdminDashboard = () => {
                         <option value="Camp Furniture">Camp Furniture</option>
                         <option value="Camp Kitchen">Camp Kitchen</option>
                         <option value="Packs">Packs</option>
-
-                        <option value="Furniture">Camp Furniture</option>
-
                         <option value="Sleep Systems">Sleep Systems</option>
                         <option value="Tents & Bivvies">Tents & Bivvies</option>
                         <option value="Additional Gear">Additional Gear</option>
-
                       </>
                     )}
                     {category === 'Accessories' && (
                       <>
-
-                        <option value="Clothing">Clothing Accessories</option>
-                        <option value="Gear">Gear Accessories</option>
-
                         <option value="Headwear">Headwear</option>
                         <option value="Clothing Accessories">Clothing Accessories</option>
                         <option value="Footwear Accessories">Footwear Accessories</option>
                         <option value="Backpack Accessories">Backpack Accessories</option>
-
                       </>
                     )}
                   </select>
                 </label>
-                <button type="submit" className="submit-button">Submit</button>
-                <button
-                  type="button"
-                  onClick={() => setShowProductForm(false)}
-                  className="cancel-button"
-                >
-                  Cancel
-                </button>
+                <button type="submit" className="submit-button">Add Product</button>
               </form>
             </div>
           </div>

@@ -23,12 +23,7 @@ function Home() {
         <p>
           Don’t let a lack of gear hold you back. Explore our catalog, choose your gear, and get ready to hit the trails. Your next adventure is just a few clicks away!
         </p>
-        <Link to="/user-dashboard">
-          <button className="go-to-dashboard-button">Go to User Dashboard</button>
-        </Link>
-        <Link to="/admin">
-          <button className="go-to-dashboard-button">Go to Admin Dashboard</button>
-        </Link>
+ 
       </div>
     );
   }

@@ -15,22 +15,33 @@ function Checkout() {
   const [formData, setFormData] = useState({
     pickupDate: '',
     pickupTime: '',
-    address: '165 Queen Street, CBD'
+    address: '165 Queen Street, CBD' // Fixed address for Click & Collect
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [discountAmount] = useState(0);
+  const [discountAmount] = useState(0); // Keeping discountAmount for future use
   const [totalDays, setTotalDays] = useState(1); // Default to 1 day if not calculated
 
   const totalCost = getTotalCost();
 
+  // Calculate the dynamic hiring fee: $50 + $10 for every $30 over the base amount
   const baseHiringFee = 50;
   const additionalHiringFee = Math.floor(totalCost / 30) * 10;
   const hiringFee = baseHiringFee + additionalHiringFee;
 
-  const serviceFeeRate = 0.2;
+  const serviceFeeRate = 0.2; // 20% service fee (from Cart)
   const serviceFee = totalCost * serviceFeeRate;
   const totalWithFee = Math.max(totalCost + hiringFee + serviceFee, 40);
+
+  // Calculate total rental days if both startDate and endDate are present
+  const calculateDays = (startDate, endDate) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
+    }
+    return 1;
+  };
 
   useEffect(() => {
     if (location.state && location.state.startDate && location.state.endDate) {
@@ -43,15 +54,6 @@ function Checkout() {
     }
   }, [location.state]);
 
-  const calculateDays = (startDate, endDate) => {
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
-    }
-    return 1;
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -63,8 +65,10 @@ function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Extract product IDs from the cart
     const productIds = cart.map(item => item.id);
 
+    // Prepare data to be saved
     const orderData = {
       ...formData,
       totalCost: totalCost,
@@ -72,17 +76,18 @@ function Checkout() {
       hiringFee: hiringFee,
       discountAmount: discountAmount,
       finalTotal: totalWithFee,
-      productIds: productIds,
+      productIds: productIds, // Add product IDs to the order
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
-      totalDays: totalDays // Include totalDays here
+      totalDays: totalDays // Include total rental days in the order
     };
 
     try {
+      // Save data to Firestore in the 'checkout' collection
       await addDoc(collection(db, 'checkout'), orderData);
       setIsSubmitted(true);
-      clearCart();
+      clearCart(); // Clear the cart after submitting the order
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -118,8 +123,8 @@ function Checkout() {
               name="pickupDate"
               value={formData.pickupDate}
               onChange={handleInputChange}
-              min={location.state.startDate}
-              max={location.state.endDate}
+              min={location.state.startDate} // Use startDate from location state
+              max={location.state.endDate}   // Use endDate from location state
               required
             />
           </div>
@@ -145,13 +150,13 @@ function Checkout() {
               id="address"
               name="address"
               value={formData.address}
-              disabled
+              disabled // Disable the input to make it non-editable
             />
           </div>
           <div className="order-summary">
             <h3>Order Summary</h3>
             <p><strong>Total Cost:</strong> ${totalCost.toFixed(2)}</p>
-            <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)}</p>
+            <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)</p>
             <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
             <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
           </div>
