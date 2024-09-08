@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from './CartContext';
 import { useUserAuth } from './UserAuth';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,20 +13,39 @@ function Cart() {
   });
   const navigate = useNavigate();
 
-  // Handle date change
-  const handleDateChange = (field, value) => {
-    setDates(prevDates => ({
-      ...prevDates,
-      [field]: value,
-    }));
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-    // Apply new dates to all items in the cart
-    cart.forEach(item => {
-      addToCart(item, item.quantity, calculateDays({ ...dates, [field]: value }));
+  useEffect(() => {
+    const savedDates = localStorage.getItem('selectedDates');
+    if (savedDates) {
+      setDates(JSON.parse(savedDates));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('selectedDates', JSON.stringify(dates));
+  }, [dates]);
+
+  const handleDateChange = (field, value) => {
+    setDates(prevDates => {
+      const newDates = { ...prevDates, [field]: value };
+
+      cart.forEach(item => {
+        if (newDates.startDate && newDates.endDate) {
+          addToCart(item, item.quantity, calculateDays(newDates));
+        }
+      });
+
+      return newDates;
     });
   };
 
-  // Calculate days between start and end dates
   const calculateDays = ({ startDate, endDate }) => {
     if (startDate && endDate) {
       const start = new Date(startDate);
@@ -36,22 +55,18 @@ function Cart() {
     return 1;
   };
 
-  // Calculate total cost
   const totalCost = getTotalCost();
-
-  // Fixed hiring fee calculation: Starts at $50, increases by $10 for every $30 spent
   const baseHiringFee = 50;
   const increment = 10;
   const threshold = 30;
   const additionalHiringFee = Math.floor(totalCost / threshold) * increment;
   const hiringFee = baseHiringFee + additionalHiringFee;
-
   const serviceFee = totalCost * 0.20;
   const totalWithFee = Math.max(totalCost + hiringFee + serviceFee, 40);
   const isDateRangeValid = dates.startDate && dates.endDate;
 
   const handleProceedToCheckout = () => {
-    navigate('/checkout', { state: { startDate: dates.startDate } });
+    navigate('/checkout', { state: { startDate: dates.startDate, endDate: dates.endDate } });
   };
 
   return (
@@ -68,6 +83,7 @@ function Cart() {
                     type="date"
                     value={dates.startDate}
                     onChange={(e) => handleDateChange('startDate', e.target.value)}
+                    min={getTodayDate()}
                   />
                 </p>
                 <p>
@@ -76,6 +92,7 @@ function Cart() {
                     type="date"
                     value={dates.endDate}
                     onChange={(e) => handleDateChange('endDate', e.target.value)}
+                    min={dates.startDate || getTodayDate()}
                   />
                 </p>
               </div>
@@ -98,7 +115,11 @@ function Cart() {
                               type="number"
                               min="1"
                               value={quantity}
-                              onChange={(e) => addToCart(cartItem, parseInt(e.target.value, 10), calculateDays(dates))}
+                              onChange={(e) => {
+                                if (dates.startDate && dates.endDate) {
+                                  addToCart(cartItem, parseInt(e.target.value, 10), calculateDays(dates));
+                                }
+                              }}
                             />
                           </p>
                           <p>Price per Day: ${parseFloat(pricePerDay).toFixed(2)}</p>
