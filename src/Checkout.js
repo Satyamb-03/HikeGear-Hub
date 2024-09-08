@@ -15,7 +15,7 @@ function Checkout() {
   const [formData, setFormData] = useState({
     pickupDate: '',
     pickupTime: '',
-    address: '165 Queen Street, CBD' // Fixed address for Click & Collect
+    address: '165 Queen Street, CBD', // Fixed address for Click & Collect
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -46,9 +46,9 @@ function Checkout() {
   useEffect(() => {
     if (location.state && location.state.startDate && location.state.endDate) {
       const { startDate, endDate } = location.state;
-      setFormData(prevFormData => ({
+      setFormData((prevFormData) => ({
         ...prevFormData,
-        pickupDate: startDate
+        pickupDate: startDate,
       }));
       setTotalDays(calculateDays(startDate, endDate));
     }
@@ -66,7 +66,7 @@ function Checkout() {
     e.preventDefault();
 
     // Extract product IDs from the cart
-    const productIds = cart.map(item => item.id);
+    const productIds = cart.map((item) => item.id);
 
     // Prepare data to be saved
     const orderData = {
@@ -80,7 +80,7 @@ function Checkout() {
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
-      totalDays: totalDays // Include total rental days in the order
+      totalDays: totalDays, // Include total rental days in the order
     };
 
     try {
@@ -89,7 +89,7 @@ function Checkout() {
       setIsSubmitted(true);
       clearCart(); // Clear the cart after submitting the order
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error('Error adding document: ', error);
     }
   };
 
@@ -123,8 +123,8 @@ function Checkout() {
               name="pickupDate"
               value={formData.pickupDate}
               onChange={handleInputChange}
-              min={location.state.startDate} // Use startDate from location state
-              max={location.state.endDate}   // Use endDate from location state
+              min={location.state?.startDate} // Use startDate from location state
+              max={location.state?.endDate}   // Use endDate from location state
               required
             />
           </div>
@@ -138,8 +138,10 @@ function Checkout() {
               required
             >
               <option value="">Select a time</option>
-              {availablePickupTimes.map(time => (
-                <option key={time} value={time}>{time}</option>
+              {availablePickupTimes.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
               ))}
             </select>
           </div>
@@ -155,13 +157,23 @@ function Checkout() {
           </div>
           <div className="order-summary">
             <h3>Order Summary</h3>
-            <p><strong>Total Cost:</strong> ${totalCost.toFixed(2)}</p>
-            <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)</p>
-            <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
-            <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
+            <p>
+              <strong>Total Cost:</strong> ${totalCost.toFixed(2)}
+            </p>
+            <p>
+              <strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)
+            </p>
+            <p>
+              <strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}
+            </p>
+            <p>
+              <strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}
+            </p>
           </div>
           <div className="form-actions">
-            <button type="button" onClick={handleBackToCart}>Back to Cart</button>
+            <button type="button" onClick={handleBackToCart}>
+              Back to Cart
+            </button>
             <button type="submit">Submit Order</button>
           </div>
         </form>
