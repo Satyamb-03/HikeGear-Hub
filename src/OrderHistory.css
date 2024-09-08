@@ -1,0 +1,71 @@
+/* OrderHistory.css */
+.order-history-container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .order-history-container h3 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .order-history-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .order-history-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .order-history-item h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .order-history-item p {
+    margin: 5px 0;
+    color: #666;
+  }
+  
+  .order-history-item .order-id {
+    font-weight: bold;
+  }
+  
+  .order-history-item .order-date {
+    font-style: italic;
+  }
+  
+  .order-history-item .order-summary {
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+  
+  .order-history-item .order-summary p {
+    margin: 5px 0;
+  }
+  
+  .order-history-item .order-summary .total-cost {
+    font-weight: bold;
+  }
+  
+  .order-history-item .order-summary .unit-cost,
+  .order-history-item .order-summary .rental-days,
+  .order-history-item .order-summary .quantity {
+    color: #888;
+  }
+  
+  .order-history-item .order-summary .order-details {
+    margin-top: 10px;
+  }
+  

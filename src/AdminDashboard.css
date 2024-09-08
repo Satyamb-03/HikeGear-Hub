@@ -1,109 +1,34 @@
-.admin-header {
-  background-color: #074088; /* Match the App header background color */
+/* AdminDashboard.css */
+.admin-dashboard {
+  font-family: Arial, sans-serif;
   padding: 20px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
-.admin-header .logo-link {
-  font-family: 'Kaushan Script', cursive;
-  font-size: 24px;
-  color: white;
-  text-decoration: none;
-}
-
-.admin-header .logo-link:hover {
-  text-decoration: underline;
-}
-
-.admin-nav {
-  background-color: #5289A1; /* Match the App nav background color */
-  padding: 10px;
-}
-
-.admin-nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: space-around; /* Spread items evenly */
-}
-
-.admin-nav ul li {
-  flex-grow: 1; /* Ensures each list item takes up equal space */
-  text-align: center; /* Centers the text within each item */
-}
-
-.admin-nav ul li a {
-  display: block;
-  color: white; /* Text color */
-  padding: 14px 20px;
-  text-decoration: none;
-}
-
-.admin-nav ul li a:hover {
-  background-color: #3a6178; /* Adjusted hover background color */
-}
-
-/* Existing admin dashboard styles for consistency */
-.dashboard-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.dashboard-header h1 {
-  font-size: 24px;
-  color: #333;
-}
-
-.content {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.user-list, .supplier-requests {
-  width: 45%;
-}
-
-.user-list ul, .supplier-requests ul {
-  list-style: none;
-  padding: 0;
-}
-
-.user-list li, .supplier-requests li {
-  margin-bottom: 10px;
-}
-
-.add-product-section {
-  text-align: center;
-}
-
-.open-form-button {
-  padding: 10px;
-  background-color: #007bff;
+.open-popup-button, .open-form-button {
+  background-color: #5289A1;
   color: white;
   border: none;
-  border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
+  margin: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
-.open-form-button:hover {
-  background-color: #0056b3;
+.open-popup-button:hover, .open-form-button:hover {
+  background-color: #3a6a8e;
 }
 
 .form-popup {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .form-container {
@@ -112,91 +37,114 @@
   border-radius: 8px;
   width: 80%;
   max-width: 600px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
-.add-product-form {
-  display: flex;
-  flex-direction: column;
+.close-button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transition: background-color 0.3s ease;
 }
 
-.add-product-form label {
-  margin-bottom: 10px;
+.close-button:hover {
+  background: #c0392b;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #5289A1;
+  color: white;
+}
+
+.table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.delete-button {
+  background-color: #dc3545; /* Red color */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+.approve-button {
+  background-color: #28a745; /* Green color */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.approve-button:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+.deny-button {
+  background-color: #ffc107; /* Yellow color */
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.deny-button:hover {
+  background-color: #e0a800; /* Darker yellow on hover */
+}
+
+.logout-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
 }
 
 .image-preview {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 10px;
 }
 
 .image-preview img {
-  max-width: 100px;
-  max-height: 100px;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
-  border: 1px solid #ddd;
-}
-
-.add-product-form button {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
   border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.add-product-form button:hover {
-  background-color: #0056b3;
-}
-
-.delete-button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  padding: 5px 10px;
-}
-
-.delete-button:hover {
-  background-color: #c82333;
-}
-
-.approve-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  padding: 5px 10px;
-}
-
-.approve-button:hover {
-  background-color: #218838;
-}
-
-.deny-button {
-  background-color: #ffc107;
-  color: black;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  padding: 5px 10px;
-  margin-left: 10px;
-}
-
-.deny-button:hover {
-  background-color: #e0a800;
-}
-
-.table th, .table td {
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-.table th {
-  background-color: #f4f4f4;
 }

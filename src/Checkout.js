@@ -15,32 +15,25 @@ function Checkout() {
   const [formData, setFormData] = useState({
     pickupDate: '',
     pickupTime: '',
-    address: '165 Queen Street, CBD',
+    address: '165 Queen Street, CBD', // Fixed address for Click & Collect
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [totalDays, setTotalDays] = useState(1);
+  const [discountAmount] = useState(0); // Keeping discountAmount for future use
+  const [totalDays, setTotalDays] = useState(1); // Default to 1 day if not calculated
+
   const totalCost = getTotalCost();
 
+  // Calculate the dynamic hiring fee: $50 + $10 for every $30 over the base amount
   const baseHiringFee = 50;
   const additionalHiringFee = Math.floor(totalCost / 30) * 10;
   const hiringFee = baseHiringFee + additionalHiringFee;
 
-  const serviceFeeRate = 0.2;
+  const serviceFeeRate = 0.2; // 20% service fee (from Cart)
   const serviceFee = totalCost * serviceFeeRate;
   const totalWithFee = Math.max(totalCost + hiringFee + serviceFee, 40);
 
-  useEffect(() => {
-    if (location.state && location.state.startDate && location.state.endDate) {
-      const { startDate, endDate } = location.state;
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        pickupDate: calculatePickupMinDate(startDate),
-      }));
-      setTotalDays(calculateDays(startDate, endDate));
-    }
-  }, [location.state]);
-
+  // Calculate total rental days if both startDate and endDate are present
   const calculateDays = (startDate, endDate) => {
     if (startDate && endDate) {
       const start = new Date(startDate);
@@ -50,17 +43,16 @@ function Checkout() {
     return 1;
   };
 
-  const calculatePickupMinDate = (startDate) => {
-    const start = new Date(startDate);
-    start.setDate(start.getDate() - 2); 
-    return start.toISOString().split('T')[0]; 
-  };
-
-  const calculatePickupMaxDate = (startDate) => {
-    const start = new Date(startDate);
-    start.setDate(start.getDate() - 1); 
-    return start.toISOString().split('T')[0]; 
-  };
+  useEffect(() => {
+    if (location.state && location.state.startDate && location.state.endDate) {
+      const { startDate, endDate } = location.state;
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        pickupDate: startDate,
+      }));
+      setTotalDays(calculateDays(startDate, endDate));
+    }
+  }, [location.state]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -73,27 +65,29 @@ function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Extract product IDs from the cart
     const productIds = cart.map((item) => item.id);
 
+    // Prepare data to be saved
     const orderData = {
       ...formData,
       totalCost: totalCost,
       serviceFee: serviceFee,
       hiringFee: hiringFee,
+      discountAmount: discountAmount,
       finalTotal: totalWithFee,
-      productIds: productIds,
+      productIds: productIds, // Add product IDs to the order
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
-      totalDays: totalDays,
-      startDate: location.state.startDate,
-      endDate: location.state.endDate,
+      totalDays: totalDays, // Include total rental days in the order
     };
 
     try {
+      // Save data to Firestore in the 'checkout' collection
       await addDoc(collection(db, 'checkout'), orderData);
       setIsSubmitted(true);
-      clearCart();
+      clearCart(); // Clear the cart after submitting the order
     } catch (error) {
       console.error('Error adding document: ', error);
     }
@@ -129,8 +123,8 @@ function Checkout() {
               name="pickupDate"
               value={formData.pickupDate}
               onChange={handleInputChange}
-              min={calculatePickupMinDate(location.state.startDate)}
-              max={calculatePickupMaxDate(location.state.startDate)} 
+              min={location.state?.startDate} // Use startDate from location state
+              max={location.state?.endDate}   // Use endDate from location state
               required
             />
           </div>
@@ -158,15 +152,23 @@ function Checkout() {
               id="address"
               name="address"
               value={formData.address}
-              disabled
+              disabled // Disable the input to make it non-editable
             />
           </div>
           <div className="order-summary">
             <h3>Order Summary</h3>
-            <p><strong>Total Cost:</strong> ${totalCost.toFixed(2)}</p>
-            <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)}</p>
-            <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
-            <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
+            <p>
+              <strong>Total Cost:</strong> ${totalCost.toFixed(2)}
+            </p>
+            <p>
+              <strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)
+            </p>
+            <p>
+              <strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}
+            </p>
+            <p>
+              <strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}
+            </p>
           </div>
           <div className="form-actions">
             <button type="button" onClick={handleBackToCart}>
