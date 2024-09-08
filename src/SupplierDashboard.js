@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ProductService from './ProductService';
+import { useUserAuth } from './UserAuth'; // Assuming you have this hook for authentication
 import './SupplierDashboard.css';
 
 const SupplierDashboard = () => {
+  const { user } = useUserAuth(); // Get the currently authenticated user
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [pricePerDay, setPricePerDay] = useState('');
@@ -13,23 +15,36 @@ const SupplierDashboard = () => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [products, setProducts] = useState([]); // State to hold the products list
 
-  // Fetch products from Firestore when the component mounts
   useEffect(() => {
     const fetchProducts = async () => {
-      try {
-        const productsSnapshot = await ProductService.getAllProducts();
-        const productList = productsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setProducts(productList);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+      if (user) {
+        try {
+          console.log("Fetching products for user:", user.uid);
+          const productsSnapshot = await ProductService.getProductsBySupplier(user.uid);
+          console.log("Products snapshot:", productsSnapshot.docs.map(doc => doc.data())); // Debugging line
+          
+          if (!productsSnapshot.empty) {
+            const productList = productsSnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }));
+
+            console.log("Fetched products:", productList); // Debugging line
+
+            productList.sort((a, b) => a.id.localeCompare(b.id));
+            setProducts(productList);
+          } else {
+            console.log("No products found for this supplier.");
+            setProducts([]);
+          }
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
       }
     };
 
     fetchProducts();
-  }, []); // Empty dependency array means this runs once when component mounts
+  }, [user]);
 
   const handleAdditionalImagesChange = (e) => {
     setAdditionalImageFiles(e.target.files);
@@ -41,33 +56,56 @@ const SupplierDashboard = () => {
     const newProduct = {
       name,
       description,
-      pricePerDay: parseInt(pricePerDay),
+      pricePerDay: parseFloat(pricePerDay), // Ensure price is a number
       category,
       subcategory,
+      supplierId: user.uid
     };
 
     try {
       console.log("Submitting product:", newProduct);
       await ProductService.addProduct(newProduct, mainImageFile, additionalImageFiles);
-      
-      // After adding the product, fetch the updated list of products
-      const productsSnapshot = await ProductService.getAllProducts();
+
+      // Refresh the product list
+      const productsSnapshot = await ProductService.getProductsBySupplier(user.uid);
       const productList = productsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      setProducts(productList); // Update the product list
 
-      // Clear the form or provide feedback
+      productList.sort((a, b) => a.id.localeCompare(b.id));
+      setProducts(productList);
+
+      // Reset form fields
       setName('');
       setDescription('');
       setPricePerDay('');
       setMainImageFile(null);
       setAdditionalImageFiles([]);
-      setShowProductForm(false); // Hide the form after successful submission
+      setShowProductForm(false);
       console.log("Product successfully submitted!");
     } catch (error) {
       console.error("Error adding product:", error);
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await ProductService.deleteProduct(productId);
+
+      // Refresh the product list
+      const productsSnapshot = await ProductService.getProductsBySupplier(user.uid);
+      const productList = productsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      productList.sort((a, b) => a.id.localeCompare(b.id));
+      setProducts(productList);
+
+      console.log("Product successfully deleted!");
+    } catch (error) {
+      console.error("Error deleting product:", error);
     }
   };
 
@@ -170,8 +208,7 @@ const SupplierDashboard = () => {
                       )}
                       {category === 'Gear' && (
                         <>
-                          <option value="Camp Furniture">Camp Furniture</option>
-                          <option value="Camp Kitchen">Camp Kitchen</option>
+                          <option value="Camp Ktchen">Camp Kitchen</option>
                           <option value="Packs">Packs</option>
                           <option value="Sleep Systems">Sleep Systems</option>
                           <option value="Tents & Bivvies">Tents & Bivvies</option>
@@ -189,7 +226,7 @@ const SupplierDashboard = () => {
                   </label>
 
                   <button type="submit" className="add-product-button">
-                    Add product
+                    Add Product
                   </button>
                   <button className="close-form-button" onClick={() => setShowProductForm(false)}>
                     Close
@@ -199,8 +236,7 @@ const SupplierDashboard = () => {
             </div>
           )}
         </div>
-<br></br>
-        {/* Product History Section */}
+      
         <div className="product-history">
           <h2>Product History</h2>
           {products.length > 0 ? (
@@ -208,8 +244,14 @@ const SupplierDashboard = () => {
               {products.map((product) => (
                 <li key={product.id} className="product-item">
                   <h3>{product.name}</h3>
-                  <p>{product.description}</p>
-                  <p>Price per Day: ${product.pricePerDay}</p>
+                  <p>Category: {product.category}</p>
+                  <p>Price per Day: ${product.pricePerDay.toFixed(2)}</p>
+                  <button 
+                    className="delete-button" 
+                    onClick={() => handleDeleteProduct(product.id)}
+                  >
+                    Delete
+                  </button>
                 </li>
               ))}
             </ul>
