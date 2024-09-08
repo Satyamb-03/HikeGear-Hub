@@ -15,13 +15,11 @@ function Checkout() {
   const [formData, setFormData] = useState({
     pickupDate: '',
     pickupTime: '',
-    address: '165 Queen Street, CBD'
+    address: '165 Queen Street, CBD',
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [discountAmount] = useState(0);
-  const [totalDays, setTotalDays] = useState(1); // Default to 1 day if not calculated
-
+  const [totalDays, setTotalDays] = useState(1);
   const totalCost = getTotalCost();
 
   const baseHiringFee = 50;
@@ -35,9 +33,9 @@ function Checkout() {
   useEffect(() => {
     if (location.state && location.state.startDate && location.state.endDate) {
       const { startDate, endDate } = location.state;
-      setFormData(prevFormData => ({
+      setFormData((prevFormData) => ({
         ...prevFormData,
-        pickupDate: startDate
+        pickupDate: calculatePickupMinDate(startDate),
       }));
       setTotalDays(calculateDays(startDate, endDate));
     }
@@ -52,6 +50,18 @@ function Checkout() {
     return 1;
   };
 
+  const calculatePickupMinDate = (startDate) => {
+    const start = new Date(startDate);
+    start.setDate(start.getDate() - 2); 
+    return start.toISOString().split('T')[0]; 
+  };
+
+  const calculatePickupMaxDate = (startDate) => {
+    const start = new Date(startDate);
+    start.setDate(start.getDate() - 1); 
+    return start.toISOString().split('T')[0]; 
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -63,20 +73,21 @@ function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const productIds = cart.map(item => item.id);
+    const productIds = cart.map((item) => item.id);
 
     const orderData = {
       ...formData,
       totalCost: totalCost,
       serviceFee: serviceFee,
       hiringFee: hiringFee,
-      discountAmount: discountAmount,
       finalTotal: totalWithFee,
       productIds: productIds,
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
-      totalDays: totalDays // Include totalDays here
+      totalDays: totalDays,
+      startDate: location.state.startDate,
+      endDate: location.state.endDate,
     };
 
     try {
@@ -84,7 +95,7 @@ function Checkout() {
       setIsSubmitted(true);
       clearCart();
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error('Error adding document: ', error);
     }
   };
 
@@ -118,8 +129,8 @@ function Checkout() {
               name="pickupDate"
               value={formData.pickupDate}
               onChange={handleInputChange}
-              min={location.state.startDate}
-              max={location.state.endDate}
+              min={calculatePickupMinDate(location.state.startDate)}
+              max={calculatePickupMaxDate(location.state.startDate)} 
               required
             />
           </div>
@@ -133,8 +144,10 @@ function Checkout() {
               required
             >
               <option value="">Select a time</option>
-              {availablePickupTimes.map(time => (
-                <option key={time} value={time}>{time}</option>
+              {availablePickupTimes.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
               ))}
             </select>
           </div>
@@ -156,7 +169,9 @@ function Checkout() {
             <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
           </div>
           <div className="form-actions">
-            <button type="button" onClick={handleBackToCart}>Back to Cart</button>
+            <button type="button" onClick={handleBackToCart}>
+              Back to Cart
+            </button>
             <button type="submit">Submit Order</button>
           </div>
         </form>
