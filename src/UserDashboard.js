@@ -3,9 +3,36 @@ import { useUserAuth } from './UserAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Card, Form } from 'react-bootstrap';
 import './UserDashboard.css'; 
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import './OrderHistory.css'; // Import OrderHistory CSS
+import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebase';
+
+// OrderHistory Component
+const OrderHistory = ({ orders }) => (
+  <Card className="order-history-card shadow-lg mt-4">
+    <Card.Body>
+      <Card.Title>Order History</Card.Title>
+      {orders.length > 0 ? (
+        <ul className="order-history-list">
+          {orders.map(order => (
+            <li key={order.id} className="order-history-item">
+              <h5>Order ID: {order.id}</h5>
+              <p><strong>Product Name:</strong> {order.productName || 'N/A'}</p>
+              <p><strong>Final Total:</strong> ${order.finalTotal.toFixed(2)}</p> {/* Updated field */}
+              <p><strong>Unit Cost:</strong> ${order.unitCost || 'N/A'}</p>
+              <p><strong>Number of Rental Days:</strong> {order.numberOfRentalDays || 'N/A'}</p>
+              <p><strong>Quantity:</strong> {order.quantity || 'N/A'}</p>
+              <p><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No orders found.</p>
+      )}
+    </Card.Body>
+  </Card>
+);
 
 const UserDashboard = () => {
   const { user, signOutUser } = useUserAuth();
@@ -19,6 +46,10 @@ const UserDashboard = () => {
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isApplicationSubmitted, setIsApplicationSubmitted] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [orderError, setOrderError] = useState(null);
+  const [loadingOrders, setLoadingOrders] = useState(true); // Loading state for orders
+  const [isOrderHistoryVisible, setIsOrderHistoryVisible] = useState(false); // State for order history visibility
 
   const navigate = useNavigate();
 
@@ -52,7 +83,41 @@ const UserDashboard = () => {
       }
     };
 
+    const fetchOrderHistory = async () => {
+      if (!user) return;
+
+      setLoadingOrders(true);
+      try {
+        const ordersQuery = query(collection(db, 'checkout'), where('userId', '==', user.uid));
+        const querySnapshot = await getDocs(ordersQuery);
+
+        if (!querySnapshot.empty) {
+          const orderList = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              productName: data.productName || 'N/A',
+              finalTotal: data.finalTotal || 0, // Updated field
+              unitCost: data.unitCost || 'N/A',
+              numberOfRentalDays: data.numberOfRentalDays || 'N/A',
+              quantity: data.quantity || 'N/A',
+              date: data.dateCreated ? data.dateCreated.toDate() : new Date()
+            };
+          });
+          setOrders(orderList);
+        } else {
+          setOrders([]);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setOrderError('Error fetching order history');
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
     fetchUserData();
+    fetchOrderHistory();
   }, [user]);
 
   const handleApplyForSupplier = async () => {
@@ -67,7 +132,6 @@ const UserDashboard = () => {
       const snapshot = await uploadBytes(idFileRef, idFile);
       const idFileUrl = await getDownloadURL(idFileRef);
 
-      // Update user document with supplier request
       const userDocRef = doc(db, 'users', user.uid);
       await setDoc(userDocRef, { 
         ...userData, 
@@ -78,7 +142,6 @@ const UserDashboard = () => {
         } 
       }, { merge: true });
 
-      // Notify user of successful submission
       setIsApplicationSubmitted(true);
     } catch (error) {
       console.error('Error applying to be a supplier:', error);
@@ -120,6 +183,10 @@ const UserDashboard = () => {
 
   const toggleSupplierFormVisibility = () => {
     setIsSupplierFormVisible(!isSupplierFormVisible);
+  };
+
+  const toggleOrderHistoryVisibility = () => {
+    setIsOrderHistoryVisible(!isOrderHistoryVisible); // Toggle order history visibility
   };
 
   if (loading) {
@@ -184,7 +251,6 @@ const UserDashboard = () => {
         </Card.Body>
       </Card>
 
-      {/* Button to toggle supplier form visibility */}
       {!isApplicationSubmitted && (
         <div className="supplier-form-toggle">
           <Button variant="info" onClick={toggleSupplierFormVisibility}>
@@ -193,7 +259,6 @@ const UserDashboard = () => {
         </div>
       )}
 
-      {/* Apply to be a Supplier Form */}
       {isSupplierFormVisible && !isApplicationSubmitted && (
         <Card className="supplier-application-card shadow-lg mt-4">
           <Card.Body>
@@ -242,6 +307,14 @@ const UserDashboard = () => {
       <Button variant="info" className="mt-4" onClick={() => navigate('/supplier-dashboard')}>
         Go to Supplier Dashboard
       </Button>
+
+      {/* Button to toggle order history visibility */}
+      <Button variant="info" className="mt-4" onClick={toggleOrderHistoryVisibility}>
+        {isOrderHistoryVisible ? "Hide Order History" : "Show Order History"}
+      </Button>
+
+      {/* Order History Section */}
+      {loadingOrders ? <p>Loading order history...</p> : (isOrderHistoryVisible && <OrderHistory orders={orders} />)}
     </Container>
   );
 };
