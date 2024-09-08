@@ -67,7 +67,6 @@ const UserDashboard = () => {
       const snapshot = await uploadBytes(idFileRef, idFile);
       const idFileUrl = await getDownloadURL(idFileRef);
 
-      // Update user document with supplier request
       const userDocRef = doc(db, 'users', user.uid);
       await setDoc(userDocRef, { 
         ...userData, 
@@ -78,7 +77,6 @@ const UserDashboard = () => {
         } 
       }, { merge: true });
 
-      // Notify user of successful submission
       setIsApplicationSubmitted(true);
     } catch (error) {
       console.error('Error applying to be a supplier:', error);
@@ -184,7 +182,6 @@ const UserDashboard = () => {
         </Card.Body>
       </Card>
 
-      {/* Button to toggle supplier form visibility */}
       {!isApplicationSubmitted && (
         <div className="supplier-form-toggle">
           <Button variant="info" onClick={toggleSupplierFormVisibility}>
@@ -193,7 +190,6 @@ const UserDashboard = () => {
         </div>
       )}
 
-      {/* Apply to be a Supplier Form */}
       {isSupplierFormVisible && !isApplicationSubmitted && (
         <Card className="supplier-application-card shadow-lg mt-4">
           <Card.Body>
