@@ -1,32 +1,49 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useUserAuth } from './UserAuth'; // Import the user auth context
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useUserAuth } from './UserAuth';
 
-// Create context
 const CartContext = createContext();
 
-// Create provider component
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  const { user } = useUserAuth(); // Access the user from the user auth context
+  const { user } = useUserAuth();
 
-  console.log('User from CartProvider:', user);
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        if (Array.isArray(parsedCart)) {
+          setCart(parsedCart);
+        }
+      } catch (error) {
+        console.error('Failed to parse cart data from localStorage:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    } else {
+      localStorage.removeItem('cart');
+    }
+  }, [cart]);
+
   const addToCart = (item, quantity, days) => {
     if (!user) {
       alert('You need to sign in to add items to the cart.');
-      return; // Exit the function if the user is not signed in
+      return;
     }
 
     setCart(prevCart => {
       const existingItemIndex = prevCart.findIndex(cartItem => cartItem.id === item.id);
       if (existingItemIndex !== -1) {
-        // Update the existing item
         return prevCart.map((cartItem, index) =>
           index === existingItemIndex
             ? { ...cartItem, quantity, days }
             : cartItem
         );
       } else {
-        // Add new item
         return [...prevCart, { ...item, quantity, days }];
       }
     });
@@ -37,20 +54,22 @@ export const CartProvider = ({ children }) => {
   };
 
   const getTotalCost = () => {
-    // Logic to calculate total cost
     return cart.reduce((total, item) => 
       total + (parseFloat(item.pricePerDay) || 0) * item.quantity * item.days, 0
     );
   };
 
+  const clearCart = () => {
+    setCart([]);
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, getTotalCost }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, getTotalCost, clearCart }}>
       {children}
     </CartContext.Provider>
   );
 };
 
-// Custom hook to use CartContext
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {

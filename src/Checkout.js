@@ -6,11 +6,11 @@ import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import './Checkout.css';
 
 function Checkout() {
-  const { cart, getTotalCost } = useCart();
+  const { cart, getTotalCost, clearCart } = useCart();
   const { user } = useUserAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const db = getFirestore(); // Initialize Firestore
+  const db = getFirestore();
 
   const [formData, setFormData] = useState({
     pickupDate: '',
@@ -20,8 +20,9 @@ function Checkout() {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [discountAmount] = useState(0); // Keeping discountAmount for future use
+  const [totalDays, setTotalDays] = useState(1); // Default to 1 day if not calculated
 
-  const totalCost = getTotalCost(); // Get total cost from the cart
+  const totalCost = getTotalCost();
 
   // Calculate the dynamic hiring fee: $50 + $10 for every $30 over the base amount
   const baseHiringFee = 50;
@@ -29,17 +30,27 @@ function Checkout() {
   const hiringFee = baseHiringFee + additionalHiringFee;
 
   const serviceFeeRate = 0.2; // 20% service fee (from Cart)
-
-  // Calculate service fee and total cost including fees
   const serviceFee = totalCost * serviceFeeRate;
   const totalWithFee = Math.max(totalCost + hiringFee + serviceFee, 40);
 
+  // Calculate total rental days if both startDate and endDate are present
+  const calculateDays = (startDate, endDate) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
+    }
+    return 1;
+  };
+
   useEffect(() => {
-    if (location.state && location.state.startDate) {
+    if (location.state && location.state.startDate && location.state.endDate) {
+      const { startDate, endDate } = location.state;
       setFormData(prevFormData => ({
         ...prevFormData,
-        pickupDate: location.state.startDate
+        pickupDate: startDate
       }));
+      setTotalDays(calculateDays(startDate, endDate));
     }
   }, [location.state]);
 
@@ -54,6 +65,9 @@ function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Extract product IDs from the cart
+    const productIds = cart.map(item => item.id);
+
     // Prepare data to be saved
     const orderData = {
       ...formData,
@@ -62,26 +76,33 @@ function Checkout() {
       hiringFee: hiringFee,
       discountAmount: discountAmount,
       finalTotal: totalWithFee,
+      productIds: productIds, // Add product IDs to the order
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
+      totalDays: totalDays // Include total rental days in the order
     };
 
     try {
       // Save data to Firestore in the 'checkout' collection
       await addDoc(collection(db, 'checkout'), orderData);
       setIsSubmitted(true);
+      clearCart(); // Clear the cart after submitting the order
     } catch (error) {
       console.error("Error adding document: ", error);
     }
   };
 
-  const handleContinueShopping = () => {
+  const handleBackToHome = () => {
+    clearCart();
+    navigate('/');
+  };
+
+  const handleBackToCart = () => {
     navigate('/cart');
   };
 
-  const availablePickupDates = ['2024-09-07', '2024-09-08', '2024-09-09']; // Example available dates
-  const availablePickupTimes = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM']; // Example available times
+  const availablePickupTimes = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'];
 
   return (
     <div className="Checkout">
@@ -90,7 +111,7 @@ function Checkout() {
         <div className="ThankYou">
           <h2>Thank You for Your Purchase!</h2>
           <p>Your order has been placed successfully. You can pick up your items at the selected time.</p>
-          <button onClick={() => setIsSubmitted(false)}>Back to Home</button>
+          <button onClick={handleBackToHome}>Back to Home</button>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -102,8 +123,8 @@ function Checkout() {
               name="pickupDate"
               value={formData.pickupDate}
               onChange={handleInputChange}
-              min={availablePickupDates[0]}
-              max={availablePickupDates[availablePickupDates.length - 1]}
+              min={location.state.startDate} // Use startDate from location state
+              max={location.state.endDate}   // Use endDate from location state
               required
             />
           </div>
@@ -140,8 +161,8 @@ function Checkout() {
             <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
           </div>
           <div className="form-actions">
+            <button type="button" onClick={handleBackToCart}>Back to Cart</button>
             <button type="submit">Submit Order</button>
-            <button type="button" onClick={handleContinueShopping}>Back to Cart</button>
           </div>
         </form>
       )}
