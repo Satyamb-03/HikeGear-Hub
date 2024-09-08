@@ -39,7 +39,7 @@ const SignUp = () => {
       if (email === "hikeGear@gmail.com") {
         navigate("/admin-dashboard");
       } else {
-        navigate("/user-dashboard");
+        navigate("/signin");//to navigate after sign up me
       }
     } catch (err) {
       setError(err.message);
