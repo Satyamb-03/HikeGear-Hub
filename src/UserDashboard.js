@@ -2,37 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useUserAuth } from './UserAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Card, Form } from 'react-bootstrap';
-import './UserDashboard.css'; 
-import './OrderHistory.css'; // Import OrderHistory CSS
 import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebase';
-
-// OrderHistory Component
-const OrderHistory = ({ orders }) => (
-  <Card className="order-history-card shadow-lg mt-4">
-    <Card.Body>
-      <Card.Title>Order History</Card.Title>
-      {orders.length > 0 ? (
-        <ul className="order-history-list">
-          {orders.map(order => (
-            <li key={order.id} className="order-history-item">
-              <h5>Order ID: {order.id}</h5>
-              <p><strong>Product Name:</strong> {order.productName || 'N/A'}</p>
-              <p><strong>Final Total:</strong> ${order.finalTotal.toFixed(2)}</p> {/* Updated field */}
-              <p><strong>Unit Cost:</strong> ${order.unitCost || 'N/A'}</p>
-              <p><strong>Number of Rental Days:</strong> {order.numberOfRentalDays || 'N/A'}</p>
-              <p><strong>Quantity:</strong> {order.quantity || 'N/A'}</p>
-              <p><strong>Date:</strong> {new Date(order.date).toLocaleDateString()}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No orders found.</p>
-      )}
-    </Card.Body>
-  </Card>
-);
+import OrderHistory from './OrderHistory'; // Import OrderHistory
+import './UserDashboard.css';
 
 const UserDashboard = () => {
   const { user, signOutUser } = useUserAuth();
@@ -50,6 +24,7 @@ const UserDashboard = () => {
   const [orderError, setOrderError] = useState(null);
   const [loadingOrders, setLoadingOrders] = useState(true); // Loading state for orders
   const [isOrderHistoryVisible, setIsOrderHistoryVisible] = useState(false); // State for order history visibility
+  const [products, setProducts] = useState({}); // To store product data
 
   const navigate = useNavigate();
 
@@ -96,15 +71,24 @@ const UserDashboard = () => {
             const data = doc.data();
             return {
               id: doc.id,
+              productIds: data.productIds || [], // Ensure productIds is an array
               productName: data.productName || 'N/A',
-              finalTotal: data.finalTotal || 0, // Updated field
+              finalTotal: data.finalTotal || 0,
               unitCost: data.unitCost || 'N/A',
               numberOfRentalDays: data.numberOfRentalDays || 'N/A',
               quantity: data.quantity || 'N/A',
-              date: data.dateCreated ? data.dateCreated.toDate() : new Date()
+              startDate: data.startDate || null,
+              endDate: data.endDate || null,
+              dateCreated: data.dateCreated ? data.dateCreated.toDate() : new Date()
             };
           });
           setOrders(orderList);
+
+          // Fetch product data
+          const productIds = orderList.flatMap(order => order.productIds || []);
+          if (productIds.length > 0) {
+            fetchProducts(productIds);
+          }
         } else {
           setOrders([]);
         }
@@ -113,6 +97,25 @@ const UserDashboard = () => {
         setOrderError('Error fetching order history');
       } finally {
         setLoadingOrders(false);
+      }
+    };
+
+    const fetchProducts = async (productIds) => {
+      try {
+        const productsQuery = query(collection(db, 'products'), where('id', 'in', productIds));
+        const productsSnapshot = await getDocs(productsQuery);
+
+        if (!productsSnapshot.empty) {
+          const productsData = productsSnapshot.docs.reduce((acc, doc) => {
+            const data = doc.data();
+            acc[doc.id] = data.name; // Adjust field based on your data structure
+            return acc;
+          }, {});
+          setProducts(productsData);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setOrderError('Error fetching product data');
       }
     };
 
@@ -189,132 +192,138 @@ const UserDashboard = () => {
     setIsOrderHistoryVisible(!isOrderHistoryVisible); // Toggle order history visibility
   };
 
+  const handleNavigateToSupplierDashboard = () => {
+    navigate('/supplier-dashboard'); // Adjust the route if needed
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
 
   if (error) {
-    return <p>{error}</p>;
-  }
-
-  if (!user) {
-    return <p>User is not logged in or not loaded yet.</p>;
+    return <p className="error-text">{error}</p>;
   }
 
   return (
     <Container className="dashboard-container">
-      <h2 className="welcome-message">Welcome, {userData?.name || "User"}!</h2>
-      <Card className="dashboard-card shadow-lg">
+      <Card className="dashboard-card">
         <Card.Body>
-          <Card.Title>Your Profile</Card.Title>
-          {isEditing ? (
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  value={editForm.name}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Age</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="age"
-                  value={editForm.age}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Mobile</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="mobile"
-                  value={editForm.mobile}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-              <Button variant="success" onClick={handleSaveChanges}>Save Changes</Button>
-              <Button variant="secondary" onClick={handleEditToggle}>Cancel</Button>
-            </Form>
-          ) : (
+          <Card.Title>User Dashboard</Card.Title>
+          {userData && (
             <>
-              <Card.Text><strong>Name:</strong> {userData?.name || 'Not provided'}</Card.Text>
-              <Card.Text><strong>Age:</strong> {userData?.age || 'Not provided'}</Card.Text>
-              <Card.Text><strong>Mobile:</strong> {userData?.mobile || 'Not provided'}</Card.Text>
-              <Card.Text><strong>Email:</strong> {user.email}</Card.Text>
-              <Button variant="primary" onClick={handleEditToggle}>Edit Profile</Button>
+              <p className="card-text"><strong>Name:</strong> {userData.name}</p>
+              <p className="card-text"><strong>Age:</strong> {userData.age}</p>
+              <p className="card-text"><strong>Mobile:</strong> {userData.mobile}</p>
+
+              {isEditing ? (
+  <Form className="edit-profile-form">
+    <Form.Group controlId="formName">
+      <Form.Label>Name: </Form.Label>
+      <Form.Control 
+        type="text" 
+        name="name" 
+        value={editForm.name} 
+        onChange={handleInputChange} 
+        placeholder="Enter your name"
+      />
+    </Form.Group>
+<br></br>
+    <Form.Group controlId="formAge">
+      <Form.Label>Age: </Form.Label>
+      <Form.Control 
+        type="number" 
+        name="age" 
+        value={editForm.age} 
+        onChange={handleInputChange} 
+        placeholder="Enter your age"
+      />
+    </Form.Group>
+<br></br>
+    <Form.Group controlId="formMobile">
+      <Form.Label>Mobile: </Form.Label>
+      <Form.Control 
+        type="text" 
+        name="mobile" 
+        value={editForm.mobile} 
+        onChange={handleInputChange} 
+        placeholder="Enter your mobile number"
+      />
+    </Form.Group>
+
+    <div className="button-group">
+      <Button 
+        className="btn btn-primary" 
+        onClick={handleSaveChanges}
+      >
+        Save Changes
+      </Button>
+      <Button 
+        className="btn btn-secondary" 
+        onClick={handleEditToggle}
+      >
+        Cancel
+      </Button>
+    </div>
+  </Form>
+) : (
+  <Button className="btn btn-primary" onClick={handleEditToggle}>
+    Edit Profile
+  </Button>
+)}
+
+
+              <Button className="btn btn-info" onClick={toggleOrderHistoryVisibility}>
+                {isOrderHistoryVisible ? 'Hide Order History' : 'Show Order History'}
+              </Button>
+
+              {isOrderHistoryVisible && (
+                <OrderHistory orders={orders} products={products} error={orderError} loading={loadingOrders} />
+              )}
+
+              <Button className="btn btn-secondary" onClick={handleNavigateToSupplierDashboard}>
+                Go to Supplier Dashboard
+              </Button>
+
+              <Button className="btn btn-success" onClick={toggleSupplierFormVisibility}>
+                {isSupplierFormVisible ? 'Hide Supplier Form' : 'Apply to be a Supplier'}
+              </Button>
+
+              {isSupplierFormVisible && (
+                <Form className="supplier-form">
+                  <Form.Group controlId="formFile">
+                    <Form.Label>Upload ID: </Form.Label>
+                    <Form.Control type="file" onChange={handleFileChange} />
+                  </Form.Group>
+                  <Form.Check
+                    type="checkbox"
+                    label={
+                      <div>
+                        I agree to the terms and conditions:
+                        <ul>
+                          <li> All information provided must be accurate.</li>
+                          <li> The uploaded ID must be valid and clear.</li>
+                          <li> We reserve the right to verify all details provided.</li>
+                          <li> Any misuse of our platform may lead to termination of application.</li>
+                        </ul>
+                      </div>}
+                    checked={termsAgreed}
+                    onChange={handleTermsChange}
+                  />
+                  <Button 
+                    className="btn btn-success" 
+                    onClick={handleApplyForSupplier} 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                  </Button>
+                  {error && <p className="error-text">{error}</p>}
+                  {isApplicationSubmitted && <p className="success-text">Application submitted successfully!</p>}
+                </Form>
+              )}
             </>
           )}
         </Card.Body>
       </Card>
-
-      {!isApplicationSubmitted && (
-        <div className="supplier-form-toggle">
-          <Button variant="info" onClick={toggleSupplierFormVisibility}>
-            {isSupplierFormVisible ? "Hide Supplier Form" : "Want to Become a Supplier?"}
-          </Button>
-        </div>
-      )}
-
-      {isSupplierFormVisible && !isApplicationSubmitted && (
-        <Card className="supplier-application-card shadow-lg mt-4">
-          <Card.Body>
-            <Card.Title>Apply to be a Supplier</Card.Title>
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Upload ID (Passport, License, etc.)</Form.Label>
-                <Form.Control type="file" onChange={handleFileChange} className="file-upload" />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Check
-                  type="checkbox"
-                  label={
-                    <div>
-                      I agree to the terms and conditions:
-                      <ul>
-                        <li> All information provided must be accurate.</li>
-                        <li> The uploaded ID must be valid and clear.</li>
-                        <li> We reserve the right to verify all details provided.</li>
-                        <li> Any misuse of our platform may lead to termination of application.</li>
-                      </ul>
-                    </div>
-                  }
-                  checked={termsAgreed}
-                  onChange={handleTermsChange}
-                />
-              </Form.Group>
-              <Button
-                variant="info"
-                disabled={!idFile || !termsAgreed || isSubmitting}
-                onClick={handleApplyForSupplier}
-                className="apply-btn"
-              >
-                {isSubmitting ? 'Submitting...' : 'Apply to be a Supplier'}
-              </Button>
-              {error && <p className="error-text">{error}</p>}
-            </Form>
-          </Card.Body>
-        </Card>
-      )}
-
-      {isApplicationSubmitted && (
-        <p className="application-status mt-4">Your request is in review. We will notify you once it is reviewed.</p>
-      )}
-
-      <Button variant="info" className="mt-4" onClick={() => navigate('/supplier-dashboard')}>
-        Go to Supplier Dashboard
-      </Button>
-
-      {/* Button to toggle order history visibility */}
-      <Button variant="info" className="mt-4" onClick={toggleOrderHistoryVisibility}>
-        {isOrderHistoryVisible ? "Hide Order History" : "Show Order History"}
-      </Button>
-
-      {/* Order History Section */}
-      {loadingOrders ? <p>Loading order history...</p> : (isOrderHistoryVisible && <OrderHistory orders={orders} />)}
     </Container>
   );
 };
