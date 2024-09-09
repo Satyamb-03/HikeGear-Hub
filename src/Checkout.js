@@ -20,7 +20,6 @@ function Checkout() {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [totalDays, setTotalDays] = useState(1);
   const [discountAmount] = useState(0); // Keeping discountAmount for future use
   const [totalDays, setTotalDays] = useState(1); // Default to 1 day if not calculated
   const [productDetails, setProductDetails] = useState({}); // State to store product details

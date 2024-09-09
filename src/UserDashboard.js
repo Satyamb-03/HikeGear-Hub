@@ -208,7 +208,8 @@ const UserDashboard = () => {
     <Container className="dashboard-container">
       <Card className="dashboard-card">
         <Card.Body>
-          <Card.Title>User Dashboard</Card.Title>
+        <h2 className="welcome-message">Welcome, {userData?.name || "User"}!</h2>
+
           {userData && (
             <>
               <p className="card-text"><strong>Name:</strong> {userData.name}</p>
