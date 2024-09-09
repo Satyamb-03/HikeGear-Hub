@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import ProductService from './ProductService';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from 'firebase/auth'; 
-import { auth } from './firebase'; 
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -21,13 +19,15 @@ const AdminDashboard = () => {
   const [showUserList, setShowUserList] = useState(false);
   const [showSupplierRequests, setShowSupplierRequests] = useState(false);
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const [orderEarnings, setOrderEarnings] = useState([]); // For individual order earnings
+  const [checkoutEarnings, setCheckoutEarnings] = useState([]);
+  const [totalCheckoutEarnings, setTotalCheckoutEarnings] = useState(0);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
     fetchOrders();
+    fetchCheckoutEarnings();
   }, []);
 
   const fetchUsers = async () => {
@@ -56,19 +56,29 @@ const AdminDashboard = () => {
       const querySnapshot = await getDocs(ordersCollection);
       const ordersList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      // Calculate total earnings from service fees
       const total = ordersList.reduce((acc, order) => acc + (order.serviceFee || 0), 0);
       setTotalEarnings(total);
-
-      // Aggregate earnings for each order
-      const earningsByOrder = ordersList.map(order => ({
-        id: order.id,
-        totalEarnings: order.serviceFee || 0 // Assuming each order has a serviceFee
-      }));
-      setOrderEarnings(earningsByOrder);
-
     } catch (error) {
       console.error('Error fetching orders:', error);
+    }
+  };
+
+  const fetchCheckoutEarnings = async () => {
+    try {
+      const checkoutCollection = collection(db, 'checkout');
+      const querySnapshot = await getDocs(checkoutCollection);
+      const checkoutList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      const total = checkoutList.reduce((acc, order) => acc + (order.serviceFee || 0), 0);
+      setTotalCheckoutEarnings(total);
+
+      const earningsByCheckout = checkoutList.map(order => ({
+        id: order.id,
+        totalEarnings: order.serviceFee || 0
+      }));
+      setCheckoutEarnings(earningsByCheckout);
+    } catch (error) {
+      console.error('Error fetching checkout earnings:', error);
     }
   };
 
@@ -135,20 +145,10 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigate('/');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
-
   return (
     <div className="admin-dashboard">
       <header>
         <h1>Admin Dashboard</h1>
-        <button onClick={handleLogout} className="logout-button">Log Out</button>
       </header>
       <div className="dashboard-content">
         <div className="admin-actions">
@@ -162,20 +162,31 @@ const AdminDashboard = () => {
             Add Product
           </button>
         </div>
-        <div className="total-earnings">
-          <h2>Total Earnings</h2>
-          <p>${totalEarnings.toFixed(2)}</p>
+
+        <div className="total-checkout-earnings">
+          <h2>Total Earnings from Checkout</h2>
+          <p>${totalCheckoutEarnings.toFixed(2)}</p>
         </div>
-        <div className="order-earnings">
-          <h2>Earnings by Order</h2>
-          <ul>
-            {orderEarnings.map(order => (
-              <li key={order.id}>
-                Order ID: {order.id} - Earnings: ${order.totalEarnings.toFixed(2)}
-              </li>
-            ))}
-          </ul>
+        <div className="checkout-earnings">
+          <h2>Earnings by Checkout</h2>
+          <table className="earnings-table">
+            <thead>
+              <tr>
+                <th>Checkout ID</th>
+                <th>Earnings ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {checkoutEarnings.map(checkout => (
+                <tr key={checkout.id}>
+                  <td>{checkout.id}</td>
+                  <td>${checkout.totalEarnings.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+
         {showUserList && (
           <div className="form-popup">
             <div className="form-container">
@@ -186,6 +197,7 @@ const AdminDashboard = () => {
                   <tr>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Role</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -194,6 +206,7 @@ const AdminDashboard = () => {
                     <tr key={user.id}>
                       <td>{user.name}</td>
                       <td>{user.email}</td>
+                      <td>{user.role || 'User'}</td>
                       <td>
                         <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
                       </td>
@@ -204,6 +217,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+
         {showSupplierRequests && (
           <div className="form-popup">
             <div className="form-container">
@@ -212,8 +226,8 @@ const AdminDashboard = () => {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>User Name</th>
-                    <th>User Email</th>
+                    <th>Name</th>
+                    <th>Email</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -233,111 +247,73 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+
         {showProductForm && (
           <div className="form-popup">
             <div className="form-container">
               <button type="button" className="close-button" onClick={() => setShowProductForm(false)}>Close</button>
               <h2>Add Product</h2>
               <form onSubmit={handleSubmit}>
-                <label>
-                  Name:
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Description:
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Price per Day:
-                  <input
-                    type="number"
-                    value={pricePerDay}
-                    onChange={(e) => setPricePerDay(e.target.value)}
-                    required
-                  />
-                </label>
-                <label>
-                  Main Image:
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setMainImageFile(e.target.files[0])}
-                    required
-                  />
-                </label>
-                <label>
-                  Additional Images:
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleAdditionalImagesChange}
-                  />
-                </label>
-                <label>
-                  Category:
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
-                  >
-                    <option value="Clothing">Clothing</option>
-                    <option value="Footwear">Footwear</option>
-                    <option value="Gear">Gear</option>
-                    <option value="Accessories">Accessories</option>
-                  </select>
-                </label>
-                <label>
-                  Subcategory:
-                  <select
-                    value={subcategory}
-                    onChange={(e) => setSubcategory(e.target.value)}
-                    required
-                  >
-                    {category === 'Clothing' && (
-                      <>
-                        <option value="Men">Men's Clothing</option>
-                        <option value="Women">Women's Clothing</option>
-                        <option value="Kids">Kids' Clothing</option>
-                      </>
-                    )}
-                    {category === 'Footwear' && (
-                      <>
-                        <option value="Men">Men's Footwear</option>
-                        <option value="Women">Women's Footwear</option>
-                        <option value="Kids">Kids' Footwear</option>
-                      </>
-                    )}
-                    {category === 'Gear' && (
-                      <>
-                        <option value="Camp Furniture">Camp Furniture</option>
-                        <option value="Camp Kitchen">Camp Kitchen</option>
-                        <option value="Packs">Packs</option>
-                        <option value="Sleep Systems">Sleep Systems</option>
-                        <option value="Tents & Bivvies">Tents & Bivvies</option>
-                        <option value="Additional Gear">Additional Gear</option>
-                      </>
-                    )}
-                    {category === 'Accessories' && (
-                      <>
-                        <option value="Headwear">Headwear</option>
-                        <option value="Clothing Accessories">Clothing Accessories</option>
-                        <option value="Footwear Accessories">Footwear Accessories</option>
-                        <option value="Backpack Accessories">Backpack Accessories</option>
-                      </>
-                    )}
-                  </select>
-                </label>
-                <button type="submit" className="submit-button">Add Product</button>
+                <label htmlFor="name">Product Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+                <label htmlFor="description">Description</label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                ></textarea>
+                <label htmlFor="pricePerDay">Price per Day</label>
+                <input
+                  type="number"
+                  id="pricePerDay"
+                  value={pricePerDay}
+                  onChange={(e) => setPricePerDay(e.target.value)}
+                  required
+                />
+                <label htmlFor="mainImage">Main Image</label>
+                <input
+                  type="file"
+                  id="mainImage"
+                  onChange={(e) => setMainImageFile(e.target.files[0])}
+                  required
+                />
+                <label htmlFor="additionalImages">Additional Images</label>
+                <input
+                  type="file"
+                  id="additionalImages"
+                  multiple
+                  onChange={handleAdditionalImagesChange}
+                />
+                <label htmlFor="category">Category</label>
+                <select
+                  id="category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value="Clothing">Clothing</option>
+                  <option value="Footwear">Footwear</option>
+                  <option value="Gear">Gear</option>
+                  <option value="Accessories">Accessories</option>
+                </select>
+                <label htmlFor="subcategory">Subcategory</label>
+                <select
+                  id="subcategory"
+                  value={subcategory}
+                  onChange={(e) => setSubcategory(e.target.value)}
+                >
+                  {/* Subcategory options based on the category */}
+                  <option value="Men">Men</option>
+                  <option value="Women">Women</option>
+                  <option value="Kids">Kids</option>
+                </select>
+                <button type="submit" className="submit-button">Submit</button>
               </form>
             </div>
           </div>
