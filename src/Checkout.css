@@ -1,59 +1,58 @@
 .Checkout {
-    max-width: 500px; /* Restrict the width of the form */
-    margin: 0 auto; /* Center the form horizontally */
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .Checkout h2 {
-    margin-bottom: 20px;
-  }
-  
-  .Checkout .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .Checkout .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .Checkout .form-group input,
-  .Checkout .form-group select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .Checkout .form-group .required {
-    color: red;
-  }
-  
-  .Checkout .total-cost {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-top: 10px;
-  }
-  
-  .Checkout button {
-    padding: 10px 15px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .Checkout button:hover {
-    background-color: #218838;
-  }
-  
-  .Checkout .ThankYou {
-    text-align: center;
-  }
-  
+  max-width: 500px; /* Restrict the width of the form */
+  margin: 0 auto; /* Center the form horizontally */
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.Checkout h2 {
+  margin-bottom: 20px;
+}
+
+.Checkout .form-group {
+  margin-bottom: 15px;
+}
+
+.Checkout .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.Checkout .form-group input,
+.Checkout .form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.Checkout .form-group .required {
+  color: red;
+}
+
+.Checkout .total-cost {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-top: 10px;
+}
+
+.Checkout button {
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.Checkout button:hover {
+  background-color: #218838;
+}
+
+.Checkout .ThankYou {
+  text-align: center;
+}
