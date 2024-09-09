@@ -13,43 +13,40 @@ const SupplierDashboard = () => {
   const [category, setCategory] = useState('Clothing');
   const [subcategory, setSubcategory] = useState('Men');
   const [showProductForm, setShowProductForm] = useState(false);
-  const [products, setProducts] = useState([]); // State to hold the products list
+  const [products, setProducts] = useState(null); // null indicates loading state
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
+  // Fetch products on component mount and user change
   useEffect(() => {
     const fetchProducts = async () => {
       if (user) {
         try {
-          console.log("Fetching products for user:", user.uid);
           const productsSnapshot = await ProductService.getProductsBySupplier(user.uid);
-          console.log("Products snapshot:", productsSnapshot.docs.map(doc => doc.data())); // Debugging line
-          
           if (!productsSnapshot.empty) {
             const productList = productsSnapshot.docs.map(doc => ({
               id: doc.id,
               ...doc.data()
             }));
-
-            console.log("Fetched products:", productList); // Debugging line
-
             productList.sort((a, b) => a.id.localeCompare(b.id));
             setProducts(productList);
           } else {
-            console.log("No products found for this supplier.");
-            setProducts([]);
+            setProducts([]); // No products found
           }
         } catch (error) {
           console.error("Error fetching products:", error);
+          setProducts([]); // In case of error, set products to empty
         }
       }
     };
-
     fetchProducts();
   }, [user]);
 
+  // Handle additional images change
   const handleAdditionalImagesChange = (e) => {
     setAdditionalImageFiles(e.target.files);
   };
 
+  // Handle product form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -63,7 +60,6 @@ const SupplierDashboard = () => {
     };
 
     try {
-      console.log("Submitting product:", newProduct);
       await ProductService.addProduct(newProduct, mainImageFile, additionalImageFiles);
 
       // Refresh the product list
@@ -72,9 +68,12 @@ const SupplierDashboard = () => {
         id: doc.id,
         ...doc.data()
       }));
-
       productList.sort((a, b) => a.id.localeCompare(b.id));
       setProducts(productList);
+
+      // Show success popup
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
 
       // Reset form fields
       setName('');
@@ -83,12 +82,12 @@ const SupplierDashboard = () => {
       setMainImageFile(null);
       setAdditionalImageFiles([]);
       setShowProductForm(false);
-      console.log("Product successfully submitted!");
     } catch (error) {
       console.error("Error adding product:", error);
     }
   };
 
+  // Handle product deletion
   const handleDeleteProduct = async (productId) => {
     try {
       await ProductService.deleteProduct(productId);
@@ -99,7 +98,6 @@ const SupplierDashboard = () => {
         id: doc.id,
         ...doc.data()
       }));
-
       productList.sort((a, b) => a.id.localeCompare(b.id));
       setProducts(productList);
 
@@ -113,6 +111,12 @@ const SupplierDashboard = () => {
     <div className="supplier-dashboard">
       <div className="content">
         <h1>Supplier Dashboard</h1>
+
+        {showSuccessPopup && (
+          <div className="success-popup">
+            <p>Your product has been successfully added!</p>
+          </div>
+        )}
 
         <div className="add-product-section">
           <button className="open-form-button" onClick={() => setShowProductForm(true)}>
@@ -166,13 +170,6 @@ const SupplierDashboard = () => {
                       multiple
                       onChange={handleAdditionalImagesChange}
                     />
-                    {additionalImageFiles.length > 0 && (
-                      <div className="image-preview">
-                        {Array.from(additionalImageFiles).map((file, index) => (
-                          <img key={index} src={URL.createObjectURL(file)} alt={`Additional ${index + 1}`} />
-                        ))}
-                      </div>
-                    )}
                   </label>
                   <label>
                     Category:
@@ -208,18 +205,16 @@ const SupplierDashboard = () => {
                       )}
                       {category === 'Gear' && (
                         <>
-                          <option value="Camp Ktchen">Camp Kitchen</option>
+                          <option value="Camp Kitchen">Camp Kitchen</option>
                           <option value="Packs">Packs</option>
                           <option value="Sleep Systems">Sleep Systems</option>
                           <option value="Tents & Bivvies">Tents & Bivvies</option>
-                          <option value="Additional Gear">Additional Gear</option>
                         </>
                       )}
                       {category === 'Accessories' && (
                         <>
                           <option value="Clothing Accessories">Clothing Accessories</option>
                           <option value="Footwear Accessories">Footwear Accessories</option>
-                          <option value="Additional Accessories">Additional Accessories</option>
                         </>
                       )}
                     </select>
@@ -236,16 +231,24 @@ const SupplierDashboard = () => {
             </div>
           )}
         </div>
-      
+
+        {/* Product History Section */}
         <div className="product-history">
           <h2>Product History</h2>
-          {products.length > 0 ? (
+
+          {/* Display loading message while fetching products */}
+          {products === null ? (
+            <p>Loading product history...</p>
+          ) : products.length > 0 ? (
             <ul>
               {products.map((product) => (
                 <li key={product.id} className="product-item">
+                  {/* Display product name, category, and price */}
                   <h3>{product.name}</h3>
-                  <p>Category: {product.category}</p>
-                  <p>Price per Day: ${product.pricePerDay.toFixed(2)}</p>
+                  <p><strong>Category:</strong> {product.category}</p>
+                  <p><strong>Price per Day:</strong> ${product.pricePerDay.toFixed(2)}</p>
+
+                  {/* Button to delete the product */}
                   <button 
                     className="delete-button" 
                     onClick={() => handleDeleteProduct(product.id)}

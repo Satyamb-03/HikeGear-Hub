@@ -7,7 +7,8 @@ function OrderHistory() {
   const { user } = useUserAuth();
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState({}); // To store product data
+  const [products, setProducts] = useState({});
+  const [loading, setLoading] = useState(true);
   const db = getFirestore();
 
   useEffect(() => {
@@ -15,20 +16,35 @@ function OrderHistory() {
       if (!user) return;
 
       try {
-        // Fetch orders
-        const ordersQuery = query(collection(db, 'orders'), where('userId', '==', user.uid));
+        const ordersQuery = query(collection(db, 'checkout'), where('userId', '==', user.uid));
         const ordersSnapshot = await getDocs(ordersQuery);
 
         if (!ordersSnapshot.empty) {
-          const orderList = ordersSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            dateCreated: doc.data().dateCreated ? doc.data().dateCreated.toDate() : new Date()
-          }));
+          const orderList = ordersSnapshot.docs.map(doc => {
+            const data = doc.data();
+
+            return {
+              id: doc.id,
+              address: data.address || 'No address provided',
+              dateCreated: data.dateCreated ? data.dateCreated.toDate() : new Date(),
+              endDate: data.endDate || '',
+              finalTotal: data.finalTotal || 0,
+              hiringFee: data.hiringFee || 0,
+              pickupDate: data.pickupDate || '',
+              pickupTime: data.pickupTime || '',
+              productIds: data.productIds || [],
+              serviceFee: data.serviceFee || 0,
+              startDate: data.startDate || '',
+              totalCost: data.totalCost || 0,
+              totalDays: data.totalDays || 0,
+              userId: data.userId || '',
+              userName: data.userName || 'Anonymous',
+            };
+          });
+
           setOrders(orderList);
 
-          // Fetch product IDs from orders
-          const productIds = orderList.map(order => order.productId); // Adjust this field based on your data structure
+          const productIds = orderList.flatMap(order => order.productIds);
           if (productIds.length > 0) {
             fetchProducts(productIds);
           }
@@ -38,19 +54,20 @@ function OrderHistory() {
       } catch (error) {
         console.error("Error fetching orders:", error);
         setError('Error fetching order history');
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchProducts = async (productIds) => {
       try {
-        // Fetch product data
         const productsQuery = query(collection(db, 'products'), where('id', 'in', productIds));
         const productsSnapshot = await getDocs(productsQuery);
 
         if (!productsSnapshot.empty) {
           const productsData = productsSnapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
-            acc[doc.id] = data.name; // Adjust field based on your data structure
+            acc[doc.id] = data.mainImage || ''; // Assuming mainImage is the image URL
             return acc;
           }, {});
           setProducts(productsData);
@@ -62,7 +79,11 @@ function OrderHistory() {
     };
 
     fetchOrderHistory();
-  }, [user]);
+  }, [user, db]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="OrderHistory">
@@ -73,15 +94,21 @@ function OrderHistory() {
           {orders.map(order => (
             <li key={order.id}>
               <p><strong>Order ID:</strong> {order.id}</p>
-              <p><strong>Product Name:</strong> {products[order.productId] || 'Unknown'}</p>
-              <p><strong>Address:</strong> {order.address || 'N/A'}</p>
-              <p><strong>Pickup Date:</strong> {order.pickupDate || 'N/A'}</p>
-              <p><strong>Pickup Time:</strong> {order.pickupTime || 'N/A'}</p>
-              <p><strong>Total Cost:</strong> ${order.totalCost?.toFixed(2) || 'N/A'}</p>
-              <p><strong>Final Total:</strong> ${order.finalTotal?.toFixed(2) || 'N/A'}</p>
-              <p><strong>Hiring Fee:</strong> ${order.hiringFee?.toFixed(2) || 'N/A'}</p>
-              <p><strong>Service Fee:</strong> ${order.serviceFee?.toFixed(2) || 'N/A'}</p>
+              <p><strong>Start Date:</strong> {order.startDate}</p>
+              <p><strong>End Date:</strong> {order.endDate}</p>
+              <p><strong>Pickup Date:</strong> {order.pickupDate}</p>
+              <p><strong>Final Total:</strong> ${order.finalTotal.toFixed(2)}</p>
+              <p><strong>Total Days:</strong> {order.totalDays}</p>
               <p><strong>Date Created:</strong> {order.dateCreated.toLocaleDateString()}</p>
+              <p><strong>Product Images:</strong> 
+                {order.productIds.length > 0 
+                  ? order.productIds.map(id => 
+                      products[id] 
+                        ? <img key={id} src={products[id]} alt={`Product ${id}`} className="product-image" />
+                        : 'No image'
+                    ) 
+                  : 'No products'}
+              </p>
             </li>
           ))}
         </ul>

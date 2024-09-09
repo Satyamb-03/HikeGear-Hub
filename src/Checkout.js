@@ -3,6 +3,7 @@ import { useCart } from './CartContext';
 import { useUserAuth } from './UserAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import ProductService from './ProductService'; // Import ProductService
 import './Checkout.css';
 
 function Checkout() {
@@ -21,6 +22,7 @@ function Checkout() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [discountAmount] = useState(0); // Keeping discountAmount for future use
   const [totalDays, setTotalDays] = useState(1); // Default to 1 day if not calculated
+  const [productDetails, setProductDetails] = useState({}); // State to store product details
 
   const totalCost = getTotalCost();
 
@@ -52,7 +54,29 @@ function Checkout() {
       }));
       setTotalDays(calculateDays(startDate, endDate));
     }
-  }, [location.state]);
+
+    // Fetch product details from Firestore
+    const fetchProductDetails = async () => {
+      try {
+        const productIds = cart.map((item) => item.id);
+        const productDetailsPromises = productIds.map((id) => ProductService.getProduct(id));
+        const productDocs = await Promise.all(productDetailsPromises);
+        
+        const details = {};
+        productDocs.forEach((docSnap) => {
+          if (docSnap.exists()) {
+            details[docSnap.id] = docSnap.data();
+          }
+        });
+
+        setProductDetails(details);
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+      }
+    };
+
+    fetchProductDetails();
+  }, [location.state, cart]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -76,7 +100,7 @@ function Checkout() {
       hiringFee: hiringFee,
       discountAmount: discountAmount,
       finalTotal: totalWithFee,
-      productIds: productIds, // Add product IDs to the order
+      productIds: productIds, // Use productIds array here
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
@@ -157,6 +181,18 @@ function Checkout() {
           </div>
           <div className="order-summary">
             <h3>Order Summary</h3>
+            <ul>
+              {cart.map((item) => {
+                const product = productDetails[item.id];
+                return (
+                  <li key={item.id} className="product-item">
+                    <h3>{product?.name}</h3>
+                    <p>Category: {product?.category}</p>
+                    <p>Price: ${product?.price}</p>
+                  </li>
+                );
+              })}
+            </ul>
             <p>
               <strong>Total Cost:</strong> ${totalCost.toFixed(2)}
             </p>

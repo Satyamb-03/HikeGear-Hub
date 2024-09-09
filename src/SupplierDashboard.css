@@ -172,3 +172,22 @@
   font-size: 0.875rem; /* Smaller font size */
   color: #555;
 }
+/* SupplierDashboard.css */
+.success-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 16px;
+  border-radius: 5px;
+  z-index: 1000;
+  font-size: 16px;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.success-popup.hide {
+  opacity: 0;
+}
+

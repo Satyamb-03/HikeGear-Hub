@@ -54,6 +54,7 @@ class ProductService {
   async updateProduct(id, updatedProduct) {
     try {
       const productDoc = doc(db, collectionName, id);
+      updatedProduct.updatedAt = new Date().toISOString(); // Add updated timestamp
       await updateDoc(productDoc, updatedProduct);
       console.log(`Product with ID ${id} successfully updated.`);
     } catch (error) {
@@ -101,7 +102,7 @@ class ProductService {
   async updateProductQuantity(productId, newQuantity) {
     try {
       const productRef = doc(db, collectionName, productId);
-      await updateDoc(productRef, { quantity: newQuantity });
+      await updateDoc(productRef, { quantity: newQuantity, updatedAt: new Date().toISOString() });
       console.log(`Product quantity for ID ${productId} updated to ${newQuantity}.`);
     } catch (error) {
       console.error(`Error updating quantity for product ID ${productId}:`, error);
@@ -121,6 +122,18 @@ class ProductService {
       return querySnapshot;
     } catch (error) {
       console.error(`Error fetching products by category ${category} and subcategory ${subcategory}:`, error);
+      throw error;
+    }
+  }
+
+  // Get products by supplier
+  async getProductsBySupplier(supplierId) {
+    try {
+      const productQuery = query(productCollectionRef, where("supplierId", "==", supplierId));
+      const querySnapshot = await getDocs(productQuery);
+      return querySnapshot;
+    } catch (error) {
+      console.error(`Error fetching products by supplier ID ${supplierId}:`, error);
       throw error;
     }
   }
