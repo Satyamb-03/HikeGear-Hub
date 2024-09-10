@@ -37,7 +37,7 @@ const ProtectedSupplierDashboard = ({ children }) => {
   }
 
   if (redirect) {
-    return <Navigate to="/unauthorized" />; // Redirect after the delay
+    return <Navigate to="/user-dashboard" />; // Redirect after the delay
   }
 
   return (

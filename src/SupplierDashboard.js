@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ProductService from './ProductService';
+import EarningsService from './EarningServices'; // Assuming you have this service for fetching earnings data
 import { useUserAuth } from './UserAuth'; // Assuming you have this hook for authentication
 import './SupplierDashboard.css';
 
@@ -15,8 +16,12 @@ const SupplierDashboard = () => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [products, setProducts] = useState(null); // null indicates loading state
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showProductHistory, setShowProductHistory] = useState(false); // State to toggle product history visibility
+  const [showEarnings, setShowEarnings] = useState(false); // State to toggle earnings visibility
+  const [totalCheckoutEarnings, setTotalCheckoutEarnings] = useState(0);
+  const [checkoutEarnings, setCheckoutEarnings] = useState([]);
 
-  // Fetch products on component mount and user change
+  // Fetch products and earnings on component mount and user change
   useEffect(() => {
     const fetchProducts = async () => {
       if (user) {
@@ -38,7 +43,22 @@ const SupplierDashboard = () => {
         }
       }
     };
+
+    const fetchEarnings = async () => {
+      if (user) {
+        try {
+          const totalEarnings = await EarningsService.getTotalEarningsBySupplier(user.uid);
+          const earningsByCheckout = await EarningsService.getEarningsByCheckout(user.uid);
+          setTotalCheckoutEarnings(totalEarnings);
+          setCheckoutEarnings(earningsByCheckout);
+        } catch (error) {
+          console.error("Error fetching earnings:", error);
+        }
+      }
+    };
+
     fetchProducts();
+    fetchEarnings();
   }, [user]);
 
   // Handle additional images change
@@ -123,6 +143,22 @@ const SupplierDashboard = () => {
             Add Product
           </button>
 
+          {/* New View Product History Button */}
+          <button
+            className="view-history-button"
+            onClick={() => setShowProductHistory(!showProductHistory)}
+          >
+            {showProductHistory ? 'Hide Product History' : 'View Product History'}
+          </button>
+
+          {/* New Toggle Earnings Button */}
+          <button
+            className="toggle-earnings-button"
+            onClick={() => setShowEarnings(!showEarnings)}
+          >
+            {showEarnings ? 'Hide Earnings' : 'View Earnings'}
+          </button>
+          
           {showProductForm && (
             <div className="form-popup">
               <div className="form-container">
@@ -231,37 +267,61 @@ const SupplierDashboard = () => {
             </div>
           )}
         </div>
-
-        {/* Product History Section */}
-        <div className="product-history">
-          <h2>Product History</h2>
-
-          {/* Display loading message while fetching products */}
-          {products === null ? (
-            <p>Loading product history...</p>
-          ) : products.length > 0 ? (
-            <ul>
-              {products.map((product) => (
-                <li key={product.id} className="product-item">
-                  {/* Display product name, category, and price */}
-                  <h3>{product.name}</h3>
-                  <p><strong>Category:</strong> {product.category}</p>
-                  <p><strong>Price per Day:</strong> ${product.pricePerDay.toFixed(2)}</p>
-
-                  {/* Button to delete the product */}
-                  <button 
-                    className="delete-button" 
-                    onClick={() => handleDeleteProduct(product.id)}
-                  >
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No products added yet.</p>
-          )}
-        </div>
+        
+        {/* Conditionally display Product History Section */}
+        {showProductHistory && (
+          <div className="product-history">
+            <h2>Product History</h2>
+            {products === null ? (
+              <p>Loading product history...</p>
+            ) : products.length > 0 ? (
+              <ul>
+                {products.map((product) => (
+                  <li key={product.id} className="product-item">
+                    <h3>{product.name}</h3>
+                    <p><strong>Category:</strong> {product.category}</p>
+                    <p><strong>Price per Day:</strong> ${product.pricePerDay.toFixed(2)}</p>
+                    <button 
+                      className="delete-button" 
+                      onClick={() => handleDeleteProduct(product.id)}
+                    >
+                      Delete
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No products added yet.</p>
+            )}
+            <div className="total-checkout-earnings">
+              <h2>Total Earnings</h2>
+              <p>${totalCheckoutEarnings.toFixed(2)}</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Conditionally display Earnings Section */}
+        {showEarnings && (
+          <div className="earnings-section">
+            <h2>Earnings Overview</h2>
+            <table className="earnings-table">
+              <thead>
+                <tr>
+                  <th>Checkout ID</th>
+                  <th>Earnings ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {checkoutEarnings.map(checkout => (
+                  <tr key={checkout.id}>
+                    <td>{checkout.id}</td>
+                    <td>${checkout.totalEarnings.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
