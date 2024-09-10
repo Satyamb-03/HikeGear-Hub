@@ -215,6 +215,8 @@ const UserDashboard = () => {
               <p className="card-text"><strong>Name:</strong> {userData.name}</p>
               <p className="card-text"><strong>Age:</strong> {userData.age}</p>
               <p className="card-text"><strong>Mobile:</strong> {userData.mobile}</p>
+              <Card.Text><strong>Email:</strong> {user.email}</Card.Text>
+
 
               {isEditing ? (
   <Form className="edit-profile-form">
