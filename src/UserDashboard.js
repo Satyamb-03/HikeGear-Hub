@@ -2,30 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { useUserAuth } from './UserAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Card, Form } from 'react-bootstrap';
-import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db, storage } from './firebase'; // Assuming Firebase storage is imported for file uploads
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from './firebase';
-import OrderHistory from './OrderHistory'; // Import OrderHistory
+import OrderHistory from './OrderHistory';
 import './UserDashboard.css';
 
 const UserDashboard = () => {
-  const { user, signOutUser } = useUserAuth();
+  const { user } = useUserAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ age: '', mobile: '', name: '' });
   const [isSupplierFormVisible, setIsSupplierFormVisible] = useState(false);
-  const [idFile, setIdFile] = useState(null);
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isApplicationSubmitted, setIsApplicationSubmitted] = useState(false);
-  const [orders, setOrders] = useState([]);
-  const [orderError, setOrderError] = useState(null);
-  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [file, setFile] = useState(null);
   const [isOrderHistoryVisible, setIsOrderHistoryVisible] = useState(false);
-  const [products, setProducts] = useState({});
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,100 +53,8 @@ const UserDashboard = () => {
       }
     };
 
-    const fetchOrderHistory = async () => {
-      if (!user) return;
-
-      setLoadingOrders(true);
-      try {
-        const ordersQuery = query(collection(db, 'checkout'), where('userId', '==', user.uid));
-        const querySnapshot = await getDocs(ordersQuery);
-
-        if (!querySnapshot.empty) {
-          const orderList = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              productIds: data.productIds || [],
-              productName: data.productName || 'N/A',
-              finalTotal: data.finalTotal || 0,
-              unitCost: data.unitCost || 'N/A',
-              numberOfRentalDays: data.numberOfRentalDays || 'N/A',
-              quantity: data.quantity || 'N/A',
-              startDate: data.startDate || null,
-              endDate: data.endDate || null,
-              dateCreated: data.dateCreated ? data.dateCreated.toDate() : new Date()
-            };
-          });
-          setOrders(orderList);
-
-          const productIds = orderList.flatMap(order => order.productIds || []);
-          if (productIds.length > 0) {
-            fetchProducts(productIds);
-          }
-        } else {
-          setOrders([]);
-        }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        setOrderError('Error fetching order history');
-      } finally {
-        setLoadingOrders(false);
-      }
-    };
-
-    const fetchProducts = async (productIds) => {
-      try {
-        const productsQuery = query(collection(db, 'products'), where('id', 'in', productIds));
-        const productsSnapshot = await getDocs(productsQuery);
-
-        if (!productsSnapshot.empty) {
-          const productsData = productsSnapshot.docs.reduce((acc, doc) => {
-            const data = doc.data();
-            acc[doc.id] = data.name;
-            return acc;
-          }, {});
-          setProducts(productsData);
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setOrderError('Error fetching product data');
-      }
-    };
-
     fetchUserData();
-    fetchOrderHistory();
   }, [user]);
-
-  const handleApplyForSupplier = async () => {
-    if (!idFile || !termsAgreed) {
-      setError("Please upload an ID and agree to all terms.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const idFileRef = ref(storage, `supplier-ids/${idFile.name}`);
-      const snapshot = await uploadBytes(idFileRef, idFile);
-      const idFileUrl = await getDownloadURL(idFileRef);
-
-      const userDocRef = doc(db, 'users', user.uid);
-      await setDoc(userDocRef, { 
-        ...userData, 
-        supplierRequest: {
-          status: 'pending', 
-          idFileUrl, 
-          termsAgreed 
-        } 
-      }, { merge: true });
-
-      setIsApplicationSubmitted(true);
-    } catch (error) {
-      console.error('Error applying to be a supplier:', error);
-      setError('Error submitting application');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -175,24 +78,70 @@ const UserDashboard = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    setIdFile(e.target.files[0]);
-  };
-
-  const handleTermsChange = (e) => {
-    setTermsAgreed(e.target.checked);
-  };
-
-  const toggleSupplierFormVisibility = () => {
-    setIsSupplierFormVisible(!isSupplierFormVisible);
-  };
-
   const toggleOrderHistoryVisibility = () => {
     setIsOrderHistoryVisible(!isOrderHistoryVisible);
   };
 
   const handleNavigateToSupplierDashboard = () => {
     navigate('/supplier-dashboard');
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleTermsChange = (e) => {
+    setTermsAgreed(e.target.checked);
+  };
+
+  const handleApplyForSupplier = async () => {
+    if (!file) {
+      setError('Please upload a valid ID.');
+      return;
+    }
+
+    if (!termsAgreed) {
+      setError('You must agree to the terms and conditions.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Upload the file to Firebase Storage
+      const fileRef = ref(storage, `supplier-ids/${file.name}`);
+      await uploadBytes(fileRef, file);
+
+      // Get the file's download URL
+      const idFileUrl = await getDownloadURL(fileRef);
+
+      // Update Firestore with supplier request details
+      const userDocRef = doc(db, 'users', user.uid);
+      await setDoc(userDocRef, { 
+        ...userData, 
+        supplierRequest: {
+          status: 'pending',
+          idFileUrl, 
+          termsAgreed 
+        } 
+      }, { merge: true });
+
+      setIsApplicationSubmitted(true);
+      setUserData(prevData => ({
+        ...prevData,
+        supplierRequest: {
+          status: 'pending',
+          idFileUrl,
+          termsAgreed
+        }
+      }));
+    } catch (error) {
+      console.error('Error applying to be a supplier:', error);
+      setError('Error applying to be a supplier');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -216,11 +165,10 @@ const UserDashboard = () => {
               <p className="card-text"><strong>Mobile:</strong> {userData.mobile}</p>
               <Card.Text><strong>Email:</strong> {user.email}</Card.Text>
 
-
               {isEditing ? (
                 <Form className="edit-profile-form">
                   <Form.Group controlId="formName">
-                    <Form.Label>Name:</Form.Label>
+                    <Form.Label>Name: </Form.Label>
                     <Form.Control 
                       type="text" 
                       name="name" 
@@ -229,8 +177,9 @@ const UserDashboard = () => {
                       placeholder="Enter your name"
                     />
                   </Form.Group>
+                  <br />
                   <Form.Group controlId="formAge">
-                    <Form.Label>Age:</Form.Label>
+                    <Form.Label>Age: </Form.Label>
                     <Form.Control 
                       type="number" 
                       name="age" 
@@ -239,8 +188,9 @@ const UserDashboard = () => {
                       placeholder="Enter your age"
                     />
                   </Form.Group>
+                  <br />
                   <Form.Group controlId="formMobile">
-                    <Form.Label>Mobile:</Form.Label>
+                    <Form.Label>Mobile: </Form.Label>
                     <Form.Control 
                       type="text" 
                       name="mobile" 
@@ -251,84 +201,81 @@ const UserDashboard = () => {
                   </Form.Group>
 
                   <div className="button-group">
-                    <Button 
-                      className="btn btn-primary" 
-                      onClick={handleSaveChanges}
-                    >
-                      Save Changes
-                    </Button>
-                    <Button 
-                      className="btn btn-secondary" 
-                      onClick={handleEditToggle}
-                    >
-                      Cancel
-                    </Button>
+                    <Button variant="primary" onClick={handleSaveChanges}>Save Changes</Button>
+                    <Button variant="secondary" onClick={handleEditToggle}>Cancel</Button>
                   </div>
                 </Form>
               ) : (
-                <Button className="btn btn-primary" onClick={handleEditToggle}>
-                  Edit Profile
-                </Button>
+                <div className="button-group">
+                  <Button variant="secondary" onClick={handleEditToggle}>Edit Profile</Button>
+                </div>
               )}
 
-              <Button className="btn btn-info" onClick={toggleOrderHistoryVisibility}>
-                {isOrderHistoryVisible ? 'Hide Order History' : 'View Order History'}
-              </Button>
-
-              {isOrderHistoryVisible && (
-                <OrderHistory orders={orders} products={products} error={orderError} loading={loadingOrders} />
-              )}
-
-              {userData?.role === 'supplier' && (
-                <Button className="btn btn-warning" onClick={handleNavigateToSupplierDashboard}>
+              {userData?.isSupplier ? (
+                <Button 
+                  variant="success" 
+                  onClick={handleNavigateToSupplierDashboard}
+                >
                   Go to Supplier Dashboard
                 </Button>
-              )}
-
-              {userData?.role !== 'supplier' && (
+              ) : (
                 <>
-                  <Button className="btn btn-success" onClick={toggleSupplierFormVisibility}>
-                    Apply to be a Supplier
-                  </Button>
+                  {!userData?.supplierRequest && (
+                    <>
+                      <Button 
+                        variant="warning" 
+                        onClick={() => setIsSupplierFormVisible(!isSupplierFormVisible)}
+                      >
+                        {isSupplierFormVisible ? 'Hide Apply to be Supplier' : 'Apply to be Supplier'}
+                      </Button>
 
-                  {isSupplierFormVisible && (
-                    <div className="supplier-form">
-                      <Form>
-                        <Form.Group controlId="formFile">
-                          <Form.Label>ID Proof:</Form.Label>
-                          <Form.Control 
-                            type="file" 
-                            accept=".jpg,.png,.pdf" 
-                            onChange={handleFileChange} 
+                      {isSupplierFormVisible && (
+                        <Form className="supplier-form">
+                          <Form.Group controlId="formFile">
+                            <Form.Label>Upload ID: </Form.Label>
+                            <Form.Control type="file" onChange={handleFileChange} />
+                          </Form.Group>
+                          <Form.Check
+                            type="checkbox"
+                            label={
+                              <div>
+                                I agree to the terms and conditions:
+                                <ul>
+                                  <li> All information provided must be accurate.</li>
+                                  <li> The uploaded ID must be valid and clear.</li>
+                                  <li> We reserve the right to verify all details provided.</li>
+                                  <li> Any misuse of our platform may lead to termination of application.</li>
+                                </ul>
+                              </div>}
+                            checked={termsAgreed}
+                            onChange={handleTermsChange}
                           />
-                        </Form.Group>
-                        <Form.Group controlId="formTerms">
-                          <Form.Check 
-                            type="checkbox" 
-                            label="I agree to all terms and conditions" 
-                            checked={termsAgreed} 
-                            onChange={handleTermsChange} 
-                          />
-                        </Form.Group>
-
-                        <Button 
-                          className="btn btn-primary" 
-                          onClick={handleApplyForSupplier}
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                        </Button>
-
-                        {isApplicationSubmitted && <p className="success-text">Application submitted successfully!</p>}
-                      </Form>
-                    </div>
+                          <Button 
+                            className="btn btn-success" 
+                            onClick={handleApplyForSupplier} 
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                          </Button>
+                          {error && <p className="error-text">{error}</p>}
+                          {isApplicationSubmitted && <p className="success-text">Application submitted successfully!</p>}
+                        </Form>
+                      )}
+                    </>
+                  )}
+                  {userData?.supplierRequest?.status === 'pending' && (
+                    <p>Your application to become a supplier is under review.</p>
                   )}
                 </>
               )}
 
-              <Button className="btn btn-danger" onClick={signOutUser}>
-                Log Out
+              <Button variant="info" onClick={toggleOrderHistoryVisibility}>
+                {isOrderHistoryVisible ? 'Hide Order History' : 'Show Order History'}
               </Button>
+
+              {isOrderHistoryVisible && (
+                <OrderHistory orders={userData.orders || []} />
+              )}
             </>
           )}
         </Card.Body>
