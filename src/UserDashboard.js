@@ -22,9 +22,9 @@ const UserDashboard = () => {
   const [isApplicationSubmitted, setIsApplicationSubmitted] = useState(false);
   const [orders, setOrders] = useState([]);
   const [orderError, setOrderError] = useState(null);
-  const [loadingOrders, setLoadingOrders] = useState(true); // Loading state for orders
-  const [isOrderHistoryVisible, setIsOrderHistoryVisible] = useState(false); // State for order history visibility
-  const [products, setProducts] = useState({}); // To store product data
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [isOrderHistoryVisible, setIsOrderHistoryVisible] = useState(false);
+  const [products, setProducts] = useState({});
 
   const navigate = useNavigate();
 
@@ -71,7 +71,7 @@ const UserDashboard = () => {
             const data = doc.data();
             return {
               id: doc.id,
-              productIds: data.productIds || [], // Ensure productIds is an array
+              productIds: data.productIds || [],
               productName: data.productName || 'N/A',
               finalTotal: data.finalTotal || 0,
               unitCost: data.unitCost || 'N/A',
@@ -84,7 +84,6 @@ const UserDashboard = () => {
           });
           setOrders(orderList);
 
-          // Fetch product data
           const productIds = orderList.flatMap(order => order.productIds || []);
           if (productIds.length > 0) {
             fetchProducts(productIds);
@@ -108,7 +107,7 @@ const UserDashboard = () => {
         if (!productsSnapshot.empty) {
           const productsData = productsSnapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
-            acc[doc.id] = data.name; // Adjust field based on your data structure
+            acc[doc.id] = data.name;
             return acc;
           }, {});
           setProducts(productsData);
@@ -189,11 +188,11 @@ const UserDashboard = () => {
   };
 
   const toggleOrderHistoryVisibility = () => {
-    setIsOrderHistoryVisible(!isOrderHistoryVisible); // Toggle order history visibility
+    setIsOrderHistoryVisible(!isOrderHistoryVisible);
   };
 
   const handleNavigateToSupplierDashboard = () => {
-    navigate('/supplier-dashboard'); // Adjust the route if needed
+    navigate('/supplier-dashboard');
   };
 
   if (loading) {
@@ -208,7 +207,7 @@ const UserDashboard = () => {
     <Container className="dashboard-container">
       <Card className="dashboard-card">
         <Card.Body>
-        <h2 className="welcome-message">Welcome, {userData?.name || "User"}!</h2>
+          <h2 className="welcome-message">Welcome, {userData?.name || "User"}!</h2>
 
           {userData && (
             <>
@@ -219,110 +218,117 @@ const UserDashboard = () => {
 
 
               {isEditing ? (
-  <Form className="edit-profile-form">
-    <Form.Group controlId="formName">
-      <Form.Label>Name: </Form.Label>
-      <Form.Control 
-        type="text" 
-        name="name" 
-        value={editForm.name} 
-        onChange={handleInputChange} 
-        placeholder="Enter your name"
-      />
-    </Form.Group>
-<br></br>
-    <Form.Group controlId="formAge">
-      <Form.Label>Age: </Form.Label>
-      <Form.Control 
-        type="number" 
-        name="age" 
-        value={editForm.age} 
-        onChange={handleInputChange} 
-        placeholder="Enter your age"
-      />
-    </Form.Group>
-<br></br>
-    <Form.Group controlId="formMobile">
-      <Form.Label>Mobile: </Form.Label>
-      <Form.Control 
-        type="text" 
-        name="mobile" 
-        value={editForm.mobile} 
-        onChange={handleInputChange} 
-        placeholder="Enter your mobile number"
-      />
-    </Form.Group>
+                <Form className="edit-profile-form">
+                  <Form.Group controlId="formName">
+                    <Form.Label>Name:</Form.Label>
+                    <Form.Control 
+                      type="text" 
+                      name="name" 
+                      value={editForm.name} 
+                      onChange={handleInputChange} 
+                      placeholder="Enter your name"
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formAge">
+                    <Form.Label>Age:</Form.Label>
+                    <Form.Control 
+                      type="number" 
+                      name="age" 
+                      value={editForm.age} 
+                      onChange={handleInputChange} 
+                      placeholder="Enter your age"
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formMobile">
+                    <Form.Label>Mobile:</Form.Label>
+                    <Form.Control 
+                      type="text" 
+                      name="mobile" 
+                      value={editForm.mobile} 
+                      onChange={handleInputChange} 
+                      placeholder="Enter your mobile number"
+                    />
+                  </Form.Group>
 
-    <div className="button-group">
-      <Button 
-        className="btn btn-primary" 
-        onClick={handleSaveChanges}
-      >
-        Save Changes
-      </Button>
-      <Button 
-        className="btn btn-secondary" 
-        onClick={handleEditToggle}
-      >
-        Cancel
-      </Button>
-    </div>
-  </Form>
-) : (
-  <Button className="btn btn-primary" onClick={handleEditToggle}>
-    Edit Profile
-  </Button>
-)}
-
+                  <div className="button-group">
+                    <Button 
+                      className="btn btn-primary" 
+                      onClick={handleSaveChanges}
+                    >
+                      Save Changes
+                    </Button>
+                    <Button 
+                      className="btn btn-secondary" 
+                      onClick={handleEditToggle}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </Form>
+              ) : (
+                <Button className="btn btn-primary" onClick={handleEditToggle}>
+                  Edit Profile
+                </Button>
+              )}
 
               <Button className="btn btn-info" onClick={toggleOrderHistoryVisibility}>
-                {isOrderHistoryVisible ? 'Hide Order History' : 'Show Order History'}
+                {isOrderHistoryVisible ? 'Hide Order History' : 'View Order History'}
               </Button>
 
               {isOrderHistoryVisible && (
                 <OrderHistory orders={orders} products={products} error={orderError} loading={loadingOrders} />
               )}
 
-              <Button className="btn btn-secondary" onClick={handleNavigateToSupplierDashboard}>
-                Go to Supplier Dashboard
-              </Button>
-
-              <Button className="btn btn-success" onClick={toggleSupplierFormVisibility}>
-                {isSupplierFormVisible ? 'Hide Supplier Form' : 'Apply to be a Supplier'}
-              </Button>
-
-              {isSupplierFormVisible && (
-                <Form className="supplier-form">
-                  <Form.Group controlId="formFile">
-                    <Form.Label>Upload ID: </Form.Label>
-                    <Form.Control type="file" onChange={handleFileChange} />
-                  </Form.Group>
-                  <Form.Check
-                    type="checkbox"
-                    label={
-                      <div>
-                        I agree to the terms and conditions:
-                        <ul>
-                          <li> All information provided must be accurate.</li>
-                          <li> The uploaded ID must be valid and clear.</li>
-                          <li> We reserve the right to verify all details provided.</li>
-                          <li> Any misuse of our platform may lead to termination of application.</li>
-                        </ul>
-                      </div>}
-                    checked={termsAgreed}
-                    onChange={handleTermsChange}
-                  />
-                  <Button 
-                    className="btn btn-success" 
-                    onClick={handleApplyForSupplier} 
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                  </Button>
-                  {error && <p className="error-text">{error}</p>}
-                  {isApplicationSubmitted && <p className="success-text">Application submitted successfully!</p>}
-                </Form>
+              {userData?.role === 'supplier' && (
+                <Button className="btn btn-warning" onClick={handleNavigateToSupplierDashboard}>
+                  Go to Supplier Dashboard
+                </Button>
               )}
+
+              {userData?.role !== 'supplier' && (
+                <>
+                  <Button className="btn btn-success" onClick={toggleSupplierFormVisibility}>
+                    Apply to be a Supplier
+                  </Button>
+
+                  {isSupplierFormVisible && (
+                    <div className="supplier-form">
+                      <Form>
+                        <Form.Group controlId="formFile">
+                          <Form.Label>ID Proof:</Form.Label>
+                          <Form.Control 
+                            type="file" 
+                            accept=".jpg,.png,.pdf" 
+                            onChange={handleFileChange} 
+                          />
+                        </Form.Group>
+                        <Form.Group controlId="formTerms">
+                          <Form.Check 
+                            type="checkbox" 
+                            label="I agree to all terms and conditions" 
+                            checked={termsAgreed} 
+                            onChange={handleTermsChange} 
+                          />
+                        </Form.Group>
+
+                        <Button 
+                          className="btn btn-primary" 
+                          onClick={handleApplyForSupplier}
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                        </Button>
+
+                        {isApplicationSubmitted && <p className="success-text">Application submitted successfully!</p>}
+                      </Form>
+                    </div>
+                  )}
+                </>
+              )}
+
+              <Button className="btn btn-danger" onClick={signOutUser}>
+                Log Out
+              </Button>
             </>
           )}
         </Card.Body>

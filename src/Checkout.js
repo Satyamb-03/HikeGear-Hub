@@ -3,7 +3,6 @@ import { useCart } from './CartContext';
 import { useUserAuth } from './UserAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import ProductService from './ProductService'; // Import ProductService
 import './Checkout.css';
 
 function Checkout() {
@@ -20,10 +19,11 @@ function Checkout() {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [discountAmount] = useState(0); // Keeping discountAmount for future use
-  const [totalDays, setTotalDays] = useState(1); // Default to 1 day if not calculated
-  const [productDetails, setProductDetails] = useState({}); // State to store product details
-
+  const [feedback, setFeedback] = useState('');
+  const [rating, setRating] = useState(0); // New state for rating
+  const [totalDays, setTotalDays] = useState(1);
+  const [submittedDate, setSubmittedDate] = useState('');
+  const [submittedTime, setSubmittedTime] = useState('');
   const totalCost = getTotalCost();
 
   const baseHiringFee = 50;
@@ -43,29 +43,7 @@ function Checkout() {
       }));
       setTotalDays(calculateDays(startDate, endDate));
     }
-
-    // Fetch product details from Firestore
-    const fetchProductDetails = async () => {
-      try {
-        const productIds = cart.map((item) => item.id);
-        const productDetailsPromises = productIds.map((id) => ProductService.getProduct(id));
-        const productDocs = await Promise.all(productDetailsPromises);
-        
-        const details = {};
-        productDocs.forEach((docSnap) => {
-          if (docSnap.exists()) {
-            details[docSnap.id] = docSnap.data();
-          }
-        });
-
-        setProductDetails(details);
-      } catch (error) {
-        console.error('Error fetching product details:', error);
-      }
-    };
-
-    fetchProductDetails();
-  }, [location.state, cart]);
+  }, [location.state]);
 
   const calculateDays = (startDate, endDate) => {
     if (startDate && endDate) {
@@ -98,17 +76,20 @@ function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const productIds = cart.map((item) => item.id);
-
+  
+    const products = cart.map((item) => ({
+      id: item.id,
+      name: item.name,
+    })); // Map to include both id and name
+  
     const orderData = {
       ...formData,
       totalCost: totalCost,
       serviceFee: serviceFee,
       hiringFee: hiringFee,
       finalTotal: totalWithFee,
-      productIds: productIds,
-      productIds: productIds, // Use productIds array here
+      productIds: products.map((product) => product.id), // Store product IDs
+      productNames: products.map((product) => product.name), // Store product names
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
@@ -116,19 +97,36 @@ function Checkout() {
       startDate: location.state.startDate,
       endDate: location.state.endDate,
     };
-
+  
     try {
       await addDoc(collection(db, 'checkout'), orderData);
       setIsSubmitted(true);
+      setSubmittedDate(formData.pickupDate); 
+      setSubmittedTime(formData.pickupTime); 
       clearCart();
     } catch (error) {
       console.error('Error adding document: ', error);
     }
   };
+  
 
-  const handleBackToHome = () => {
-    clearCart();
-    navigate('/');
+  const handleFeedbackSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await addDoc(collection(db, 'feedback'), {
+        userId: user.uid,
+        userName: user.displayName,
+        feedback: feedback,
+        rating: rating, // Include rating in the feedback
+        dateSubmitted: new Date(),
+      });
+      setFeedback('');
+      setRating(0); // Reset rating
+      navigate('/');
+    } catch (error) {
+      console.error('Error submitting feedback: ', error);
+    }
   };
 
   const handleBackToCart = () => {
@@ -139,12 +137,39 @@ function Checkout() {
 
   return (
     <div className="Checkout">
-      <h2>Checkout</h2>
+      <h2>Done!!</h2>
       {isSubmitted ? (
         <div className="ThankYou">
           <h2>Thank You for Your Purchase!</h2>
-          <p>Your order has been placed successfully. You can pick up your items at the selected time.</p>
-          <button onClick={handleBackToHome}>Back to Home</button>
+          <p>
+            Your order has been placed successfully. You can pick up your items
+            on <strong>{submittedDate}</strong> at <strong>{submittedTime}</strong>.
+          </p>
+
+          <div className="Feedback">
+            <h3>We'd love to hear your feedback!</h3>
+            <form onSubmit={handleFeedbackSubmit}>
+              <div className="rating">
+                <label>Rating:</label>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`star ${rating >= star ? 'filled' : ''}`}
+                    onClick={() => setRating(star)}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <textarea
+                placeholder="Leave your feedback"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                required
+              />
+              <button type="submit">Submit Feedback</button>
+            </form>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -194,30 +219,6 @@ function Checkout() {
             <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)}</p>
             <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
             <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
-            <ul>
-              {cart.map((item) => {
-                const product = productDetails[item.id];
-                return (
-                  <li key={item.id} className="product-item">
-                    <h3>{product?.name}</h3>
-                    <p>Category: {product?.category}</p>
-                    <p>Price: ${product?.price}</p>
-                  </li>
-                );
-              })}
-            </ul>
-            <p>
-              <strong>Total Cost:</strong> ${totalCost.toFixed(2)}
-            </p>
-            <p>
-              <strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)} (Refundable upon gear return)
-            </p>
-            <p>
-              <strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}
-            </p>
-            <p>
-              <strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}
-            </p>
           </div>
           <div className="form-actions">
             <button type="button" onClick={handleBackToCart}>
