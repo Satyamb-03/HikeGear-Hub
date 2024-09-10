@@ -29,7 +29,7 @@ body {
 /* Button Styles */
 .action-button {
   padding: 10px 15px;
-  background-color: #5289A1;
+  background-color: #074088;
   color: white;
   border: none;
   border-radius: 4px;
@@ -43,7 +43,7 @@ body {
 }
 
 .add-product-button {
-  background-color: #4CAF50; /* Green for adding products */
+  background-color: #074088; /* Green for adding products */
 }
 
 .add-product-button:hover {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, updateDoc, doc, deleteDoc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, deleteDoc,getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import ProductService from './ProductService';
 import { useNavigate } from 'react-router-dom';
@@ -68,20 +68,35 @@ const AdminDashboard = () => {
     try {
       const checkoutCollection = collection(db, 'checkout');
       const querySnapshot = await getDocs(checkoutCollection);
-      const checkoutList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
+  
+      // Map the checkout data including the new fields
+      const checkoutList = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        serviceFee: doc.data().serviceFee || 0,  // Existing serviceFee
+        finalTotal: doc.data().finalTotal || 0,  // New finalTotal field
+        userId: doc.data().userId || 'Unknown',  // New userId field
+        productNames: doc.data().productNames || [],  // New productNames field (as array or string)
+      }));
+  
+      // Calculate total earnings (if needed for the existing functionality)
       const total = checkoutList.reduce((acc, order) => acc + (order.serviceFee || 0), 0);
       setTotalCheckoutEarnings(total);
-
+  
+      // Store checkout earnings data with new fields
       const earningsByCheckout = checkoutList.map(order => ({
         id: order.id,
-        totalEarnings: order.serviceFee || 0
+        totalEarnings: order.serviceFee,
+        finalTotal: order.finalTotal,   // New field added
+        userId: order.userId,           // New field added
+        productNames: order.productNames.join(', '),  // New field added (join to display as string)
       }));
       setCheckoutEarnings(earningsByCheckout);
+  
     } catch (error) {
       console.error('Error fetching checkout earnings:', error);
     }
   };
+  
 
   const handleAdditionalImagesChange = (e) => {
     setAdditionalImageFiles(e.target.files);
@@ -114,9 +129,8 @@ const AdminDashboard = () => {
   const handleDeleteUser = async (userId) => {
     try {
       const user = users.find(user => user.id === userId);
-      // Check if user is admin
-      if (user.role === 'admin' && user.email === 'hikeGear1@gmail.com') {
-        alert('Cannot delete the admin user.');
+      if (user.role === 'admin') {
+        alert('Cannot delete an admin user.');
         return;
       }
       await deleteDoc(doc(db, 'users', userId));
@@ -197,20 +211,26 @@ const AdminDashboard = () => {
         <div className="checkout-earnings">
           <h2>Earnings by Checkout</h2>
           <table className="earnings-table">
-            <thead>
-              <tr>
-                <th>Checkout ID</th>
-                <th>Earnings ($)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {checkoutEarnings.map(checkout => (
-                <tr key={checkout.id}>
-                  <td>{checkout.id}</td>
-                  <td>${checkout.totalEarnings.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
+          <thead>
+    <tr>
+      <th>Checkout ID</th>
+      <th>Service Fee</th>
+      <th>Final Total</th>  {/* New column */}
+      <th>User ID</th>      {/* New column */}
+      <th>Product Names</th>{/* New column */}
+    </tr>
+  </thead>
+  <tbody>
+    {checkoutEarnings.map((checkout) => (
+      <tr key={checkout.id}>
+        <td>{checkout.id}</td>
+        <td>${checkout.totalEarnings}</td>
+        <td>${checkout.finalTotal}</td>  {/* Display finalTotal */}
+        <td>{checkout.userId}</td>       {/* Display userId */}
+        <td>{checkout.productNames}</td> {/* Display productNames */}
+      </tr>
+    ))}
+  </tbody>
           </table>
         </div>
 
@@ -244,10 +264,7 @@ const AdminDashboard = () => {
                         </select>
                       </td>
                       <td>
-                        <button 
-                          onClick={() => handleDeleteUser(user.id)}
-                          disabled={user.role === 'admin'}
-                        >
+                        <button onClick={() => handleDeleteUser(user.id)} className="delete-button" disabled={user.role === 'admin'}>
                           Delete
                         </button>
                       </td>
@@ -267,7 +284,7 @@ const AdminDashboard = () => {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>User Name</th>
+                    <th>Username</th>
                     <th>Email</th>
                     <th>ID Proof</th>
                     <th>Actions</th>
@@ -278,12 +295,14 @@ const AdminDashboard = () => {
                     <tr key={request.id}>
                       <td>{request.userName}</td>
                       <td>{request.userEmail}</td>
+                      <td><a href={request.idProofUrl} target="_blank" rel="noopener noreferrer">View</a></td>
                       <td>
-                        <a href={request.idProofUrl} target="_blank" rel="noopener noreferrer">View ID Proof</a>
-                      </td>
-                      <td>
-                        <button onClick={() => handleApproveSupplier(request.id)}>Approve</button>
-                        <button onClick={() => handleDenySupplier(request.id)}>Deny</button>
+                        <button onClick={() => handleApproveSupplier(request.id)} className="approve-button">
+                          Approve
+                        </button>
+                        <button onClick={() => handleDenySupplier(request.id)} className="deny-button">
+                          Deny
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -300,54 +319,28 @@ const AdminDashboard = () => {
               <h2>Add Product</h2>
               <form onSubmit={handleSubmit}>
                 <label>
-                  Name:
-                  <input 
-                    type="text" 
-                    value={name} 
-                    onChange={(e) => setName(e.target.value)} 
-                    required 
-                  />
+                  Product Name:
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
                 </label>
                 <label>
                   Description:
-                  <textarea 
-                    value={description} 
-                    onChange={(e) => setDescription(e.target.value)} 
-                    required 
-                  />
+                  <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
                 </label>
                 <label>
-                  Price Per Day:
-                  <input 
-                    type="number" 
-                    value={pricePerDay} 
-                    onChange={(e) => setPricePerDay(e.target.value)} 
-                    required 
-                  />
+                  Price Per Day ($):
+                  <input type="number" value={pricePerDay} onChange={(e) => setPricePerDay(e.target.value)} required />
                 </label>
                 <label>
                   Main Image:
-                  <input 
-                    type="file" 
-                    onChange={(e) => setMainImageFile(e.target.files[0])} 
-                    required 
-                  />
+                  <input type="file" accept="image/*" onChange={(e) => setMainImageFile(e.target.files[0])} required />
                 </label>
                 <label>
                   Additional Images:
-                  <input 
-                    type="file" 
-                    multiple 
-                    onChange={handleAdditionalImagesChange} 
-                  />
+                  <input type="file" accept="image/*" multiple onChange={handleAdditionalImagesChange} />
                 </label>
                 <label>
                   Category:
-                  <select 
-                    value={category} 
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
-                  >
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} required>
                     <option value="Clothing">Clothing</option>
                     <option value="Footwear">Footwear</option>
                     <option value="Gear">Gear</option>
@@ -356,11 +349,7 @@ const AdminDashboard = () => {
                 </label>
                 <label>
                   Subcategory:
-                  <select 
-                    value={subcategory} 
-                    onChange={(e) => setSubcategory(e.target.value)}
-                    required
-                  >
+                  <select value={subcategory} onChange={(e) => setSubcategory(e.target.value)} required>
                     {category === 'Clothing' && (
                       <>
                         <option value="Men's Clothing">Men's Clothing</option>
@@ -377,7 +366,6 @@ const AdminDashboard = () => {
                     )}
                     {category === 'Gear' && (
                       <>
-                        <option value="Camp Furniture">Camp Furniture</option>
                         <option value="Camp Kitchen">Camp Kitchen</option>
                         <option value="Packs">Packs</option>
                         <option value="Sleep Systems">Sleep Systems</option>
@@ -387,7 +375,6 @@ const AdminDashboard = () => {
                     )}
                     {category === 'Accessories' && (
                       <>
-                        <option value="Headwear">Headwear</option>
                         <option value="Clothing Accessories">Clothing Accessories</option>
                         <option value="Footwear Accessories">Footwear Accessories</option>
                         <option value="Backpack Accessories">Backpack Accessories</option>
@@ -395,7 +382,7 @@ const AdminDashboard = () => {
                     )}
                   </select>
                 </label>
-                <button type="submit">Add Product</button>
+                <button type="submit" className="submit-button">Add Product</button>
               </form>
             </div>
           </div>
