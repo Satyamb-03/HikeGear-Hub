@@ -12,7 +12,7 @@ const AdminDashboard = () => {
   const [mainImageFile, setMainImageFile] = useState(null);
   const [additionalImageFiles, setAdditionalImageFiles] = useState([]);
   const [category, setCategory] = useState('Clothing');
-  const [subcategory, setSubcategory] = useState('Men');
+  const [subcategory, setSubcategory] = useState('Men\'s Clothing');
   const [users, setUsers] = useState([]);
   const [supplierRequests, setSupplierRequests] = useState([]);
   const [showProductForm, setShowProductForm] = useState(false);
@@ -42,7 +42,8 @@ const AdminDashboard = () => {
         .map(user => ({
           id: user.id,
           userName: user.name,
-          userEmail: user.email
+          userEmail: user.email,
+          idProofUrl: user.supplierRequest.idFileUrl // Accessing the URL from supplierRequest
         }));
       setSupplierRequests(requests);
     } catch (error) {
@@ -228,6 +229,7 @@ const AdminDashboard = () => {
                   <tr>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>ID Proof</th> {/* Column for ID proof */}
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -236,6 +238,13 @@ const AdminDashboard = () => {
                     <tr key={request.id}>
                       <td>{request.userName}</td>
                       <td>{request.userEmail}</td>
+                      <td>
+                        {request.idProofUrl ? (
+                          <img src={request.idProofUrl} alt="ID Proof" className="id-proof-image" />
+                        ) : (
+                          'No proof provided'
+                        )}
+                      </td>
                       <td>
                         <button onClick={() => handleApproveSupplier(request.id)} className="approve-button">Approve</button>
                         <button onClick={() => handleDenySupplier(request.id)} className="deny-button">Deny</button>
@@ -252,68 +261,76 @@ const AdminDashboard = () => {
           <div className="form-popup">
             <div className="form-container">
               <button type="button" className="close-button" onClick={() => setShowProductForm(false)}>Close</button>
-              <h2>Add Product</h2>
+              <h2>Add New Product</h2>
               <form onSubmit={handleSubmit}>
-                <label htmlFor="name">Product Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-                <label htmlFor="description">Description</label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                ></textarea>
-                <label htmlFor="pricePerDay">Price per Day</label>
-                <input
-                  type="number"
-                  id="pricePerDay"
-                  value={pricePerDay}
-                  onChange={(e) => setPricePerDay(e.target.value)}
-                  required
-                />
-                <label htmlFor="mainImage">Main Image</label>
-                <input
-                  type="file"
-                  id="mainImage"
-                  onChange={(e) => setMainImageFile(e.target.files[0])}
-                  required
-                />
-                <label htmlFor="additionalImages">Additional Images</label>
-                <input
-                  type="file"
-                  id="additionalImages"
-                  multiple
-                  onChange={handleAdditionalImagesChange}
-                />
-                <label htmlFor="category">Category</label>
-                <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  <option value="Clothing">Clothing</option>
-                  <option value="Footwear">Footwear</option>
-                  <option value="Gear">Gear</option>
-                  <option value="Accessories">Accessories</option>
-                </select>
-                <label htmlFor="subcategory">Subcategory</label>
-                <select
-                  id="subcategory"
-                  value={subcategory}
-                  onChange={(e) => setSubcategory(e.target.value)}
-                >
-                  {/* Subcategory options based on the category */}
-                  <option value="Men">Men</option>
-                  <option value="Women">Women</option>
-                  <option value="Kids">Kids</option>
-                </select>
-                <button type="submit" className="submit-button">Submit</button>
+                <label>
+                  Name:
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                </label>
+                <label>
+                  Description:
+                  <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
+                </label>
+                <label>
+                  Price per Day:
+                  <input type="number" value={pricePerDay} onChange={(e) => setPricePerDay(e.target.value)} required />
+                </label>
+                <label>
+                  Main Image:
+                  <input type="file" onChange={(e) => setMainImageFile(e.target.files[0])} required />
+                </label>
+                <label>
+                  Additional Images:
+                  <input type="file" multiple onChange={handleAdditionalImagesChange} />
+                </label>
+                <label>
+                  Category:
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} required>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Footwear">Footwear</option>
+                    <option value="Gear">Gear</option>
+                    <option value="Accessories">Accessories</option>
+                  </select>
+                </label>
+                <label>
+                  Subcategory:
+                  <select value={subcategory} onChange={(e) => setSubcategory(e.target.value)} required>
+                    {/* Update options based on selected category */}
+                    {category === 'Clothing' && (
+                      <>
+                        <option value="Men's Clothing">Men's Clothing</option>
+                        <option value="Women's Clothing">Women's Clothing</option>
+                        <option value="Kid's Clothing">Kid's Clothing</option>
+                      </>
+                    )}
+                    {category === 'Footwear' && (
+                      <>
+                        <option value="Men's Footwear">Men's Footwear</option>
+                        <option value="Women's Footwear">Women's Footwear</option>
+                        <option value="Kid's Footwear">Kid's Footwear</option>
+                      </>
+                    )}
+                    {category === 'Gear' && (
+                      <>
+                        <option value="Camp Furniture">Camp Furniture</option>
+                        <option value="Camp Kitchen">Camp Kitchen</option>
+                        <option value="Packs">Packs</option>
+                        <option value="Sleep Systems">Sleep Systems</option>
+                        <option value="Tents & Bivvies">Tents & Bivvies</option>
+                        <option value="Additional Gear">Additional Gear</option>
+                      </>
+                    )}
+                    {category === 'Accessories' && (
+                      <>
+                        <option value="Headwear">Headwear</option>
+                        <option value="Clothing Accessories">Clothing Accessories</option>
+                        <option value="Footwear Accessories">Footwear Accessories</option>
+                        <option value="Backpack Accessories">Backpack Accessories</option>
+                      </>
+                    )}
+                  </select>
+                </label>
+                <button type="submit" className="submit-button">Add Product</button>
               </form>
             </div>
           </div>
