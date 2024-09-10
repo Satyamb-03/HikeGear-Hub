@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, deleteDoc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import ProductService from './ProductService';
 import { useNavigate } from 'react-router-dom';
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
           id: user.id,
           userName: user.name,
           userEmail: user.email,
-          idProofUrl: user.supplierRequest.idFileUrl // Accessing the URL from supplierRequest
+          idProofUrl: user.supplierRequest.idFileUrl
         }));
       setSupplierRequests(requests);
     } catch (error) {
@@ -113,11 +113,37 @@ const AdminDashboard = () => {
 
   const handleDeleteUser = async (userId) => {
     try {
+      const user = users.find(user => user.id === userId);
+      // Check if user is admin
+      if (user.role === 'admin' && user.email === 'hikeGear1@gmail.com') {
+        alert('Cannot delete the admin user.');
+        return;
+      }
       await deleteDoc(doc(db, 'users', userId));
       setUsers(users.filter(user => user.id !== userId));
       setSupplierRequests(supplierRequests.filter(request => request.id !== userId));
     } catch (error) {
       console.error('Error deleting user:', error);
+    }
+  };
+
+  const handleRoleChange = async (userId, newRole) => {
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+      const userData = userDoc.data();
+
+      if (userData.role === 'admin') {
+        alert('The admin role cannot be changed.');
+        return;
+      }
+
+      await updateDoc(userDocRef, {
+        isSupplier: newRole === 'Supplier'
+      });
+      fetchUsers(); // Refresh user list to reflect changes
+    } catch (error) {
+      console.error('Error updating user role:', error);
     }
   };
 
@@ -207,9 +233,23 @@ const AdminDashboard = () => {
                     <tr key={user.id}>
                       <td>{user.name}</td>
                       <td>{user.email}</td>
-                      <td>{user.role || 'User'}</td>
                       <td>
-                        <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
+                        <select 
+                          value={user.isSupplier ? 'Supplier' : 'Customer'} 
+                          onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                          disabled={user.role === 'admin'}
+                        >
+                          <option value="Customer">Customer</option>
+                          <option value="Supplier">Supplier</option>
+                        </select>
+                      </td>
+                      <td>
+                        <button 
+                          onClick={() => handleDeleteUser(user.id)}
+                          disabled={user.role === 'admin'}
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -227,9 +267,9 @@ const AdminDashboard = () => {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Name</th>
+                    <th>User Name</th>
                     <th>Email</th>
-                    <th>ID Proof</th> {/* Column for ID proof */}
+                    <th>ID Proof</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -239,15 +279,11 @@ const AdminDashboard = () => {
                       <td>{request.userName}</td>
                       <td>{request.userEmail}</td>
                       <td>
-                        {request.idProofUrl ? (
-                          <img src={request.idProofUrl} alt="ID Proof" className="id-proof-image" />
-                        ) : (
-                          'No proof provided'
-                        )}
+                        <a href={request.idProofUrl} target="_blank" rel="noopener noreferrer">View ID Proof</a>
                       </td>
                       <td>
-                        <button onClick={() => handleApproveSupplier(request.id)} className="approve-button">Approve</button>
-                        <button onClick={() => handleDenySupplier(request.id)} className="deny-button">Deny</button>
+                        <button onClick={() => handleApproveSupplier(request.id)}>Approve</button>
+                        <button onClick={() => handleDenySupplier(request.id)}>Deny</button>
                       </td>
                     </tr>
                   ))}
@@ -261,31 +297,57 @@ const AdminDashboard = () => {
           <div className="form-popup">
             <div className="form-container">
               <button type="button" className="close-button" onClick={() => setShowProductForm(false)}>Close</button>
-              <h2>Add New Product</h2>
+              <h2>Add Product</h2>
               <form onSubmit={handleSubmit}>
                 <label>
                   Name:
-                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                  <input 
+                    type="text" 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                    required 
+                  />
                 </label>
                 <label>
                   Description:
-                  <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
+                  <textarea 
+                    value={description} 
+                    onChange={(e) => setDescription(e.target.value)} 
+                    required 
+                  />
                 </label>
                 <label>
-                  Price per Day:
-                  <input type="number" value={pricePerDay} onChange={(e) => setPricePerDay(e.target.value)} required />
+                  Price Per Day:
+                  <input 
+                    type="number" 
+                    value={pricePerDay} 
+                    onChange={(e) => setPricePerDay(e.target.value)} 
+                    required 
+                  />
                 </label>
                 <label>
                   Main Image:
-                  <input type="file" onChange={(e) => setMainImageFile(e.target.files[0])} required />
+                  <input 
+                    type="file" 
+                    onChange={(e) => setMainImageFile(e.target.files[0])} 
+                    required 
+                  />
                 </label>
                 <label>
                   Additional Images:
-                  <input type="file" multiple onChange={handleAdditionalImagesChange} />
+                  <input 
+                    type="file" 
+                    multiple 
+                    onChange={handleAdditionalImagesChange} 
+                  />
                 </label>
                 <label>
                   Category:
-                  <select value={category} onChange={(e) => setCategory(e.target.value)} required>
+                  <select 
+                    value={category} 
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                  >
                     <option value="Clothing">Clothing</option>
                     <option value="Footwear">Footwear</option>
                     <option value="Gear">Gear</option>
@@ -294,8 +356,11 @@ const AdminDashboard = () => {
                 </label>
                 <label>
                   Subcategory:
-                  <select value={subcategory} onChange={(e) => setSubcategory(e.target.value)} required>
-                    {/* Update options based on selected category */}
+                  <select 
+                    value={subcategory} 
+                    onChange={(e) => setSubcategory(e.target.value)}
+                    required
+                  >
                     {category === 'Clothing' && (
                       <>
                         <option value="Men's Clothing">Men's Clothing</option>
@@ -330,7 +395,7 @@ const AdminDashboard = () => {
                     )}
                   </select>
                 </label>
-                <button type="submit" className="submit-button">Add Product</button>
+                <button type="submit">Add Product</button>
               </form>
             </div>
           </div>
