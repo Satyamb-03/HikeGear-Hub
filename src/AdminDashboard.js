@@ -21,6 +21,7 @@ const AdminDashboard = () => {
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [checkoutEarnings, setCheckoutEarnings] = useState([]);
   const [totalCheckoutEarnings, setTotalCheckoutEarnings] = useState(0);
+  const [feedbacks, setFeedbacks] = useState([]);
 
   const navigate = useNavigate();
 
@@ -28,7 +29,21 @@ const AdminDashboard = () => {
     fetchUsers();
     fetchOrders();
     fetchCheckoutEarnings();
+    fetchFeedbacks();
+   
   }, []);
+
+  const fetchFeedbacks = async () => {
+    try {
+      const feedbackCollection = collection(db, 'feedback');  // Corrected collection name
+      const querySnapshot = await getDocs(feedbackCollection);
+      const feedbackList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setFeedbacks(feedbackList);
+    } catch (error) {
+      console.error('Error fetching feedbacks:', error);
+    }
+  };
+  
 
   const fetchUsers = async () => {
     try {
@@ -204,35 +219,39 @@ const AdminDashboard = () => {
           </button>
         </div>
 
-        <div className="total-checkout-earnings">
-          <h2>Total Earnings from Checkout</h2>
-          <p>${totalCheckoutEarnings.toFixed(2)}</p>
-        </div>
-        <div className="checkout-earnings">
-          <h2>Earnings by Checkout</h2>
-          <table className="earnings-table">
-          <thead>
-    <tr>
-      <th>Checkout ID</th>
-      <th>Service Fee</th>
-      <th>Final Total</th>  {/* New column */}
-      <th>User ID</th>      {/* New column */}
-      <th>Product Names</th>{/* New column */}
-    </tr>
-  </thead>
-  <tbody>
-    {checkoutEarnings.map((checkout) => (
-      <tr key={checkout.id}>
-        <td>{checkout.id}</td>
-        <td>${checkout.totalEarnings}</td>
-        <td>${checkout.finalTotal}</td>  {/* Display finalTotal */}
-        <td>{checkout.userId}</td>       {/* Display userId */}
-        <td>{checkout.productNames}</td> {/* Display productNames */}
-      </tr>
-    ))}
-  </tbody>
-          </table>
-        </div>
+        <div className="earnings-section">
+  <div className="total-earnings-container">
+    <h2>Total Earnings from Checkout</h2>
+    <p>${totalCheckoutEarnings.toFixed(2)}</p>
+  </div>
+
+  <div className="checkout-earnings">
+    <h2>Earnings by Checkout</h2>
+    <table className="earnings-table">
+      <thead>
+        <tr>
+          <th>Checkout ID</th>
+          <th>Service Fee</th>
+          <th>Final Total</th>
+          <th>User ID</th>
+          <th>Product Names</th>
+        </tr>
+      </thead>
+      <tbody>
+        {checkoutEarnings.map((checkout) => (
+          <tr key={checkout.id}>
+            <td>{checkout.id}</td>
+            <td>${checkout.totalEarnings}</td>
+            <td>${checkout.finalTotal}</td>
+            <td>{checkout.userId}</td>
+            <td>{checkout.productNames}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
         {showUserList && (
           <div className="form-popup">
@@ -311,6 +330,29 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+<div className="feedbacks-section">
+  <h2>Feedbacks</h2>
+  <table className="earnings-table">
+    <thead>
+      <tr>
+        <th>Checkout ID</th>
+        <th>Feedback</th>
+        <th>Rating</th>
+        <th>User ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      {feedbacks.map(feedback => (
+        <tr key={feedback.id}>
+          <td>{feedback.checkoutId}</td>
+          <td>{feedback.feedback}</td>
+          <td>{feedback.rating}</td>
+          <td>{feedback.userId}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
         {showProductForm && (
           <div className="form-popup">
@@ -375,6 +417,7 @@ const AdminDashboard = () => {
                     )}
                     {category === 'Accessories' && (
                       <>
+
                         <option value="Clothing Accessories">Clothing Accessories</option>
                         <option value="Footwear Accessories">Footwear Accessories</option>
                         <option value="Backpack Accessories">Backpack Accessories</option>

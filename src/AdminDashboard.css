@@ -289,3 +289,40 @@ body {
     max-width: 95%;
   }
 }
+/* Container for earnings section */
+.earnings-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Adjust total earnings container */
+.total-earnings-container {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px; /* Space between the total earnings and the table */
+  text-align: center;
+  max-width: 300px;
+}
+
+/* Styling for the Total Earnings title and value */
+.total-earnings-container h2 {
+  font-size: 22px;
+  color: #074088;
+  margin-bottom: 10px;
+}
+
+.total-earnings-container p {
+  font-size: 24px;
+  font-weight: bold;
+  color: #5289A1;
+}
+
+/* Center table for consistency */
+.checkout-earnings {
+  max-width: 1000px; /* Adjust max-width for table layout */
+  width: 100%;
+}
