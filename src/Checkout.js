@@ -24,6 +24,7 @@ function Checkout() {
   const [totalDays, setTotalDays] = useState(1);
   const [submittedDate, setSubmittedDate] = useState('');
   const [submittedTime, setSubmittedTime] = useState('');
+  const [checkoutId, setCheckoutId] = useState(''); // State to hold checkout ID
   const totalCost = getTotalCost();
 
   const baseHiringFee = 50;
@@ -56,14 +57,14 @@ function Checkout() {
 
   const calculatePickupMinDate = (startDate) => {
     const start = new Date(startDate);
-    start.setDate(start.getDate() - 2); 
-    return start.toISOString().split('T')[0]; 
+    start.setDate(start.getDate() - 2);
+    return start.toISOString().split('T')[0];
   };
 
   const calculatePickupMaxDate = (startDate) => {
     const start = new Date(startDate);
-    start.setDate(start.getDate() - 1); 
-    return start.toISOString().split('T')[0]; 
+    start.setDate(start.getDate() - 1);
+    return start.toISOString().split('T')[0];
   };
 
   const handleInputChange = (e) => {
@@ -76,20 +77,20 @@ function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const products = cart.map((item) => ({
       id: item.id,
       name: item.name,
-    })); // Map to include both id and name
-  
+    }));
+
     const orderData = {
       ...formData,
       totalCost: totalCost,
       serviceFee: serviceFee,
       hiringFee: hiringFee,
       finalTotal: totalWithFee,
-      productIds: products.map((product) => product.id), // Store product IDs
-      productNames: products.map((product) => product.name), // Store product names
+      productIds: products.map((product) => product.id),
+      productNames: products.map((product) => product.name),
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
@@ -97,18 +98,18 @@ function Checkout() {
       startDate: location.state.startDate,
       endDate: location.state.endDate,
     };
-  
+
     try {
-      await addDoc(collection(db, 'checkout'), orderData);
+      const docRef = await addDoc(collection(db, 'checkout'), orderData);
+      setCheckoutId(docRef.id); // Store the checkout ID
       setIsSubmitted(true);
-      setSubmittedDate(formData.pickupDate); 
-      setSubmittedTime(formData.pickupTime); 
+      setSubmittedDate(formData.pickupDate);
+      setSubmittedTime(formData.pickupTime);
       clearCart();
     } catch (error) {
       console.error('Error adding document: ', error);
     }
   };
-  
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
@@ -118,11 +119,12 @@ function Checkout() {
         userId: user.uid,
         userName: user.displayName,
         feedback: feedback,
-        rating: rating, // Include rating in the feedback
+        rating: rating,
+        checkoutId: checkoutId, // Store the checkout ID with feedback
         dateSubmitted: new Date(),
       });
       setFeedback('');
-      setRating(0); // Reset rating
+      setRating(0);
       navigate('/');
     } catch (error) {
       console.error('Error submitting feedback: ', error);
@@ -182,7 +184,7 @@ function Checkout() {
               value={formData.pickupDate}
               onChange={handleInputChange}
               min={calculatePickupMinDate(location.state.startDate)}
-              max={calculatePickupMaxDate(location.state.startDate)} 
+              max={calculatePickupMaxDate(location.state.startDate)}
               required
             />
           </div>
