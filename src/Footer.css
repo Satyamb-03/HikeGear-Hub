@@ -1,26 +1,28 @@
-/* Footer.css */
 .App-footer {
-    background-color: #074D88;
-    color: white;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  .footer-links {
-    margin-bottom: 10px;
-  }
-  
-  .footer-links a {
-    color: #61dafb;
-    margin: 0 15px;
-    text-decoration: none;
-  }
-  
-  .footer-links a:hover {
-    text-decoration: underline;
-  }
-  
-  .footer-copyright {
-    margin-top: 10px;
-  }
-  
+  background-color: #074D88;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  width: 100vw; /* Ensure full viewport width */
+  box-sizing: border-box; /* Include padding and border in the width */
+  margin: 0; /* Remove default margins */
+}
+
+
+.footer-links {
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  color: #61dafb;
+  margin: 0 15px;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-copyright p {
+  color: white !important; /* Ensuring the color is white */
+}
