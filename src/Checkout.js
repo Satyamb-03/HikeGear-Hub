@@ -18,13 +18,17 @@ function Checkout() {
     address: '165 Queen Street, CBD',
   });
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isOrderSubmitted, setIsOrderSubmitted] = useState(false);
+  const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
   const [feedback, setFeedback] = useState('');
-  const [rating, setRating] = useState(0); // New state for rating
+  const [rating, setRating] = useState(0);
   const [totalDays, setTotalDays] = useState(1);
   const [submittedDate, setSubmittedDate] = useState('');
   const [submittedTime, setSubmittedTime] = useState('');
-  const [checkoutId, setCheckoutId] = useState(''); // State to hold checkout ID
+  const [checkoutId, setCheckoutId] = useState('');
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+
   const totalCost = getTotalCost();
 
   const baseHiringFee = 50;
@@ -101,11 +105,12 @@ function Checkout() {
 
     try {
       const docRef = await addDoc(collection(db, 'checkout'), orderData);
-      setCheckoutId(docRef.id); // Store the checkout ID
-      setIsSubmitted(true);
+      setCheckoutId(docRef.id);
+      setIsOrderSubmitted(true);
       setSubmittedDate(formData.pickupDate);
       setSubmittedTime(formData.pickupTime);
       clearCart();
+      setIsOrderModalOpen(true);
     } catch (error) {
       console.error('Error adding document: ', error);
     }
@@ -120,12 +125,13 @@ function Checkout() {
         userName: user.displayName,
         feedback: feedback,
         rating: rating,
-        checkoutId: checkoutId, // Store the checkout ID with feedback
+        checkoutId: checkoutId,
         dateSubmitted: new Date(),
       });
       setFeedback('');
       setRating(0);
-      navigate('/');
+      setIsFeedbackSubmitted(true);
+      setIsFeedbackModalOpen(true); // Open feedback confirmation popup
     } catch (error) {
       console.error('Error submitting feedback: ', error);
     }
@@ -135,12 +141,25 @@ function Checkout() {
     navigate('/cart');
   };
 
+  const handleCloseOrderModal = () => {
+    setIsOrderModalOpen(false);
+    // Open the feedback modal after closing the order confirmation
+    if (isFeedbackSubmitted) {
+      setIsFeedbackModalOpen(true);
+    }
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setIsFeedbackModalOpen(false);
+    navigate('/'); // Redirect after closing feedback confirmation
+  };
+
   const availablePickupTimes = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'];
 
   return (
     <div className="Checkout">
-      <h2>Done!!</h2>
-      {isSubmitted ? (
+      <h2>Checkout</h2>
+      {isOrderSubmitted ? (
         <div className="ThankYou">
           <h2>Thank You for Your Purchase!</h2>
           <p>
@@ -223,12 +242,38 @@ function Checkout() {
             <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
           </div>
           <div className="form-actions">
-            <button type="button" onClick={handleBackToCart}>
+            <button type="button" onClick={handleBackToCart} className="back-to-cart-btn">
               Back to Cart
             </button>
-            <button type="submit">Submit Order</button>
+            <button type="submit" className="submit-order-btn">
+              Submit Order
+            </button>
           </div>
         </form>
+      )}
+
+      {/* Modal for Order Confirmation */}
+      {isOrderModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={handleCloseOrderModal}>&times;</span>
+            <h2>Order Confirmation</h2>
+            <p>Your order has been successfully placed!</p>
+            <button onClick={handleCloseOrderModal}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for Feedback Confirmation */}
+      {isFeedbackModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={handleCloseFeedbackModal}>&times;</span>
+            <h2>Feedback Submitted</h2>
+            <p>Thank you for your feedback!</p>
+            <button onClick={handleCloseFeedbackModal}>Close</button>
+          </div>
+        </div>
       )}
     </div>
   );
