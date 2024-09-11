@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
-import './Clothing.css';
+import React, { useState, useEffect } from 'react';
+import './Clothing.css'; 
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
- 
 
 function KidsClothing() {
   const [clothingItems, setClothingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchClothingItems = async () => {
@@ -30,7 +31,12 @@ function KidsClothing() {
   }, []);
 
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); // Default quantity and days
+    addToCart(item, 1, 1);
+    setNotificationMessage(`${item.name} has been added to your cart!`);
+    setShowNotification(true);
+    setTimeout(() => {
+      setShowNotification(false);
+    }, 3000); 
   };
 
   const handleItemClick = (item) => {
@@ -47,7 +53,6 @@ function KidsClothing() {
 
   return (
     <div className="Clothing">
- 
       <h2>Kids' Clothing</h2>
       <p>Find durable and comfortable outdoor clothing for kids of all ages.</p>
       <div className="clothing-list">
@@ -55,10 +60,14 @@ function KidsClothing() {
           <div key={item.id} className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
-            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
+            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
+              {item.name}
+            </h3>
             <p>{item.description}</p>
             <p className="price">${item.pricePerDay}/day</p>
-            <button onClick={() => handleAddToCart(item)}>Add to Cart</button>
+            <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
+              Add to Cart
+            </button>
           </div>
         ))}
       </div>
@@ -79,6 +88,12 @@ function KidsClothing() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {showNotification && (
+        <div className="notification">
+          {notificationMessage}
         </div>
       )}
     </div>

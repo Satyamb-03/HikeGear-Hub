@@ -3,7 +3,7 @@ import { useUserAuth } from './UserAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Card, Form } from 'react-bootstrap';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db, storage } from './firebase'; // Assuming Firebase storage is imported for file uploads
+import { db, storage } from './firebase'; 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import OrderHistory from './OrderHistory';
 import './UserDashboard.css';
@@ -109,14 +109,14 @@ const UserDashboard = () => {
     setError(null);
 
     try {
-      // Upload the file to Firebase Storage
+     
       const fileRef = ref(storage, `supplier-ids/${file.name}`);
       await uploadBytes(fileRef, file);
 
-      // Get the file's download URL
+      
       const idFileUrl = await getDownloadURL(fileRef);
 
-      // Update Firestore with supplier request details
+     
       const userDocRef = doc(db, 'users', user.uid);
       await setDoc(userDocRef, { 
         ...userData, 
