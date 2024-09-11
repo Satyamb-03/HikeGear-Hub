@@ -36,6 +36,7 @@ function OrderHistory() {
               totalDays: data.totalDays || 0,
               userId: data.userId || '',
               userName: data.userName || 'Anonymous',
+              productNames: data.productNames || [],
             };
           });
 
@@ -87,28 +88,25 @@ function OrderHistory() {
       <h2>Order History</h2>
       {error && <p className="error-text">{error}</p>}
       {orders.length > 0 ? (
-        <ul>
-          {orders.map(order => (
-            <li key={order.id}>
-              <p><strong>Order ID:</strong> {order.id}</p>
-              <p><strong>Start Date:</strong> {order.startDate}</p>
-              <p><strong>End Date:</strong> {order.endDate}</p>
-              <p><strong>Pickup Date:</strong> {order.pickupDate}</p>
-              <p><strong>Final Total:</strong> ${order.finalTotal.toFixed(2)}</p>
-              <p><strong>Total Days:</strong> {order.totalDays}</p>
-              <p><strong>Date Created:</strong> {order.dateCreated.toLocaleDateString()}</p>
-              <p><strong>Product Images:</strong> 
-                {order.productIds.length > 0 
-                  ? order.productIds.map(id => 
-                      products[id] 
-                        ? <img key={id} src={products[id]} alt={`Product ${id}`} className="product-image" />
-                        : 'No image'
-                    ) 
-                  : 'No products'}
-              </p>
-            </li>
-          ))}
-        </ul>
+   <ul>
+   {orders.map(order => (
+     <li key={order.id}>
+       <p><strong>Order ID:</strong> {order.id}</p>
+       <p><strong>Start Date:</strong> {order.startDate}</p>
+       <p><strong>End Date:</strong> {order.endDate}</p>
+       <p><strong>Pickup Date:</strong> {order.pickupDate}</p>
+       <p><strong>Final Total:</strong> ${order.finalTotal.toFixed(2)}</p>
+       <p><strong>Total Days:</strong> {order.totalDays}</p>
+       <p><strong>Date Created:</strong> {order.dateCreated.toLocaleDateString()}</p>
+       {order.productNames.map((productName, index) => (
+         <p key={index}><strong>Product Name:</strong> {productName || 'Unknown Product'}</p>
+       ))}
+     </li>
+   ))}
+ </ul>
+ 
+  
+      
       ) : (
         <p>No orders found.</p>
       )}
