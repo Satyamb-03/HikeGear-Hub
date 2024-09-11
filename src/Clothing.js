@@ -1,26 +1,28 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Clothing.css';
-import { useCart } from './CartContext'; // Use useCart hook
+import { useCart } from './CartContext'; 
 import ProductService from './ProductService';
 import { useUserAuth } from './UserAuth';
- 
 
 function Clothing() {
   const [clothingItems, setClothingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const { addToCart } = useCart(); 
   const { user } = useUserAuth();
-
 
   useEffect(() => {
     const fetchClothingItems = async () => {
       try {
         const clothingSnapshot = await ProductService.getAllProducts();
-        const clothingList = clothingSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })).filter(item => item.category === 'Clothing'); // Filter by 'Clothing'
+        const clothingList = clothingSnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          .filter(item => item.category === 'Clothing'); 
         setClothingItems(clothingList);
       } catch (error) {
         console.error("Error fetching clothing items:", error);
@@ -33,7 +35,12 @@ function Clothing() {
   }, []);
 
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); // Default quantity and days
+    addToCart(item, 1, 1); 
+    setNotificationMessage(`${item.name} has been added to your cart!`);
+    setShowNotification(true);
+    setTimeout(() => {
+      setShowNotification(false);
+    }, 3000); 
   };
 
   const handleItemClick = (item) => {
@@ -50,7 +57,6 @@ function Clothing() {
 
   return (
     <div className="Clothing">
- 
       <h2>Clothing</h2>
       <p>Explore our wide range of outdoor clothing suitable for all weather conditions.</p>
       <div className="clothing-list">
@@ -58,10 +64,14 @@ function Clothing() {
           <div key={item.id} className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
-            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
+            <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
+              {item.name}
+            </h3>
             <p className="description-preview">{item.description}</p>
             <p className="price">${item.pricePerDay}/day</p>
-            <button className="confirm-btn" onClick={() => handleAddToCart(item)}>Add to Cart</button>
+            <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
+              Add to Cart
+            </button>
           </div>
         ))}
       </div>
@@ -82,6 +92,12 @@ function Clothing() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {showNotification && (
+        <div className="notification">
+          {notificationMessage}
         </div>
       )}
     </div>

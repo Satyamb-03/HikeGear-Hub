@@ -1,5 +1,5 @@
 import { collection, addDoc, getDocs, doc, deleteDoc, setDoc, getDoc } from 'firebase/firestore';
-import { db } from './firebase';  // Ensure you're using db, not firestore
+import { db } from './firebase'; 
 
 const addUser = async (userData) => {
   try {

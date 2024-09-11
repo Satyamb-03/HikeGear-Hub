@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
-import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
+import React, { useState, useEffect } from 'react';
+import './Gear.css'; 
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
- 
 
 function Packs() {
   const [packItems, setPackItems] = useState([]);
@@ -10,13 +9,13 @@ function Packs() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
-
+  const [notification, setNotification] = useState('');
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
     const fetchPackItems = async () => {
       try {
-        // Fetch all products and filter by 'Gear' and 'Packs'
+        
         const gearSnapshot = await ProductService.getAllProducts();
         const packList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -24,7 +23,7 @@ function Packs() {
         })).filter(item => item.category === 'Gear' && item.subcategory === 'Packs');
         setPackItems(packList);
 
-        // Initialize quantities for each item
+        
         const initialQuantities = {};
         packList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -49,11 +48,15 @@ function Packs() {
 
   const handleAddToCart = (item) => {
     addToCart(item, quantities[item.id], days);
+    setNotification(`Added ${item.name} to cart!`);
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
     }));
     setDays(1);
+
+    // Hide notification after 3 seconds
+    setTimeout(() => setNotification(''), 3000);
   };
 
   const handleItemClick = (item) => {
@@ -70,7 +73,6 @@ function Packs() {
 
   return (
     <div className="Gear">
- 
       <h2>Packs</h2>
       <p>Explore a variety of packs for your outdoor adventures.</p>
 
@@ -80,10 +82,8 @@ function Packs() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description.split('. ')[0] + '...'}</p> 
-               
+            <p>{item.description.split('. ')[0] + '...'}</p>
             <p className="price">{item.pricePerDay}/day</p>
-           
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -99,7 +99,7 @@ function Packs() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p> {selectedItem.description}</p>
+            <p>{selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (
@@ -110,6 +110,12 @@ function Packs() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="cart-message">
+          {notification}
         </div>
       )}
     </div>

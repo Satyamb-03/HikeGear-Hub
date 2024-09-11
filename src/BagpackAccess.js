@@ -1,6 +1,5 @@
-
-import React, { useState, useEffect, useContext } from 'react';
-import './Accessories.css'; // Ensure this file has the correct styles for Accessories
+import React, { useState, useEffect } from 'react';
+import './Accessories.css'; 
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
 
@@ -8,7 +7,8 @@ function BackpackAccess() {
   const [backpackItems, setBackpackItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [notification, setNotification] = useState('');
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
     const fetchBackpackItems = async () => {
@@ -30,7 +30,11 @@ function BackpackAccess() {
   }, []);
 
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); // Default quantity and days
+    addToCart(item, 1, 1); 
+    setNotification(`Added ${item.name} to cart!`);
+    
+  
+    setTimeout(() => setNotification(''), 3000);
   };
 
   const handleItemClick = (item) => {
@@ -46,23 +50,22 @@ function BackpackAccess() {
   }
 
   return (
-    <div className="Accessories">  
-
+    <div className="Accessories">
       <h2>Backpack Accessories</h2>
       <p>Discover essential backpack accessories to enhance your hiking experience.</p>
 
-      <div className="accessories-list">  
+      <div className="accessories-list">
         {backpackItems.map((item) => (
-          <div key={item.id} className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}> {/* Match class names */}
+          <div key={item.id} className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            <img src={item.mainImage} alt={item.name} /> {/* Ensure the image field matches */}
+            <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
               {item.name}
             </h3>
             <p className="description-preview">
               {item.description.split('. ')[0] + '...'}
-            </p> {/* Match class name */}
-            <p className="price">${item.pricePerDay}/day</p> {/* Ensure the price field matches */}
+            </p>
+            <p className="price">${item.pricePerDay}/day</p>
             <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
               Add to Cart
             </button>
@@ -88,6 +91,12 @@ function BackpackAccess() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="notification">
+          {notification}
         </div>
       )}
     </div>

@@ -82,7 +82,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-y: auto; 
     z-index: 1000;
   }
   
@@ -92,8 +92,8 @@
     border-radius: 10px;
     width: 80%;
     max-width: 600px;
-    max-height: 90vh; /* Limits the height to 90% of the viewport */
-    overflow-y: auto; /* Enables scrolling within the popup */
+    max-height: 90vh; 
+    overflow-y: auto; 
     text-align: left;
     position: relative;
     white-space: normal;
@@ -119,8 +119,62 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-height: 3em; /* Adjust this based on the line-height to show two lines */
-    line-height: 1.5em; /* Adjust the line-height if necessary */
+    max-height: 3em; 
+    line-height: 1.5em; 
   }
   
+  .notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #28a745;
+    color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cart-message {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    width: 3in; 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    animation: fadeOut 3s forwards;
+  }
+  .confirm-btn {
+    background-color: #007bff; 
+    color: white;
+    border: none;
+    padding: 12px 20px; 
+    border-radius: 50px; 
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  }
+  
+  .confirm-btn:hover {
+    background-color: #0056b3; 
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); 
+    transform: translateY(-3px);
+  }
+  
+  .confirm-btn:active {
+    transform: translateY(1px); 
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); 
+  }
   

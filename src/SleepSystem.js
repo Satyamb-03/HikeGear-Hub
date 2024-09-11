@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
- 
 
 function SleepingSystems() {
   const [sleepingItems, setSleepingItems] = useState([]);
@@ -10,8 +9,8 @@ function SleepingSystems() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState('');
   const { addToCart } = useCart(); // Use useCart hook
-
 
   useEffect(() => {
     const fetchSleepingItems = async () => {
@@ -49,11 +48,15 @@ function SleepingSystems() {
 
   const handleAddToCart = (item) => {
     addToCart(item, quantities[item.id], days);
+    setNotification(`Added ${item.name} to cart!`);
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
     }));
     setDays(1);
+
+    // Hide notification after 3 seconds
+    setTimeout(() => setNotification(''), 3000);
   };
 
   const handleItemClick = (item) => {
@@ -70,7 +73,6 @@ function SleepingSystems() {
 
   return (
     <div className="Gear">
- 
       <h2>Sleeping Systems</h2>
       <p>Explore a range of sleeping systems for a comfortable night under the stars.</p>
 
@@ -80,10 +82,8 @@ function SleepingSystems() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description.split('. ')[0] + '...'}</p> 
-            
+            <p>{item.description.split('. ')[0] + '...'}</p>
             <p className="price">{item.pricePerDay}/day</p>
-           
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -110,6 +110,12 @@ function SleepingSystems() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="notification">
+          {notification}
         </div>
       )}
     </div>

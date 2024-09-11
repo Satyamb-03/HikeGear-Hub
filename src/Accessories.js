@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Accessories.css'; 
 import { useCart } from './CartContext';
-
 import ProductService from './ProductService';
 
 function Accessories() {
   const [accessoriesItems, setAccessoriesItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [cartMessage, setCartMessage] = useState(''); 
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchAccessoriesItems = async () => {
@@ -33,6 +33,8 @@ function Accessories() {
 
   const handleAddToCart = (item) => {
     addToCart(item, 1, 1); 
+    setCartMessage('Item added to cart'); 
+    setTimeout(() => setCartMessage(''), 3000); 
   };
 
   const handleItemClick = (item) => {
@@ -49,20 +51,21 @@ function Accessories() {
 
   return (
     <div className="Accessories">
-
       <h2>Accessories</h2>
       <p>Discover essential accessories to make your hike comfortable and safe.</p>
 
-      <div className="accessories-list"> {/* Match class name used in FootwearAccess */}
+      {cartMessage && <div className="cart-message">{cartMessage}</div>} {/* Display cart message */}
+
+      <div className="accessories-list">
         {accessoriesItems.map((item) => (
-          <div key={item.id} className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}> {/* Match class names */}
+          <div key={item.id} className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
-            <img src={item.mainImage} alt={item.name} /> {/* Ensure the image field matches */}
+            <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
               {item.name}
             </h3>
             <p className="description-preview">
-              {item.description.split('. ')[0] + '...'} {/* Preview of description */}
+              {item.description.split('. ')[0] + '...'}
             </p>
             <p className="price">${item.pricePerDay}/day</p>
             <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
@@ -77,7 +80,7 @@ function Accessories() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription || selectedItem.description}</p> {/* Display full description */}
+            <p>{selectedItem.fullDescription || selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (
@@ -87,7 +90,6 @@ function Accessories() {
                 <p>No additional images available</p>
               )}
             </div>
-            {/* Removed Add to Cart button and price from popup */}
           </div>
         </div>
       )}
