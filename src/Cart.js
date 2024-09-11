@@ -5,14 +5,20 @@ import { useNavigate } from 'react-router-dom';
 import './Cart.css';
 
 function Cart() {
+  // Extract user information from UserAuth context
   const { user } = useUserAuth();
+  // Extract cart-related functions from CartContext
   const { cart, removeFromCart, addToCart, getTotalCost } = useCart();
+
+  // State for start and end date of product rental
   const [dates, setDates] = useState({
     startDate: '',
     endDate: '',
   });
+
   const navigate = useNavigate();
 
+  // Helper function to get today's date in 'YYYY-MM-DD' format
   const getTodayDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -21,6 +27,7 @@ function Cart() {
     return `${year}-${month}-${day}`;
   };
 
+  // useEffect to load saved dates from localStorage on component mount
   useEffect(() => {
     const savedDates = localStorage.getItem('selectedDates');
     if (savedDates) {
@@ -28,14 +35,17 @@ function Cart() {
     }
   }, []);
 
+  // useEffect to save selected dates to localStorage whenever dates change
   useEffect(() => {
     localStorage.setItem('selectedDates', JSON.stringify(dates));
   }, [dates]);
 
+  // Handler to update selected dates and recalculate days and cart totals
   const handleDateChange = (field, value) => {
     setDates(prevDates => {
       const newDates = { ...prevDates, [field]: value };
 
+      // Update cart items with recalculated days for rental period
       cart.forEach(item => {
         if (newDates.startDate && newDates.endDate) {
           addToCart(item, item.quantity, calculateDays(newDates));
@@ -46,25 +56,36 @@ function Cart() {
     });
   };
 
+  // Helper function to calculate the number of days between start and end date
   const calculateDays = ({ startDate, endDate }) => {
     if (startDate && endDate) {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
+      return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1; // At least 1 day
     }
     return 1;
   };
 
+  // Calculate the total cost of items in the cart
   const totalCost = getTotalCost();
+
+  // Hiring fee calculations based on total cost
   const baseHiringFee = 50;
   const increment = 10;
   const threshold = 30;
   const additionalHiringFee = Math.floor(totalCost / threshold) * increment;
   const hiringFee = baseHiringFee + additionalHiringFee;
+
+  // Service fee is 20% of total cost
   const serviceFee = totalCost * 0.20;
+
+  // Ensure the total cost with fees is at least $40
   const totalWithFee = Math.max(totalCost + hiringFee + serviceFee, 40);
+
+  // Check if both start and end dates are selected
   const isDateRangeValid = dates.startDate && dates.endDate;
 
+  // Proceed to checkout if dates are valid
   const handleProceedToCheckout = () => {
     navigate('/checkout', { state: { startDate: dates.startDate, endDate: dates.endDate } });
   };
@@ -102,6 +123,7 @@ function Cart() {
                 <ul>
                   {cart.map((cartItem) => {
                     const { id, name, quantity, image, pricePerDay } = cartItem;
+                    // Calculate total for each item based on quantity and rental period
                     const total = (parseFloat(pricePerDay) || 0) * quantity * calculateDays(dates);
 
                     return (
