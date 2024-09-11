@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react"; // Keep this import
+import React, { useState} from "react";  
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Alert, Button } from "react-bootstrap";
 import GoogleButton from "react-google-button";
-import { useUserAuth } from "./UserAuth"; // Adjust the import path if needed
+import { useUserAuth } from "./components/Context/UserAuth";
 import { getDoc, doc, setDoc } from "firebase/firestore";
-import { db } from "./firebase"; // Adjust the import path if needed
+import { db } from "./components/Context/firebase";  
 import './SignIn.css';
  
 

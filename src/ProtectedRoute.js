@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useUserAuth } from "./UserAuth";
+import { useUserAuth } from './components/Context/UserAuth';
 import { getDoc, doc } from "firebase/firestore";
-import { db } from "./firebase"; // Adjust the import path if needed
+import { db } from "./components/Context/firebase";  
 
 const RESTRICTED_PATHS = ['/user-dashboard', '/supplier-dashboard'];
 

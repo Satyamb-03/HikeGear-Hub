@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useUserAuth } from './UserAuth'; // Your auth context
+import { useUserAuth } from './components/Context/UserAuth';
 import { Navigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from './firebase'; // Firestore database
+import { db } from './components/Context/firebase'; // Firestore database
 
 const ProtectedSupplierDashboard = ({ children }) => {
   const { user } = useUserAuth(); // Assuming you have user authentication in context

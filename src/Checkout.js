@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useCart } from './CartContext';
-import { useUserAuth } from './UserAuth';
+import { useCart } from './components/Context/CartContext';
+import { useUserAuth } from './components/Context/UserAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import './Checkout.css';
