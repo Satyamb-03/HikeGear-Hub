@@ -37,7 +37,8 @@ class ProductService {
         ...newProduct,
         mainImage: mainImageURL,
         additionalImages: additionalImagesURLs,
-        createdAt: new Date().toISOString() // Add timestamp for tracking
+        createdAt: new Date().toISOString(), // Add timestamp for tracking
+        supplierId: newProduct.supplierId // Ensure supplierId is included
       };
 
       console.log("Product data to be saved:", productData);
