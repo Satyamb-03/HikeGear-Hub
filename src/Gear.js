@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Gear.css';
-import { useCart } from './CartContext'; // Use useCart hook
+import { useCart } from './CartContext'; 
 import ProductService from './ProductService';
- 
+
 function Gear() {
   const [gearItems, setGearItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [notification, setNotification] = useState(''); 
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchGearItems = async () => {
@@ -50,6 +51,12 @@ function Gear() {
       [item.id]: 1
     }));
     setDays(1);
+    setNotification(`Added ${item.name} to cart!`); 
+
+    
+    setTimeout(() => {
+      setNotification('');
+    }, 3000);
   };
 
   const handleItemClick = (item) => {
@@ -66,7 +73,6 @@ function Gear() {
 
   return (
     <div className="Gear">
- 
       <h2>Gear</h2>
       <p>Get top-notch hiking gear, from tents to backpacks.</p>
       <div className="gear-list">
@@ -76,7 +82,7 @@ function Gear() {
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             {/* Display short description */}
-            <p>{item.description.split('. ')[0] + '...'}</p> 
+            <p>{item.description.split('. ')[0] + '...'}</p>
             <p className="price">{item.pricePerDay}/day</p>
             <button
               className="confirm-btn"
@@ -94,7 +100,7 @@ function Gear() {
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
             {/* Display full description in popup */}
-            <p> {selectedItem.description}</p>
+            <p>{selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (
@@ -105,6 +111,13 @@ function Gear() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {}
+      {notification && (
+        <div className="notification">
+          <p>{notification}</p>
         </div>
       )}
     </div>

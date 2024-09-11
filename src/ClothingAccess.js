@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
-import './Accessories.css'; // Ensure this file has the correct styles for Accessories
+import React, { useState, useEffect } from 'react';
+import './Accessories.css'; 
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
- 
 
 function ClothingAccess() {
   const [clothingAccessItems, setClothingAccessItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [notification, setNotification] = useState('');
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
     const fetchClothingAccessItems = async () => {
@@ -34,7 +34,11 @@ function ClothingAccess() {
   }, []);
 
   const handleAddToCart = item => {
-    addToCart(item, 1, 1); // Default quantity and days
+    addToCart(item, 1, 1); 
+    setNotification(`Added ${item.name} to cart!`);
+    
+    
+    setTimeout(() => setNotification(''), 3000);
   };
 
   const handleItemClick = item => {
@@ -51,7 +55,6 @@ function ClothingAccess() {
 
   return (
     <div className="Accessories">
-   
       <h2>Clothing Accessories</h2>
       <p>Discover essential clothing accessories to enhance your hiking experience.</p>
 
@@ -82,7 +85,7 @@ function ClothingAccess() {
               &times;
             </span>
             <h2>{selectedItem.name}</h2>
-            {/* Display full description */}
+            {}
             <p>{selectedItem.fullDescription || selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
@@ -94,6 +97,12 @@ function ClothingAccess() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="notification">
+          {notification}
         </div>
       )}
     </div>

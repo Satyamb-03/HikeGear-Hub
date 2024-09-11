@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
+import './Gear.css'; 
 import ProductService from './ProductService';
 import { useCart } from './CartContext';
 import { useUserAuth } from './UserAuth';
@@ -10,13 +10,14 @@ function Additional() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [notification, setNotification] = useState('');
+  const { addToCart } = useCart(); 
   const { user } = useUserAuth();
 
   useEffect(() => {
     const fetchTentItems = async () => {
       try {
-        // Fetch all products and filter by 'Gear' and 'Additional'
+       
         const gearSnapshot = await ProductService.getAllProducts();
         const tentList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -24,7 +25,7 @@ function Additional() {
         })).filter(item => item.category === 'Gear' && item.subcategory === 'Additional');
         setTentItems(tentList);
 
-        // Initialize quantities for each item
+        
         const initialQuantities = {};
         tentList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -49,11 +50,15 @@ function Additional() {
 
   const handleAddToCart = (item) => {
     addToCart(item, quantities[item.id], days);
+    setNotification(`Added ${item.name} to cart!`);
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
     }));
     setDays(1);
+
+    // Hide notification after 3 seconds
+    setTimeout(() => setNotification(''), 3000);
   };
 
   const handleItemClick = (item) => {
@@ -109,6 +114,12 @@ function Additional() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="notification">
+          {notification}
         </div>
       )}
     </div>

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
-import { useCart } from './CartContext'; // Use useCart hook
+import './Gear.css'; 
+import { useCart } from './CartContext'; 
 import ProductService from './ProductService';
 import { useUserAuth } from './UserAuth';
- 
 
 function CampKitchen() {
   const [kitchenItems, setKitchenItems] = useState([]);
@@ -11,13 +10,14 @@ function CampKitchen() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [notification, setNotification] = useState('');
+  const { addToCart } = useCart(); 
   const { user } = useUserAuth();
 
   useEffect(() => {
     const fetchKitchenItems = async () => {
       try {
-        // Fetch all products and filter by 'Gear' and 'CampKitchen'
+  
         const gearSnapshot = await ProductService.getAllProducts();
         const kitchenList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -25,7 +25,7 @@ function CampKitchen() {
         })).filter(item => item.category === 'Gear' && item.subcategory === 'Kitchen');
         setKitchenItems(kitchenList);
 
-        // Initialize quantities for each item
+        
         const initialQuantities = {};
         kitchenList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -50,11 +50,15 @@ function CampKitchen() {
 
   const handleAddToCart = (item) => {
     addToCart(item, quantities[item.id], days);
+    setNotification(`Added ${item.name} to cart!`);
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
     }));
     setDays(1);
+    
+   
+    setTimeout(() => setNotification(''), 3000);
   };
 
   const handleItemClick = (item) => {
@@ -71,7 +75,6 @@ function CampKitchen() {
 
   return (
     <div className="Gear">
-
       <h2>Camp Kitchen</h2>
       <p>Explore our camp kitchen gear to make your outdoor cooking experience easier and more enjoyable.</p>
 
@@ -82,9 +85,7 @@ function CampKitchen() {
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description.split('. ')[0] + '...'}</p> 
-            
             <p className="price">{item.pricePerDay}/day</p>
-           
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -100,8 +101,7 @@ function CampKitchen() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p> {selectedItem.description}</p>
-
+            <p>{selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (
@@ -112,6 +112,12 @@ function CampKitchen() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="cart-message">
+          {notification}
         </div>
       )}
     </div>
