@@ -20,7 +20,7 @@ function FootwearAccess() {
             ...doc.data()
           }))
           .filter(
-            item => item.category === 'Accessories' && item.subcategory === 'Footwear'
+            item => item.category === 'Accessories' && item.subcategory === 'Footwear Accessories'
           );
         setFootwearItems(footwearList);
       } catch (error) {
