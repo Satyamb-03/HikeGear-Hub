@@ -126,6 +126,7 @@ const SupplierDashboard = () => {
       console.error("Error deleting product:", error);
     }
   };
+  
 
   return (
     <div className="supplier-dashboard">
@@ -245,12 +246,14 @@ const SupplierDashboard = () => {
                           <option value="Packs">Packs</option>
                           <option value="Sleep Systems">Sleep Systems</option>
                           <option value="Tents & Bivvies">Tents & Bivvies</option>
+                          <option value="Additional Gear">Additional Gear</option>
                         </>
                       )}
                       {category === 'Accessories' && (
                         <>
                           <option value="Clothing Accessories">Clothing Accessories</option>
                           <option value="Footwear Accessories">Footwear Accessories</option>
+                          <option value="Backpack Accessories">Backpack Accessories</option>
                         </>
                       )}
                     </select>

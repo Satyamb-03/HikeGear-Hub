@@ -4,15 +4,18 @@ import { useCart } from './CartContext';
 import ProductService from './ProductService';
 
 function Accessories() {
+  // State to hold the list of accessories, the currently selected item, and loading status
   const [accessoriesItems, setAccessoriesItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [cartMessage, setCartMessage] = useState(''); 
-  const { addToCart } = useCart();
+  const [cartMessage, setCartMessage] = useState(''); // State to show a message when an item is added to the cart
+  const { addToCart } = useCart(); // Access cart functionality from context
 
   useEffect(() => {
+    // Fetch accessories items from the service when the component mounts
     const fetchAccessoriesItems = async () => {
       try {
+        // Get all products and filter out accessories
         const productSnapshot = await ProductService.getAllProducts();
         const accessoriesList = productSnapshot.docs
           .map(doc => ({
@@ -20,31 +23,35 @@ function Accessories() {
             ...doc.data()
           }))
           .filter(item => item.category === 'Accessories');
-        setAccessoriesItems(accessoriesList);
+        setAccessoriesItems(accessoriesList); // Update state with the fetched items
       } catch (error) {
-        console.error("Error fetching accessories items:", error);
+        console.error("Error fetching accessories items:", error); // Log any errors
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false when done
       }
     };
 
     fetchAccessoriesItems();
-  }, []);
+  }, []); // Empty dependency array means this effect runs once on mount
 
+  // Function to handle adding an item to the cart
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); 
-    setCartMessage('Item added to cart'); 
-    setTimeout(() => setCartMessage(''), 3000); 
+    addToCart(item, 1, 1); // Add item to the cart
+    setCartMessage('Item added to cart'); // Show confirmation message
+    setTimeout(() => setCartMessage(''), 3000); // Hide message after 3 seconds
   };
 
+  // Function to handle clicking on an item
   const handleItemClick = (item) => {
-    setSelectedItem(item);
+    setSelectedItem(item); // Set the selected item for the popup
   };
 
+  // Function to close the popup
   const handleClosePopup = () => {
-    setSelectedItem(null);
+    setSelectedItem(null); // Clear the selected item
   };
 
+  // Show loading message while fetching data
   if (loading) {
     return <p>Loading accessories items...</p>;
   }
@@ -54,7 +61,7 @@ function Accessories() {
       <h2>Accessories</h2>
       <p>Discover essential accessories to make your hike comfortable and safe.</p>
 
-      {cartMessage && <div className="cart-message">{cartMessage}</div>} {/* Display cart message */}
+      {cartMessage && <div className="cart-message">{cartMessage}</div>} {/* Show message if there's any */}
 
       <div className="accessories-list">
         {accessoriesItems.map((item) => (
@@ -65,7 +72,7 @@ function Accessories() {
               {item.name}
             </h3>
             <p className="description-preview">
-              {item.description.split('. ')[0] + '...'}
+              {item.description.split('. ')[0] + '...'} {/* Show a preview of the description */}
             </p>
             <p className="price">${item.pricePerDay}/day</p>
             <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
