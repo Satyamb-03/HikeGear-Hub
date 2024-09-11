@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useCart } from './CartContext';
-import { useUserAuth } from './UserAuth';
-import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from './components/Context/CartContext';
+import { useUserAuth } from './components/Context/UserAuth';
+import { useNavigate } from 'react-router-dom';
 import './Cart.css';
 
 function Cart() {
