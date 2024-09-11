@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
-import './footwear.css';
+import React, { useState, useEffect } from 'react';
+import './footwear.css'; 
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
- 
 
 function KidFootwear() {
   const [footwearItems, setFootwearItems] = useState([]);
@@ -10,20 +9,22 @@ function KidFootwear() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Use useCart hook
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
     const fetchFootwearItems = async () => {
       try {
-        // Fetch all products and filter by 'Footwear' and 'Kids'
+       
         const footwearSnapshot = await ProductService.getAllProducts();
         const footwearList = footwearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Footwear' && item.subcategory === 'Kids'); // Filter by 'Footwear' and 'Kids'
+        })).filter(item => item.category === 'Footwear' && item.subcategory === 'Kids'); 
         setFootwearItems(footwearList);
 
-        // Initialize quantities for each item
+      
         const initialQuantities = {};
         footwearList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -48,6 +49,12 @@ function KidFootwear() {
 
   const handleAddToCart = (item) => {
     addToCart(item, quantities[item.id], days);
+    setNotificationMessage(`${item.name} has been added to your cart!`);
+    setShowNotification(true);
+    setTimeout(() => {
+      setShowNotification(false);
+    }, 3000); 
+
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
@@ -69,7 +76,6 @@ function KidFootwear() {
 
   return (
     <div className="Footwear">
- 
       <h2>Kids' Footwear</h2>
       <p>Discover the best footwear for your young adventurers.</p>
 
@@ -79,10 +85,8 @@ function KidFootwear() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description.split('. ')[0] + '...'}</p> 
-
-            <p className="price">{item.pricePerDay}/day</p>
-           
+            <p>{item.description.split('. ')[0] + '...'}</p>
+            <p className="price">${item.pricePerDay}/day</p>
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -109,6 +113,12 @@ function KidFootwear() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {showNotification && (
+        <div className="notification">
+          {notificationMessage}
         </div>
       )}
     </div>

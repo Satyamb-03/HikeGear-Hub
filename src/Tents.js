@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Gear.css'; // Assuming this is the same CSS file used for `Gear`
 import { useCart } from './CartContext';
 import ProductService from './ProductService';
- 
 
 function Tents() {
   const [tentItems, setTentItems] = useState([]);
@@ -10,8 +9,8 @@ function Tents() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState('');
   const { addToCart } = useCart(); // Use useCart hook
-
 
   useEffect(() => {
     const fetchTentItems = async () => {
@@ -49,11 +48,15 @@ function Tents() {
 
   const handleAddToCart = (item) => {
     addToCart(item, quantities[item.id], days);
+    setNotification(`Added ${item.name} to cart!`);
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
     }));
     setDays(1);
+
+    // Hide notification after 3 seconds
+    setTimeout(() => setNotification(''), 3000);
   };
 
   const handleItemClick = (item) => {
@@ -70,7 +73,6 @@ function Tents() {
 
   return (
     <div className="Gear">
- 
       <h2>Tents</h2>
       <p>Discover our range of tents for all your camping needs.</p>
 
@@ -80,10 +82,8 @@ function Tents() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            <p>{item.description.split('. ')[0] + '...'}</p> 
-
+            <p>{item.description.split('. ')[0] + '...'}</p>
             <p className="price">{item.pricePerDay}/day</p>
-           
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -110,6 +110,12 @@ function Tents() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="notification">
+          {notification}
         </div>
       )}
     </div>
