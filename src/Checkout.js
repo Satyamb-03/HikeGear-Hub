@@ -85,6 +85,7 @@ function Checkout() {
     const products = cart.map((item) => ({
       id: item.id,
       name: item.name,
+      supplierId: item.supplierId, // Ensure supplierId is part of the product
     }));
 
     const orderData = {
@@ -95,6 +96,7 @@ function Checkout() {
       finalTotal: totalWithFee,
       productIds: products.map((product) => product.id),
       productNames: products.map((product) => product.name),
+      supplierIds: products.map((product) => product.supplierId), // Store the supplier IDs
       dateCreated: new Date(),
       userName: user.displayName,
       userId: user.uid,
@@ -240,38 +242,51 @@ function Checkout() {
             <p><strong>Hiring Fee:</strong> ${hiringFee.toFixed(2)}</p>
             <p><strong>Service Fee (20%):</strong> ${serviceFee.toFixed(2)}</p>
             <p><strong>Final Total with Fees:</strong> ${totalWithFee.toFixed(2)}</p>
+
+            <h4>Products in Your Cart:</h4>
+            <ul>
+              {cart.map((item) => (
+                <li key={item.id}>
+                  <p><strong>Product:</strong> {item.name}</p>
+                  <p><strong>Supplier ID:</strong> {item.supplierId}</p> {/* Display supplier ID */}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="form-actions">
             <button type="button" onClick={handleBackToCart} className="back-to-cart-btn">
               Back to Cart
             </button>
-            <button type="submit" className="submit-order-btn">
-              Submit Order
+            <button type="submit" className="submit-btn">
+              Confirm Order
             </button>
           </div>
         </form>
       )}
 
-      {/* Modal for Order Confirmation */}
       {isOrderModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <span className="close" onClick={handleCloseOrderModal}>&times;</span>
+            <span className="close" onClick={handleCloseOrderModal}>
+              &times;
+            </span>
             <h2>Order Confirmation</h2>
-            <p>Your order has been successfully placed!</p>
-            <button onClick={handleCloseOrderModal}>Close</button>
+            <p>Your order has been placed successfully. Thank you for your purchase!</p>
+            {isFeedbackSubmitted && (
+              <p>Your feedback has been submitted. Thank you!</p>
+            )}
           </div>
         </div>
       )}
 
-      {/* Modal for Feedback Confirmation */}
       {isFeedbackModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <span className="close" onClick={handleCloseFeedbackModal}>&times;</span>
+            <span className="close" onClick={handleCloseFeedbackModal}>
+              &times;
+            </span>
             <h2>Feedback Submitted</h2>
             <p>Thank you for your feedback!</p>
-            <button onClick={handleCloseFeedbackModal}>Close</button>
           </div>
         </div>
       )}
