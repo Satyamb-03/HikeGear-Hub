@@ -20,7 +20,7 @@ function ClothingAccess() {
             ...doc.data()
           }))
           .filter(
-            item => item.category === 'Accessories' && item.subcategory === 'Clothing'
+            item => item.category === 'Accessories' && item.subcategory === 'Clothing Accessories'
           );
         setClothingAccessItems(clothingAccessList);
       } catch (error) {

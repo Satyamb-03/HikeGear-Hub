@@ -20,7 +20,7 @@ function SleepingSystems() {
         const sleepingList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Gear' && item.subcategory === 'Sleep');
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Sleep Systems');
         setSleepingItems(sleepingList);
 
         // Initialize quantities for each item

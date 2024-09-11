@@ -23,7 +23,7 @@ function CampKitchen() {
         const kitchenList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Gear' && item.subcategory === 'kitchen');
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Camp Kitchen');
         setKitchenItems(kitchenList);
 
         

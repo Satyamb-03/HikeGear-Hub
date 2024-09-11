@@ -19,7 +19,7 @@ function Tents() {
         const tentList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Gear' && item.subcategory === 'Tents');
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Tents & Bivvies');
         setTentItems(tentList);
 
         // Initialize quantities for each item
