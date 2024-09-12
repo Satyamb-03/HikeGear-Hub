@@ -22,7 +22,7 @@ function Additional() {
         const tentList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Gear' && item.subcategory === 'Additional');
+        })).filter(item => item.category === 'Gear' && item.subcategory === 'Additional Gear');
         setTentItems(tentList);
 
         

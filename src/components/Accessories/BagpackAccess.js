@@ -17,7 +17,7 @@ function BackpackAccess() {
         const backpackList = productSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })).filter(item => item.category === 'Accessories' && item.subcategory === 'Backpack');
+        })).filter(item => item.category === 'Accessories' && item.subcategory === 'Bagpack Accessories');
         setBackpackItems(backpackList);
       } catch (error) {
         console.error("Error fetching backpack items:", error);
