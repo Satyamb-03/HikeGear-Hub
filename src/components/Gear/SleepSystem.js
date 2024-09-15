@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Gear.css';  
 import { useCart } from '../Context/CartContext';
+import { useUserAuth } from '../Context/UserAuth'; // Import UserAuth context
 import ProductService from '../Services/ProductService';
 
 function SleepingSystems() {
@@ -11,11 +12,12 @@ function SleepingSystems() {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState('');
   const { addToCart } = useCart(); // Use useCart hook
+  const { user } = useUserAuth(); // Use UserAuth context to check user
 
   useEffect(() => {
     const fetchSleepingItems = async () => {
       try {
-        // Fetch all products and filter by 'Gear' and 'Sleep'
+        // Fetch all products and filter by 'Gear' and 'Sleep Systems'
         const gearSnapshot = await ProductService.getAllProducts();
         const sleepingList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -47,8 +49,12 @@ function SleepingSystems() {
   };
 
   const handleAddToCart = (item) => {
-    addToCart(item, quantities[item.id], days);
-    setNotification(`Added ${item.name} to cart!`);
+    if (user) { // Check if user is logged in
+      addToCart(item, quantities[item.id], days);
+      setNotification(`Added ${item.name} to cart!`);
+    } else {
+      setNotification('You need to sign in to add items to the cart.');
+    }
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
@@ -83,7 +89,7 @@ function SleepingSystems() {
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             <p>{item.description.split('. ')[0] + '...'}</p>
-            <p className="price">{item.pricePerDay}/day</p>
+            <p className="price">${item.pricePerDay}/day</p>
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -115,7 +121,7 @@ function SleepingSystems() {
 
       {notification && (
         <div className="notification">
-          {notification}
+          <p>{notification}</p>
         </div>
       )}
     </div>

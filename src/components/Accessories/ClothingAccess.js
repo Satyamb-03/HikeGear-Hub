@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './Accessories.css'; 
 import { useCart } from '../Context/CartContext';
 import ProductService from '../Services/ProductService';
+import { getAuth } from 'firebase/auth'; // Import Firebase Auth
 
 function ClothingAccess() {
   const [clothingAccessItems, setClothingAccessItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState('');
+  const [notification, setNotification] = useState(''); // Notification for cart messages
   const { addToCart } = useCart(); 
+
+  const auth = getAuth(); // Initialize Firebase Auth
 
   useEffect(() => {
     const fetchClothingAccessItems = async () => {
@@ -19,12 +22,10 @@ function ClothingAccess() {
             id: doc.id,
             ...doc.data()
           }))
-          .filter(
-            item => item.category === 'Accessories' && item.subcategory === 'Clothing Accessories'
-          );
+          .filter(item => item.category === 'Accessories' && item.subcategory === 'Clothing Accessories');
         setClothingAccessItems(clothingAccessList);
       } catch (error) {
-        console.error('Error fetching clothing access items:', error);
+        console.error("Error fetching clothing accessories:", error);
       } finally {
         setLoading(false);
       }
@@ -33,15 +34,20 @@ function ClothingAccess() {
     fetchClothingAccessItems();
   }, []);
 
-  const handleAddToCart = item => {
-    addToCart(item, 1, 1); 
-    setNotification(`Added ${item.name} to cart!`);
-    
-    
-    setTimeout(() => setNotification(''), 3000);
+  const handleAddToCart = (item) => {
+    const user = auth.currentUser; 
+
+    if (user) {
+      addToCart(item, 1, 1); 
+      setNotification(`Added ${item.name} to cart!`);
+    } else {
+      setNotification("You need to sign in to add items to the cart.");
+    }
+  
+    setTimeout(() => setNotification(''), 3000); 
   };
 
-  const handleItemClick = item => {
+  const handleItemClick = (item) => {
     setSelectedItem(item);
   };
 
@@ -58,18 +64,17 @@ function ClothingAccess() {
       <h2>Clothing Accessories</h2>
       <p>Discover essential clothing accessories to enhance your hiking experience.</p>
 
-      <div className="clothing-list">
-        {clothingAccessItems.map(item => (
-          <div
-            key={item.id}
-            className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}
-          >
+      <div className="accessories-list">
+        {clothingAccessItems.map((item) => (
+          <div key={item.id} className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}>
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
               {item.name}
             </h3>
-            <p className="description-preview">{item.description.split('. ')[0] + '...'}</p>
+            <p className="description-preview">
+              {item.description.split('. ')[0] + '...'}
+            </p>
             <p className="price">${item.pricePerDay}/day</p>
             <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
               Add to Cart
@@ -81,11 +86,8 @@ function ClothingAccess() {
       {selectedItem && (
         <div className="popup" onClick={handleClosePopup}>
           <div className="popup-content" onClick={e => e.stopPropagation()}>
-            <span className="close-btn" onClick={handleClosePopup}>
-              &times;
-            </span>
+            <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            {}
             <p>{selectedItem.fullDescription || selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
