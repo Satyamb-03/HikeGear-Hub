@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './Clothing.css';
 import { useCart } from '../Context/CartContext';
 import ProductService from '../Services/ProductService';
-import { useUserAuth } from '../Context/UserAuth';
+import { useUserAuth } from '../Context/UserAuth'; // Import user authentication context
 
 function Clothing() {
   const [clothingItems, setClothingItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
-  const { addToCart } = useCart(); 
-  const { user } = useUserAuth();
+  const [notification, setNotification] = useState(''); 
+  const { addToCart } = useCart();
+  const { user } = useUserAuth(); // Get the user from authentication context
 
   useEffect(() => {
     const fetchClothingItems = async () => {
@@ -35,14 +34,15 @@ function Clothing() {
   }, []);
 
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); 
-    setNotificationMessage(`${item.name} has been added to your cart!`);
-    setShowNotification(true);
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000); 
+    if (user) {
+      addToCart(item, 1, 1); 
+      setNotification(`Added ${item.name} to cart!`);
+      setTimeout(() => setNotification(''), 3000); 
+    } else {
+      setNotification("You need to sign in to add items to the cart.");
+      setTimeout(() => setNotification(''), 3000); 
+    }
   };
-
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
@@ -59,6 +59,9 @@ function Clothing() {
     <div className="Clothing">
       <h2>Clothing</h2>
       <p>Explore our wide range of outdoor clothing suitable for all weather conditions.</p>
+
+      {notification && <div className="notification">{notification}</div>} {/* Notification message */}
+
       <div className="clothing-list">
         {clothingItems.map((item) => (
           <div key={item.id} className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}>
@@ -67,7 +70,9 @@ function Clothing() {
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">
               {item.name}
             </h3>
-            <p className="description-preview">{item.description}</p>
+            <p className="description-preview">
+              {item.description.split('. ')[0] + '...'}
+            </p>
             <p className="price">${item.pricePerDay}/day</p>
             <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
               Add to Cart
@@ -81,7 +86,7 @@ function Clothing() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            <p>{selectedItem.fullDescription}</p>
+            <p>{selectedItem.fullDescription || selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
                 selectedItem.additionalImages.map((image, index) => (
@@ -92,12 +97,6 @@ function Clothing() {
               )}
             </div>
           </div>
-        </div>
-      )}
-
-      {showNotification && (
-        <div className="notification">
-          {notificationMessage}
         </div>
       )}
     </div>

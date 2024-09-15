@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Clothing.css'; 
 import { useCart } from '../Context/CartContext';
 import ProductService from '../Services/ProductService';
+import { useUserAuth } from '../Context/UserAuth'; // Import user authentication context
 
 function WomensClothing() {
   const [womensClothingItems, setWomensClothingItems] = useState([]);
@@ -9,7 +10,8 @@ function WomensClothing() {
   const [loading, setLoading] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
-  const { addToCart } = useCart(); 
+  const { addToCart } = useCart();
+  const { user } = useUserAuth(); // Get the user from authentication context
 
   useEffect(() => {
     const fetchWomensClothingItems = async () => {
@@ -31,12 +33,16 @@ function WomensClothing() {
   }, []);
 
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); 
-    setNotificationMessage(`${item.name} has been added to your cart!`);
+    if (user) { // Check if the user is logged in
+      addToCart(item, 1, 1);
+      setNotificationMessage(`${item.name} has been added to your cart!`);
+    } else {
+      setNotificationMessage('You need to sign in to add items to the cart.');
+    }
     setShowNotification(true);
     setTimeout(() => {
       setShowNotification(false);
-    }, 3000); 
+    }, 3000); // Notification disappears after 3 seconds
   };
 
   const handleItemClick = (item) => {

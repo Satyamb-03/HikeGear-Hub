@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './footwear.css'; 
 import ProductService from '../Services/ProductService'; 
 import { useCart } from '../Context/CartContext';
+import { useUserAuth } from '../Context/UserAuth'; // Import user authentication context
 
 function WomensFootwear() {
   const [footwearItems, setFootwearItems] = useState([]);
@@ -12,23 +13,24 @@ function WomensFootwear() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
   const { addToCart } = useCart(); 
+  const { user } = useUserAuth(); // Get the user from authentication context
 
   useEffect(() => {
     const fetchFootwearItems = async () => {
       try {
-
         const footwearSnapshot = await ProductService.getAllProducts();
         const footwearList = footwearSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })).filter(item => item.category === 'Footwear' && item.subcategory === 'Women'); 
+        
         setFootwearItems(footwearList);
 
-      
-        const initialQuantities = {};
-        footwearList.forEach(item => {
-          initialQuantities[item.id] = 1;
-        });
+        const initialQuantities = footwearList.reduce((acc, item) => ({
+          ...acc,
+          [item.id]: 1
+        }), {});
+
         setQuantities(initialQuantities);
       } catch (error) {
         console.error("Error fetching women's footwear items:", error);
@@ -48,12 +50,14 @@ function WomensFootwear() {
   };
 
   const handleAddToCart = (item) => {
-    addToCart(item, quantities[item.id], days);
-    setNotificationMessage(`${item.name} has been added to your cart!`);
+    if (user) { // Check if user is logged in
+      addToCart(item, quantities[item.id], days);
+      setNotificationMessage(`${item.name} has been added to your cart!`);
+    } else {
+      setNotificationMessage('You need to sign in to add items to the cart.');
+    }
     setShowNotification(true);
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000); 
+    setTimeout(() => setShowNotification(false), 3000); 
 
     setQuantities(prevQuantities => ({
       ...prevQuantities,

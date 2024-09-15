@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Gear.css'; 
 import { useCart } from '../Context/CartContext';
 import ProductService from '../Services/ProductService';
+import { useUserAuth } from '../Context/UserAuth'; 
 
 function Packs() {
   const [packItems, setPackItems] = useState([]);
@@ -11,11 +12,11 @@ function Packs() {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState('');
   const { addToCart } = useCart(); 
+  const { user } = useUserAuth();
 
   useEffect(() => {
     const fetchPackItems = async () => {
       try {
-        
         const gearSnapshot = await ProductService.getAllProducts();
         const packList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -23,7 +24,7 @@ function Packs() {
         })).filter(item => item.category === 'Gear' && item.subcategory === 'Packs');
         setPackItems(packList);
 
-        
+        // Initialize quantities for each item
         const initialQuantities = {};
         packList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -47,8 +48,12 @@ function Packs() {
   };
 
   const handleAddToCart = (item) => {
-    addToCart(item, quantities[item.id], days);
-    setNotification(`Added ${item.name} to cart!`);
+    if (user) { // Check if user is logged in
+      addToCart(item, quantities[item.id], days);
+      setNotification(`Added ${item.name} to cart!`);
+    } else {
+      setNotification('You need to sign in to add items to the cart.');
+    }
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
@@ -82,8 +87,9 @@ function Packs() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
+            {/* Display short description */}
             <p>{item.description.split('. ')[0] + '...'}</p>
-            <p className="price">{item.pricePerDay}/day</p>
+            <p className="price">${item.pricePerDay}/day</p>
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -99,6 +105,7 @@ function Packs() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
+            {/* Display full description in popup */}
             <p>{selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
@@ -114,8 +121,8 @@ function Packs() {
       )}
 
       {notification && (
-        <div className="cart-message">
-          {notification}
+        <div className="notification">
+          <p>{notification}</p>
         </div>
       )}
     </div>

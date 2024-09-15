@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './footwear.css';
 import ProductService from '../Services/ProductService';
 import { useCart } from '../Context/CartContext';
+import { useUserAuth } from '../Context/UserAuth'; // Import user authentication context
 
 function MensFootwear() {
   const [footwearItems, setFootwearItems] = useState([]);
@@ -11,12 +12,12 @@ function MensFootwear() {
   const [loading, setLoading] = useState(true);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
-  const { addToCart } = useCart(); 
+  const { addToCart } = useCart();
+  const { user } = useUserAuth(); // Get the user from authentication context
 
   useEffect(() => {
     const fetchFootwearItems = async () => {
       try {
-      
         const footwearSnapshot = await ProductService.getAllProducts();
         const footwearList = footwearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -24,7 +25,6 @@ function MensFootwear() {
         })).filter(item => item.category === 'Footwear' && item.subcategory === 'Men'); 
         setFootwearItems(footwearList);
 
-      
         const initialQuantities = {};
         footwearList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -48,17 +48,21 @@ function MensFootwear() {
   };
 
   const handleAddToCart = (item) => {
-    addToCart(item, quantities[item.id], days);
-    setQuantities(prevQuantities => ({
-      ...prevQuantities,
-      [item.id]: 1
-    }));
-    setDays(1);
-    setNotificationMessage(`${item.name} has been added to your cart!`);
+    if (user) { // Check if user is logged in
+      addToCart(item, quantities[item.id], days);
+      setQuantities(prevQuantities => ({
+        ...prevQuantities,
+        [item.id]: 1
+      }));
+      setDays(1);
+      setNotificationMessage(`${item.name} has been added to your cart!`);
+    } else {
+      setNotificationMessage('You need to sign in to add items to the cart.');
+    }
     setShowNotification(true);
     setTimeout(() => {
       setShowNotification(false);
-    }, 3000); 
+    }, 3000); // Notification disappears after 3 seconds
   };
 
   const handleItemClick = (item) => {

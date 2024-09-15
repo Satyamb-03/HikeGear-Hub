@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Gear.css';
 import { useCart } from '../Context/CartContext';
+import { useUserAuth } from '../Context/UserAuth'; // Import user authentication context
 import ProductService from '../Services/ProductService';
 
 function Gear() {
@@ -9,8 +10,9 @@ function Gear() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState(''); 
+  const [notification, setNotification] = useState('');
   const { addToCart } = useCart();
+  const { user } = useUserAuth(); // Get the user from authentication context
 
   useEffect(() => {
     const fetchGearItems = async () => {
@@ -22,6 +24,7 @@ function Gear() {
         })).filter(item => item.category === 'Gear');
         setGearItems(gearList);
 
+        // Initialize quantities for each gear item
         const initialQuantities = {};
         gearList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -45,15 +48,18 @@ function Gear() {
   };
 
   const handleAddToCart = (item) => {
-    addToCart(item, quantities[item.id], days);
+    if (user) { // Check if user is logged in
+      addToCart(item, quantities[item.id], days);
+      setNotification(`Added ${item.name} to cart!`);
+    } else {
+      setNotification('You need to sign in to add items to the cart.');
+    }
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
     }));
     setDays(1);
-    setNotification(`Added ${item.name} to cart!`); 
 
-    
     setTimeout(() => {
       setNotification('');
     }, 3000);
@@ -81,13 +87,9 @@ function Gear() {
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
-            {/* Display short description */}
             <p>{item.description.split('. ')[0] + '...'}</p>
-            <p className="price">{item.pricePerDay}/day</p>
-            <button
-              className="confirm-btn"
-              onClick={() => handleAddToCart(item)}
-            >
+            <p className="price">${item.pricePerDay}/day</p>
+            <button className="confirm-btn" onClick={() => handleAddToCart(item)}>
               Add to Cart
             </button>
           </div>
@@ -99,7 +101,6 @@ function Gear() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <span className="close-btn" onClick={handleClosePopup}>&times;</span>
             <h2>{selectedItem.name}</h2>
-            {/* Display full description in popup */}
             <p>{selectedItem.description}</p>
             <div className="popup-images">
               {selectedItem.additionalImages && selectedItem.additionalImages.length > 0 ? (
@@ -114,7 +115,6 @@ function Gear() {
         </div>
       )}
 
-      {}
       {notification && (
         <div className="notification">
           <p>{notification}</p>
