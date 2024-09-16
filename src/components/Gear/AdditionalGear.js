@@ -11,13 +11,12 @@ function Additional() {
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState('');
-  const { addToCart } = useCart(); 
+  const { addToCart } = useCart();
   const { user } = useUserAuth();
 
   useEffect(() => {
     const fetchTentItems = async () => {
       try {
-       
         const gearSnapshot = await ProductService.getAllProducts();
         const tentList = gearSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -25,14 +24,14 @@ function Additional() {
         })).filter(item => item.category === 'Gear' && item.subcategory === 'Additional Gear');
         setTentItems(tentList);
 
-        
+        // Initialize quantities for each item
         const initialQuantities = {};
         tentList.forEach(item => {
           initialQuantities[item.id] = 1;
         });
         setQuantities(initialQuantities);
       } catch (error) {
-        console.error("Error fetching tent items:", error);
+        console.error("Error fetching additional gear items:", error);
       } finally {
         setLoading(false);
       }
@@ -49,8 +48,12 @@ function Additional() {
   };
 
   const handleAddToCart = (item) => {
-    addToCart(item, quantities[item.id], days);
-    setNotification(`Added ${item.name} to cart!`);
+    if (user) { // Check if user is logged in
+      addToCart(item, quantities[item.id], days);
+      setNotification(`Added ${item.name} to cart!`);
+    } else {
+      setNotification('You need to sign in to add items to the cart.');
+    }
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [item.id]: 1
@@ -86,7 +89,7 @@ function Additional() {
             <h3 onClick={() => handleItemClick(item)} className="item-name-clickable">{item.name}</h3>
             {/* Display short description */}
             <p>{item.description.split('. ')[0] + (item.description.split('. ')[0].endsWith('.') ? '' : '...') }</p>
-            <p className="price">{item.pricePerDay}/day</p>
+            <p className="price">${item.pricePerDay}/day</p>
             <button
               className="confirm-btn"
               onClick={() => handleAddToCart(item)}
@@ -119,7 +122,7 @@ function Additional() {
 
       {notification && (
         <div className="notification">
-          {notification}
+          <p>{notification}</p>
         </div>
       )}
     </div>

@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './Accessories.css'; 
 import { useCart } from '../Context/CartContext';
 import ProductService from '../Services/ProductService';
+import { getAuth } from 'firebase/auth'; // Import Firebase Auth
 
 function Accessories() {
   const [accessoriesItems, setAccessoriesItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [cartMessage, setCartMessage] = useState(''); 
+  const [notification, setNotification] = useState(''); 
   const { addToCart } = useCart();
+  
+  const auth = getAuth(); // Initialize Firebase Auth
 
   useEffect(() => {
     const fetchAccessoriesItems = async () => {
@@ -32,9 +35,16 @@ function Accessories() {
   }, []);
 
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); 
-    setCartMessage('Item added to cart'); 
-    setTimeout(() => setCartMessage(''), 3000); 
+    const user = auth.currentUser; 
+
+    if (user) {
+      addToCart(item, 1, 1); 
+      setNotification(`Added ${item.name} to cart!`);
+      setTimeout(() => setNotification(''), 3000); 
+    } else {
+      setNotification("You need to sign in to add items to the cart.");
+      setTimeout(() => setNotification(''), 3000); 
+    }
   };
 
   const handleItemClick = (item) => {
@@ -54,7 +64,7 @@ function Accessories() {
       <h2>Accessories</h2>
       <p>Discover essential accessories to make your hike comfortable and safe.</p>
 
-      {cartMessage && <div className="cart-message">{cartMessage}</div>} {/* Display cart message */}
+      {notification && <div className="notification">{notification}</div>} {/* Notification message */}
 
       <div className="accessories-list">
         {accessoriesItems.map((item) => (
@@ -86,7 +96,7 @@ function Accessories() {
                 selectedItem.additionalImages.map((image, index) => (
                   <img key={index} src={image} alt={`${selectedItem.name} - ${index + 1}`} />
                 ))
-              ) : (
+              ) : (  
                 <p>No additional images available</p>
               )}
             </div>

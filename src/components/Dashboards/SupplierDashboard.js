@@ -56,7 +56,7 @@ const SupplierDashboard = () => {
           const earningsSnapshot = await getDocs(earningsQuery);
           const earnings = earningsSnapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
-            return (- acc - data.finalTotal  || 0);
+            return (  data.finalTotal -acc  || 0);
           }, 0);
           setTotalEarnings(earnings);
 

@@ -10,10 +10,9 @@ function Footwear() {
   const [quantities, setQuantities] = useState({});
   const [days, setDays] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notification, setNotification] = useState('');
   const { addToCart } = useCart(); 
-  const { user } = useUserAuth();
+  const { user } = useUserAuth(); 
 
   useEffect(() => {
     const fetchFootwearItems = async () => {
@@ -21,11 +20,10 @@ function Footwear() {
         const footwearSnapshot = await ProductService.getAllProducts();
         const footwearList = footwearSnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
-        })).filter(item => item.category === 'Footwear'); 
+          ...doc.data(),
+        })).filter(item => item.category === 'Footwear');
         setFootwearItems(footwearList);
 
-        
         const initialQuantities = {};
         footwearList.forEach(item => {
           initialQuantities[item.id] = 1;
@@ -44,22 +42,26 @@ function Footwear() {
   const handleQuantityChange = (id, value) => {
     setQuantities(prevQuantities => ({
       ...prevQuantities,
-      [id]: value
+      [id]: value,
     }));
   };
 
   const handleAddToCart = (item) => {
+    if (!user) {
+      setNotification('You need to sign in to add items to the cart.');
+      setTimeout(() => setNotification(''), 3000);
+      return;
+    }
+
     addToCart(item, quantities[item.id], days);
     setQuantities(prevQuantities => ({
       ...prevQuantities,
-      [item.id]: 1
+      [item.id]: 1,
     }));
     setDays(1);
-    setNotificationMessage(`${item.name} has been added to your cart!`);
-    setShowNotification(true);
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000); 
+    setNotification(`${item.name} has been added to your cart!`);
+
+    setTimeout(() => setNotification(''), 3000);
   };
 
   const handleItemClick = (item) => {
@@ -78,6 +80,7 @@ function Footwear() {
     <div className="Footwear">
       <h2>Footwear</h2>
       <p>Discover the best footwear for your hiking adventures.</p>
+
       <div className="footwear-list">
         {footwearItems.map((item) => (
           <div key={item.id} className={`footwear-item ${item.newArrival ? 'new-arrival' : ''}`}>
@@ -115,9 +118,9 @@ function Footwear() {
         </div>
       )}
 
-      {showNotification && (
+      {notification && (
         <div className="notification">
-          {notificationMessage}
+          {notification}
         </div>
       )}
     </div>

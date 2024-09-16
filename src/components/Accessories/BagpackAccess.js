@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './Accessories.css'; 
 import { useCart } from '../Context/CartContext';
 import ProductService from '../Services/ProductService';
+import { getAuth } from 'firebase/auth'; // Import Firebase Auth
 
 function BackpackAccess() {
   const [backpackItems, setBackpackItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState('');
+  const [notification, setNotification] = useState(''); // To show notification message
   const { addToCart } = useCart(); 
+
+  const auth = getAuth(); // Initialize Firebase Auth
 
   useEffect(() => {
     const fetchBackpackItems = async () => {
@@ -30,11 +33,16 @@ function BackpackAccess() {
   }, []);
 
   const handleAddToCart = (item) => {
-    addToCart(item, 1, 1); 
-    setNotification(`Added ${item.name} to cart!`);
-    
+    const user = auth.currentUser; 
+
+    if (user) {
+      addToCart(item, 1, 1); 
+      setNotification(`Added ${item.name} to cart!`);
+    } else {
+      setNotification("You need to sign in to add items to the cart.");
+    }
   
-    setTimeout(() => setNotification(''), 3000);
+    setTimeout(() => setNotification(''), 3000); 
   };
 
   const handleItemClick = (item) => {

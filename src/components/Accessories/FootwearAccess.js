@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './Accessories.css'; 
 import { useCart } from '../Context/CartContext';
 import ProductService from '../Services/ProductService';
+import { getAuth } from 'firebase/auth'; // Import Firebase Auth
 
 function FootwearAccess() {
   const [footwearItems, setFootwearItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState('');
+  const [notification, setNotification] = useState(''); // To show notification message
   const { addToCart } = useCart(); 
+
+  const auth = getAuth(); // Initialize Firebase Auth
 
   useEffect(() => {
     const fetchFootwearItems = async () => {
@@ -34,11 +37,17 @@ function FootwearAccess() {
   }, []);
 
   const handleAddToCart = item => {
-    addToCart(item, 1, 1); 
-    setNotification(`Added ${item.name} to cart!`);
-    
+    const user = auth.currentUser; // Check if user is authenticated
+
    
-    setTimeout(() => setNotification(''), 3000);
+    if (user) {
+      addToCart(item, 1, 1); 
+      setNotification(`Added ${item.name} to cart!`);
+    } else {
+      setNotification("You need to sign in to add items to the cart.");
+    }
+
+    setTimeout(() => setNotification(''), 3000); // Clear notification after 3 seconds
   };
 
   const handleItemClick = item => {
@@ -58,11 +67,11 @@ function FootwearAccess() {
       <h2>Footwear Accessories</h2>
       <p>Discover essential footwear accessories to enhance your hiking experience.</p>
 
-      <div className="clothing-list">
+      <div className="accessories-list">
         {footwearItems.map(item => (
           <div
             key={item.id}
-            className={`clothing-item ${item.newArrival ? 'new-arrival' : ''}`}
+            className={`accessories-item ${item.newArrival ? 'new-arrival' : ''}`}
           >
             {item.newArrival && <span className="new-badge">New Arrival</span>}
             <img src={item.mainImage} alt={item.name} />
